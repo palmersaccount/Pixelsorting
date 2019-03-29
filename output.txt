@@ -1,0 +1,304 @@
+<start image>|<int func>|<sort func>|<other args>|<sorted image>
+
+
+
+
+Starting image url: https://i.imgur.com/rfasPI6.jpg?1
+Int func: random
+Sort func: intensity
+Args:  -a 173 -c 185 -u 0.15 -t 0.75 -r 25
+
+Sorted image: https://i.imgur.com/pknqZjS.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/pZRkMzP.jpg?1
+Int func: random
+Sort func: intensity
+Args:  -a 244 -c 425 -u 0.85 -t 0.1 -r 75
+
+Sorted image: https://i.imgur.com/dcybNfc.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/5VqeP6Y.jpg?1
+Int func: edges
+Sort func: hue
+Args:  -a 89 -c 140 -u 0.4 -t 0.85 -r 50
+
+Sorted image: https://i.imgur.com/yTbsxxb.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/pZRkMzP.jpg?1
+Int func (randomly chosen): random
+Sort func (randomly chosen): hue
+Args:  -a 20 -c 440 -u 0.9 -t 0.7 -r 25
+
+Sorted image: https://i.imgur.com/SImrs90.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func (randomly chosen): waves
+Sort func (randomly chosen): saturation
+Args:  -a 88 -c 305 -u 0.05 -t 0.5 -r 25
+
+Sorted image: https://i.imgur.com/71ChGI9.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func: random
+Sort func (randomly chosen): intensity
+Args:  -a 176 -c 80 -u 0.7 -t 0.3 -r 10
+
+Sorted image: https://i.imgur.com/CkUl0zP.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func: random
+Sort func (randomly chosen): saturation
+Args:  -r 50 -c 250
+
+Sorted image: https://i.imgur.com/qyGMtM4.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func (randomly chosen): waves
+Sort func (randomly chosen): hue
+Args:  -a 17 -c 125 -u 0.95 -t 0.85 -r 15
+
+Sorted image: https://i.imgur.com/CQYdBZB.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func (randomly chosen): random
+Sort func (randomly chosen): saturation
+Args:  -a 294 -c 245 -u 0.5 -t 0.25 -r 50
+
+Sorted image: https://i.imgur.com/xBFSkTl.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func (randomly chosen): waves
+Sort func (randomly chosen): lightness
+Args:  -a 30 -c 275 -u 0.2 -t 0.2 -r 50
+
+Sorted image: https://i.imgur.com/8hXPvXG.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func (randomly chosen): random
+Sort func (randomly chosen): lightness
+Args:  -a 15 -c 305 -u 0.75 -t 0.9 -r 30
+
+Sorted image: https://i.imgur.com/FkgryEC.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/rfasPI6.jpg?1
+Int func (randomly chosen): waves
+Sort func (randomly chosen): hue
+Args:  -a 79 -c 290 -u 0.05 -t 0.65 -r 5
+
+Sorted image: https://i.imgur.com/rsIYJ1j.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/1UBT6fK.png
+Int func (randomly chosen): random
+Sort func (randomly chosen): hue
+Args:  -a 182 -c 485 -u 0.75 -t 0.05 -r 15
+
+Sorted image: https://i.imgur.com/8tPncPK.png
+-----------------------------------
+Starting image url: https://i.imgur.com/Z438D1L.jpg
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 850 -a 180
+
+Sorted image: https://i.imgur.com/HBPpfVa.jpg
+-----------------------------------
+Starting image url: https://cdn.discordapp.com/attachments/140196952167022592/551958248618459137/83351965_explorer273lincolnshirewoldssouthpicturebynicholassilkstone.png
+Int func (randomly chosen): threshold
+Sort func (randomly chosen): saturation
+Args:  -a 51 -c 395 -u 0.65 -t 0.65 -r 35
+
+Sorted image: https://i.imgur.com/XKQFkqt.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 250 -a 45
+
+Sorted image: https://i.imgur.com/hy53i9g.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/5VqeP6Y.jpg?1
+Int func (randomly chosen): 8
+Sort func (randomly chosen): 6
+Args:  -a 149 -c 485 -u 0.45 -t 0.5 -r 30
+
+Sorted image: https://i.imgur.com/HW4yNZb.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/5VqeP6Y.jpg?1
+Int func (randomly chosen): threshold
+Sort func (randomly chosen): saturation
+Args:  -a 302 -c 440 -u 0.4 -t 0.85 -r 50
+
+Sorted image: https://i.imgur.com/ZlnPUS1.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/5VqeP6Y.jpg?1
+Int func (randomly chosen): waves
+Sort func (randomly chosen): lightness
+Args:  -a 301 -c 95 -u 0.85 -t 0.4 -r 55
+
+Sorted image: https://i.imgur.com/btJHSUD.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/5VqeP6Y.jpg?1
+Int func (randomly chosen): threshold
+Sort func (randomly chosen): lightness
+Args:  -a 67 -c 275 -u 0.8 -t 0.45 -r 10
+
+Sorted image: https://i.imgur.com/WyXBura.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/5VqeP6Y.jpg?1
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 250 -a 45
+
+Sorted image: https://i.imgur.com/cCUwUo7.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/5VqeP6Y.jpg?1
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 250 -a 45
+
+Sorted image: https://i.imgur.com/MO90mLC.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 250 -a 45
+
+Sorted image: https://i.imgur.com/6izNFVe.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/5VqeP6Y.jpg?1
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 250 -a 45
+
+Sorted image: https://i.imgur.com/ILOlPLx.jpg
+-----------------------------------
+Starting image url: https://preview.redd.it/0g4rzved3pk21.jpg?width=960&height=692&crop=smart&auto=webp&s=a0aacf7a55c86693c9bee0abe7dfe86e44f575f1
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 250 -a 45
+
+Sorted image: https://i.imgur.com/uKhUJFF.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/LNeD6su.png?1
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 250 -a 45
+
+Sorted image: https://i.imgur.com/Y2njl51.png
+-----------------------------------
+Starting image url: https://i.imgur.com/LNeD6su.png?1
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 450
+
+Sorted image: https://i.imgur.com/kDfwTJJ.png
+-----------------------------------
+Starting image url: https://i.imgur.com/LNeD6su.png?1
+Int func: edges
+Sort func: intensity
+Args:  -r 50 -t .8
+
+Sorted image: https://i.imgur.com/jVUMIIF.png
+-----------------------------------
+Starting image url: https://instagram.fbeg2-1.fna.fbcdn.net/vp/faf959d0a55328eac6241e945516d706/5D02377B/t51.2885-15/e35/52508220_330612794327691_545723469762267826_n.jpg?_nc_ht=instagram.fbeg2-1.fna.fbcdn.net
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 450 -a 45
+
+Sorted image: https://i.imgur.com/wcJZtDK.jpg
+-----------------------------------
+Starting image url: https://instagram.fbeg2-1.fna.fbcdn.net/vp/faf959d0a55328eac6241e945516d706/5D02377B/t51.2885-15/e35/52508220_330612794327691_545723469762267826_n.jpg?_nc_ht=instagram.fbeg2-1.fna.fbcdn.net
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 450
+
+Sorted image: https://i.imgur.com/8hhJywU.jpg
+-----------------------------------
+Starting image url: https://instagram.fbeg2-1.fna.fbcdn.net/vp/faf959d0a55328eac6241e945516d706/5D02377B/t51.2885-15/e35/52508220_330612794327691_545723469762267826_n.jpg?_nc_ht=instagram.fbeg2-1.fna.fbcdn.net
+Int func: edges
+Sort func: intensity
+Args:  -r 50 -t .8
+
+Sorted image: https://i.imgur.com/U1eAknz.jpg
+-----------------------------------
+Starting image url: https://i.redd.it/0g4rzved3pk21.jpg
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 450
+
+Sorted image: https://i.imgur.com/xvFKS31.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func (randomly chosen): edges
+Sort func (randomly chosen): saturation
+Args:  -a 344 -c 80 -u 0.5 -t 0.1 -r 55
+
+Sorted image: https://i.imgur.com/XJJw13f.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/5VqeP6Y.jpg?1
+Int func (randomly chosen): random
+Sort func (randomly chosen): hue
+Args:  -a 289 -c 380 -u 0.9 -t 0.45 -r 5
+
+Sorted image: https://i.imgur.com/MvuW46d.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/pZRkMzP.jpg?1
+Int func (randomly chosen): waves
+Sort func (randomly chosen): lightness
+Args:  -a 185 -c 275 -u 0.5 -t 0.3 -r 30
+
+Sorted image: https://i.imgur.com/2MLt9TY.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/RPnqMdr.jpg
+Int func (randomly chosen): threshold
+Sort func (randomly chosen): hue
+Args:  -a 75 -c 125 -u 0.9 -t 0.2 -r 55
+
+Sorted image: https://i.imgur.com/1tVCAcG.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/5VqeP6Y.jpg?1
+Int func (randomly chosen): edges
+Sort func (randomly chosen): lightness
+Args:  -a 12 -c 230 -u 0.75 -t 0.45 -r 35
+
+Sorted image: https://i.imgur.com/C4Lbmnk.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/5VqeP6Y.jpg?1
+Int func (randomly chosen): edges
+Sort func (randomly chosen): intensity
+Args:  -a 134 -c 320 -u 0.75 -t 0.25 -r 25
+Sorted on: 2019-03-19 16:23
+
+Sorted image: https://i.imgur.com/9qJMzzO.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/5VqeP6Y.jpg?1
+Int func (randomly chosen): threshold
+Sort func (randomly chosen): saturation
+Args:  -a 164 -c 230 -u 0.8 -t 0.05 -r 45
+Sorted on: 03-19- 16:24
+
+Sorted image: https://i.imgur.com/tu1nFXw.jpg
+-----------------------------------
+Starting image url: https://i.redd.it/0ecneyv55do21.jpg
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 450
+Sorted on: 03-27-2019 01:38
+
+Sorted image: https://i.imgur.com/io7eh9I.png
+-----------------------------------
+Starting image url: https://i.redd.it/itxvgnw3liyz.jpg
+Int func (randomly chosen): edges
+Sort func (randomly chosen): lightness
+Args:  -a 148 -c 335 -u 0.65 -t 0.4 -r 35
+Sorted on: 03-27-2019 01:39
+
+Sorted image: https://i.imgur.com/AVQwEqN.png
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func (randomly chosen): threshold
+Sort func (randomly chosen): minimum
+Args:  -a 167 -c 215 -u 0.95 -t 0.2 -r 15
+Sorted on: 03-27-2019 19:24
+
+Sorted image: https://i.imgur.com/EgLRuxa.jpg
+-----------------------------------
