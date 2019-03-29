@@ -2,19 +2,21 @@ try:
     import Image
 except ImportError:
     from PIL import Image
-import sorter
-import util
-import interval
-import sorting
-import requests
 import argparse
-import pyimgur
 import os
 import random
 import sys
-import psutil
 import time
+
+import pyimgur
+import requests
 import arrow
+import interval
+import psutil
+import sorter
+import sorting
+import util
+
 
 def clear():
 	return os.system('cls' if os.name == 'nt' else 'clear')

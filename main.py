@@ -1,8 +1,8 @@
-#This the entry point for your Repl.
-#source: https://github.com/satyarth/pixelsort 
+# This the entry point for your Repl.
+# source: https://github.com/satyarth/pixelsort
 
 
-#TODO
+# TODO
 """
 -use logging metrics to slow down pixel counting?
 -options based in tuple ternary conditions
