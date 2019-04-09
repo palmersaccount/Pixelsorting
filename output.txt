@@ -302,3 +302,19 @@ Sorted on: 03-27-2019 19:24
 
 Sorted image: https://i.imgur.com/EgLRuxa.jpg
 -----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func: shuffle-total
+Sort func: lightness
+Args: No args
+Sorted on: 04-09-2019 15:52
+
+Sorted image: https://i.imgur.com/r4DJnzo.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func: shuffle-total
+Sort func: lightness
+Args: No args
+Sorted on: 04-09-2019 16:00
+
+Sorted image: https://i.imgur.com/tseI9Fs.jpg
+-----------------------------------
