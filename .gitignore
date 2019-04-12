@@ -118,3 +118,4 @@ dmypy.json
 .vscode/launch.json
 .vscode/settings.json
 *.code-workspace
+output.txt
