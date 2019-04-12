@@ -334,3 +334,27 @@ Sorted on: 04-11-2019 01:30
 
 Sorted image: https://i.imgur.com/ozHShiv.jpg
 -----------------------------------
+Starting image url: https://i.redd.it/matopiudgtr21.jpg
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 450
+Sorted on: 04-12-2019 19:14
+
+Sorted image: https://i.imgur.com/V7TsQ18.jpg
+-----------------------------------
+Starting image url: https://i.redd.it/matopiudgtr21.jpg
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 450 -a 90
+Sorted on: 04-12-2019 19:17
+
+Sorted image: https://i.imgur.com/YC6jl4G.jpg
+-----------------------------------
+Starting image url: https://i.redd.it/mmzchj0v8ir21.jpg
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 650
+Sorted on: 04-12-2019 19:19
+
+Sorted image: https://i.imgur.com/cOQ1HCL.jpg
+-----------------------------------

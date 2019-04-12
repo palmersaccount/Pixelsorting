@@ -109,7 +109,7 @@ def main():
     input_img = Image.open(requests.get(url, stream=True).raw)
     width, height = input_img.size
     resolution_msg = "Resolution: "+str(width)+"x"+str(height)
-    image_msg = (("[WARNING] No image url given, using " + ("random" if url_random else "chosen") + " default image " + (random_url if url_random else str(url_input))) if not url_given else "Using given image" + resolution_msg)
+    image_msg = (("[WARNING] No image url given, using " + ("random" if url_random else "chosen") + " default image " + (random_url if url_random else str(url_input))) if not url_given else "Using given image " + resolution_msg)
     clear()
 
     #preset input
@@ -345,12 +345,22 @@ def main():
 
     out_msg = "\nStarting image url: "+url+("\nInt func: " if not int_rand else "\nInt func (randomly chosen): ")+int_func_input+("\nSort func: " if not sort_rand else "\nSort func (randomly chosen): ")+sort_func_input+"\nArgs: "+(arg_parse_input if arg_parse_input is not None else "No args")+"\nSorted on: "+date_time
     im = pyimgur.Imgur(CLIENT_ID)
-    uploaded_image = im.upload_image(PATH, title="Pixel sorted", description=out_msg)
+    try:
+        uploaded_image = im.upload_image(PATH, title="Pixel sorted", description=out_msg)
+    except:
+        print("[WARNING] Image is over max image size, resizing to allow upload.")
+        resized = Image.open(output_image_path)
+        while True:
+            size = (round(int(resized.size[0]/1.1), 0), round(int(resized.size[1]/1.1), 0))
+            resized.thumnail(size, Image.ANTIALIAS)
+            resized.save(output_image_path)
+            uploaded_image = im.upload_image(PATH, title="Pixel sorted", description=out_msg)
+            continue
+
 
     #delete old file, seeing as its uploaded
     print("Removing local file...")
     os.remove(output_image_path)
-    print("Local file removed!")
 
     #output to 'output.txt'
     print("Saving config to 'output.txt'...")
@@ -358,5 +368,6 @@ def main():
         f.write("\nStarting image url: "+url+("\nInt func: " if not int_rand else "\nInt func (randomly chosen): ")+int_func_input+("\nSort func: " if not sort_rand else "\nSort func (randomly chosen): ") +
                 sort_func_input+"\nArgs: "+(arg_parse_input if arg_parse_input is not None else "No args")+"\nSorted on: "+date_time+"\n\nSorted image: "+uploaded_image.link+"\n"+(35*'-'))
     
-    print("Saved config to 'output.txt'!\nDone!")
+    print("Done!")
     print("Link to image: " + uploaded_image.link)
+    output_img.show()
