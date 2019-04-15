@@ -203,7 +203,7 @@ def snap_sort(pixels, args, url):
     
     pixels.setflags(write=1)
     for i in range(round(int(xy.shape[0] / 2), 0)):
-        pixels[numbers_that_dont_feel_so_good[i][0]][numbers_that_dont_feel_so_good[i][1]] = [255, 255, 255, 0]
+        pixels[numbers_that_dont_feel_so_good[i][0]][numbers_that_dont_feel_so_good[i][1]] = [0, 0, 0, 0]
 
     print("Perfectly balanced, as all things should be.")
     feel_better = Image.fromarray(pixels, 'RGBA')

@@ -17,6 +17,8 @@ import sorter
 import sorting
 import util
 
+class CustomError(Exception):
+    pass
 
 def clear():
     return os.system('cls' if os.name == 'nt' else 'clear')
@@ -144,7 +146,7 @@ def main():
         print(image_msg+"\n"+resolution_msg)
         print("\nWhat interval function are you using?\nOptions (default is random):\n-1|random\n-2|threshold\n-3|edges\n-4|waves\n-5|snap\n-6|shuffle-total\n-7|shuffle-axis\n-8|file\n-9|file-edges\n-10|none\n-11|random select")
         int_func_input = input("\nChoice: ").lower()
-        int_func_options = ["random","threshold","edges","waves","shuffle-total","shuffle-axis","file","file-edges","none"]
+        int_func_options = ["random","threshold","edges","waves","snap","shuffle-total","shuffle-axis","file","file-edges","none"]
         if int_func_input in ['1','2','3','4','5','6','7','8','9','10']:
             int_func_input = {
                 '1': 'random',
@@ -308,11 +310,11 @@ def main():
     print("Determining intervals...")
     intervals = interval_function(pixels, __args, url)
     
-    if not shuffled or snapped:
+    if shuffled or snapped:
+        sorted_pixels = intervals
+    else:
         print("Sorting pixels...")
         sorted_pixels = sorter.sort_image(pixels, intervals, randomness, sorting_function)
-    else:
-        sorted_pixels = intervals
 
     print("Placing pixels in output image...")
     output_img = Image.new('RGBA', input_img.size)

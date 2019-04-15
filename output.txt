@@ -358,3 +358,27 @@ Sorted on: 04-12-2019 19:19
 
 Sorted image: https://i.imgur.com/cOQ1HCL.jpg
 -----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func: snap
+Sort func: lightness
+Args: No args
+Sorted on: 04-15-2019 20:53
+
+Sorted image: https://i.imgur.com/zvLHiFz.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func: snap
+Sort func: intensity
+Args: No args
+Sorted on: 04-15-2019 20:57
+
+Sorted image: https://i.imgur.com/XEOOUjn.jpg
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func: snap
+Sort func: lightness
+Args: No args
+Sorted on: 04-15-2019 20:59
+
+Sorted image: https://i.imgur.com/fjff9nV.jpg
+-----------------------------------
