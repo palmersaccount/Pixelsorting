@@ -355,3 +355,6 @@ def main():
     print("Done!")
     print("Link to image: " + uploaded_image.link)
     output_img.show()
+
+if __name__ == "__main__":
+    main()
