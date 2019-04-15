@@ -53,6 +53,7 @@ def read_interval_function(int_func_input):
             "threshold": interval.threshold,
             "edges": interval.edge,
             "waves": interval.waves,
+            "snap": interval.snap_sort,
             "file": interval.file_mask,
             "file-edges": interval.file_edges,
             "shuffle-total": interval.shuffle_total,
@@ -141,29 +142,28 @@ def main():
     if not preset_true:
         #int func input
         print(image_msg+"\n"+resolution_msg)
-        print("\nWhat interval function are you using?\nOptions (default is random):\n-1|random\n-2|threshold\n-3|edges\n-4|waves\n-5|shuffle-total\n-6|shuffle-axis\n-7|file\n-8|file-edges\n-9|none\n-0|random select")
+        print("\nWhat interval function are you using?\nOptions (default is random):\n-1|random\n-2|threshold\n-3|edges\n-4|waves\n-5|snap\n-6|shuffle-total\n-7|shuffle-axis\n-8|file\n-9|file-edges\n-10|none\n-11|random select")
         int_func_input = input("\nChoice: ").lower()
         int_func_options = ["random","threshold","edges","waves","shuffle-total","shuffle-axis","file","file-edges","none"]
-        if int_func_input in ['1','2','3','4','5','6','7','8','9']:
+        if int_func_input in ['1','2','3','4','5','6','7','8','9','10']:
             int_func_input = {
                 '1': 'random',
                 '2': 'threshold',
                 '3': 'edges',
                 '4': 'waves',
-                '5': 'shuffle-total',
-                '6': 'shuffle-axis',
-                '7': 'file',
-                '8': 'file-edges',
-                '9': 'none'
+                '5': 'snap',
+                '6': 'shuffle-total',
+                '7': 'shuffle-axis',
+                '8': 'file',
+                '9': 'file-edges',
+                '10': 'none'
             }[int_func_input]
             int_rand = False
-        elif int_func_input in ['0','random select']:
+        elif int_func_input in ['11','random select']:
             int_func_input = int_func_options[random.randint(0,3)]
             int_rand = True
-        if int_func_input in ['shuffle-total', 'shuffle-axis']:
-            shuffled = True
-        else:
-            shuffled = False
+        shuffled = True if int_func_input in ['shuffle-total', 'shuffle-axis'] else False
+        snapped = True if int_func_input in ['snap'] else False
 
         int_msg = ("Interval function: " if not int_rand else "Interval function (randomly selected): ") + int_func_input if int_func_input in int_func_options else "Interval function: random (default)"
         clear()
@@ -249,14 +249,9 @@ def main():
 
     __args = p.parse_args(args_in)
 
-    #input_img is assigned earlier
-    #image_input_path = input_img
     output_image_path = "image.png"
     interval_function = read_interval_function(int_func_input)
     sorting_function = read_sorting_function(sort_func_input)
-    #bottom_threshold = __args.bottom_threshold
-    #upper_threshold = __args.upper_threshold
-    #clength = __args.clength
     angle = __args.angle
     randomness = __args.randomness
 
@@ -313,7 +308,7 @@ def main():
     print("Determining intervals...")
     intervals = interval_function(pixels, __args, url)
     
-    if not shuffled:
+    if not shuffled or snapped:
         print("Sorting pixels...")
         sorted_pixels = sorter.sort_image(pixels, intervals, randomness, sorting_function)
     else:
@@ -340,23 +335,12 @@ def main():
     #upload to imgur
     CLIENT_ID = "d7155a81c1e37bd"
     PATH = output_image_path
-    repl_link = "http://repl.it/@wolfembers/Pixelsorting"
     date_time = str(arrow.utcnow().format('MM-DD-YYYY HH:mm'))
 
     out_msg = "\nStarting image url: "+url+("\nInt func: " if not int_rand else "\nInt func (randomly chosen): ")+int_func_input+("\nSort func: " if not sort_rand else "\nSort func (randomly chosen): ")+sort_func_input+"\nArgs: "+(arg_parse_input if arg_parse_input is not None else "No args")+"\nSorted on: "+date_time
     im = pyimgur.Imgur(CLIENT_ID)
-    try:
-        uploaded_image = im.upload_image(PATH, title="Pixel sorted", description=out_msg)
-    except:
-        print("[WARNING] Image is over max image size, resizing to allow upload.")
-        resized = Image.open(output_image_path)
-        while True:
-            size = (round(int(resized.size[0]/1.1), 0), round(int(resized.size[1]/1.1), 0))
-            resized.thumnail(size, Image.ANTIALIAS)
-            resized.save(output_image_path)
-            uploaded_image = im.upload_image(PATH, title="Pixel sorted", description=out_msg)
-            continue
-
+    uploaded_image = im.upload_image(PATH, title="Pixel sorted", description=out_msg)
+    print("Image uploaded!")
 
     #delete old file, seeing as its uploaded
     print("Removing local file...")

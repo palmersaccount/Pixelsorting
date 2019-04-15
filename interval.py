@@ -188,34 +188,52 @@ def file_edges(pixels, args, url):
     return intervals
 
 
+def snap_sort(pixels, args, url):
+    print("Gaining power...")
+    input_img = Image.open(requests.get(url, stream=True).raw)
+    input_img = input_img.convert("RGBA")
+    width, height = input_img.size
+    print("Opening the soul stone...")
+    pixels = np.asarray(input_img)
+
+    print("Balancing perfectly...")
+    nx, ny = height, width
+    xy = np.mgrid[:nx, :ny].reshape(2, -1).T
+    numbers_that_dont_feel_so_good = xy.take(np.random.choice(xy.shape[0], round(int(xy.shape[0] / 2), 0), replace=False), axis=0)
+    
+    pixels.setflags(write=1)
+    for i in range(round(int(xy.shape[0] / 2), 0)):
+        pixels[numbers_that_dont_feel_so_good[i][0]][numbers_that_dont_feel_so_good[i][1]] = [255, 255, 255, 0]
+
+    print("Perfectly balanced, as all things should be.")
+    feel_better = Image.fromarray(pixels, 'RGBA')
+    feel_better.save("pixels_that_dont_feel_so_good.png")
+    
+    print("Allowing the saved to return...")
+    input_img = Image.open("pixels_that_dont_feel_so_good.png")
+    input_img = input_img.convert("RGBA")
+    data = input_img.load()
+    pixels = []
+    append = pixels.append
+    size1 = input_img.size[1]
+    size0 = input_img.size[0]
+
+    for y in range(size1):
+        append([])
+        for x in range(size0):
+            pixels[y].append(data[x, y])
+    print("Removing dust from the snap...")
+    os.remove("pixels_that_dont_feel_so_good.png")
+    print("Sorted perfectly in half.")
+    
+    return pixels
+
+
 def shuffle_total(pixels, args, url):
-    # sort total
     print("Creating array from image...")
     input_img = Image.open(requests.get(url, stream=True).raw)
     height = input_img.size[1]
     shuffle = np.array(input_img)
-
-    # attempting to shuffle more randomly
-    '''
-    intervals = []
-    appendInt = intervals.append
-
-    print("Shuffling image...")
-    for y in range(len(shuffle)):
-        appendInt([])
-        x = 0
-        while True:
-            width = util.random_width(args.clength)
-            x += width
-            if x > len(shuffle[0]):
-                intervals[y].append(shuffle[0])
-                np.random.shuffle(intervals[y])
-                break
-            else:
-                intervals[y].append(x)
-                np.random.shuffle(intervals[y])
-    shuffled_out = Image.fromarray(intervals, 'RGB')
-    '''
 
     print("Shuffling image...")
     for i in range(int(height)):
@@ -241,7 +259,6 @@ def shuffle_total(pixels, args, url):
 
 
 def shuffled_axis(pixels, args, url):
-    # sort axis
     print("Getting image...")
     input_img = Image.open(requests.get(url, stream=True).raw)
     height = input_img.size[1]
