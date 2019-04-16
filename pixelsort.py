@@ -129,7 +129,7 @@ def main():
     width, height = input_img.size
     resolution_msg = "Resolution: "+str(width)+"x"+str(height)
     image_msg = (("[WARNING] No image url given, using " + ("random" if url_random else "chosen") + " default image " +
-                  (random_url if url_random else str(url_input))) if not url_given else "Using given image " + resolution_msg)
+                  (random_url if url_random else str(url_input))) if not url_given else "Using given image ")
     clear()
 
     # preset input
@@ -233,7 +233,7 @@ def main():
             "2": "imgur"
         }
     site_input = read_site(site_input)
-    site_msg = ("Using site "+site_input+" to upload image.")
+    site_msg = ("Image host site: "+site_input)
     clear()
 
     # args
@@ -241,7 +241,7 @@ def main():
         needs_help = input("Do you need help with args? (y/n)\n")
         clear()
         if needs_help in ['y', 'yes', '1']:
-            print(image_msg+"\n"+int_msg+"\n"+sort_msg+"\n"+resolution_msg +"\n"+site_msg+
+            print(image_msg+"\n"+resolution_msg+"\n"+int_msg+"\n"+sort_msg+"\n"+site_msg+
                   "\n\nWhat args will you be adding?\n" +
                   '{:21}'.format("Parameter") + '{:>6}'.format("| Flag |") + '{:>12}'.format("Description") + "\n" +
                   '{:21}'.format("---------------------") + '{:>6}'.format("|------|") + '{:>12}'.format("------------") + "\n" +
@@ -251,7 +251,7 @@ def main():
                   '{:21}'.format("Threshold (lower)") + '{:>6}'.format("| -t   |") + "How dark must a pixel be to be considered as a 'border' for sorting?\n" + 29 * ' ' + "Takes values from 0-1. 0.25 by default. Used in edges and threshold modes." + "\n" +
                   '{:21}'.format("Threshold (upper)") + '{:>6}'.format("| -u   |") + "How bright must a pixel be to be considered as a 'border' for sorting?\n"+29*' '+"Takes values from 0-1. 0.8 by default. Used in threshold mode.")
         else:
-            print(image_msg+"\n"+int_msg+"\n"+sort_msg+"\n"+resolution_msg +"\n"+site_msg+
+            print(image_msg+"\n"+resolution_msg+"\n"+int_msg+"\n"+sort_msg+"\n"+site_msg+
                   "\n\nWhat args will you be adding?\n" +
                   '{:21}'.format("Parameter") + '{:>6}'.format("| Flag |") + "\n" +
                   '{:21}'.format("---------------------") + '{:>6}'.format("|------|") + "\n" +
@@ -303,7 +303,7 @@ def main():
         print("Removed old files!")
         clear()
 
-    print(image_msg+"\n"+("Preset: " +preset_input if preset_true else "No preset applied")+"\n"+int_msg+"\n"+sort_msg+"\n"+site_msg)
+    print(image_msg+"\n"+resolution_msg+"\n"+("Preset: " +preset_input if preset_true else "No preset applied")+"\n"+int_msg+"\n"+sort_msg+"\n"+site_msg)
 
     # even if they were never given, at some point they need to be assigned to default values properly
     if int_func_input in ['', ' ']:
@@ -322,7 +322,6 @@ def main():
     print("------------------------------")
 
     print("Opening image...")
-    print(resolution_msg)
 
     print("Converting to RGBA...")
     input_img.convert('RGBA')

@@ -406,3 +406,75 @@ Sorted on: 04-16-2019 18:25
 
 Sorted image: https://s.put.re/uoSkak1f.png
 -----------------------------------
+Starting image url: https://i.redd.it/rjrt9iqbzds21.jpg
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 350
+Sorted on: 04-16-2019 18:42
+
+Sorted image: https://s.put.re/w2cD3922.png
+-----------------------------------
+Starting image url: https://i.redd.it/gvj9ngd7uas21.jpg
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 1000
+Sorted on: 04-16-2019 18:44
+
+Sorted image: https://s.put.re/PazYhWbi.png
+-----------------------------------
+Starting image url: https://i.redd.it/phk1qtncw7s21.jpg
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 500 -a 45
+Sorted on: 04-16-2019 18:46
+
+Sorted image: https://s.put.re/bRRiU6v6.png
+-----------------------------------
+Starting image url: https://i.redd.it/bt3egp3nztp21.jpg
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 250 -a 45
+Sorted on: 04-16-2019 18:47
+
+Sorted image: https://s.put.re/z9FmdXyr.png
+-----------------------------------
+Starting image url: https://i.redd.it/pv1gx8b2d9p21.jpg
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 750
+Sorted on: 04-16-2019 18:49
+
+Sorted image: https://s.put.re/gGLiD3p4.png
+-----------------------------------
+Starting image url: https://i.redd.it/o7j2qned8dq21.jpg
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 250 -a 45
+Sorted on: 04-16-2019 18:51
+
+Sorted image: https://s.put.re/K7q37LHX.png
+-----------------------------------
+Starting image url: https://i.redd.it/o7j2qned8dq21.jpg
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 450
+Sorted on: 04-16-2019 18:52
+
+Sorted image: https://s.put.re/F8xmYb4d.png
+-----------------------------------
+Starting image url: https://i.redd.it/o7j2qned8dq21.jpg
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 450
+Sorted on: 04-16-2019 18:54
+
+Sorted image: https://s.put.re/NE2aBXc6.png
+-----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func: snap
+Sort func: intensity
+Args: No args
+Sorted on: 04-16-2019 18:56
+
+Sorted image: https://s.put.re/ndXhp8Vk.png
+-----------------------------------
