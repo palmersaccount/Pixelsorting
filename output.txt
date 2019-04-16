@@ -382,3 +382,27 @@ Sorted on: 04-15-2019 20:59
 
 Sorted image: https://i.imgur.com/fjff9nV.jpg
 -----------------------------------
+Starting image url: https://i.imgur.com/wFzJ6ua.jpg?1
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 500 -a 45
+Sorted on: 04-16-2019 18:12
+
+Sorted image: https://s.put.re/T7YNSDmP.png
+-----------------------------------
+Starting image url: https://i.imgur.com/rfasPI6.jpg?1
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 500 -a 45
+Sorted on: 04-16-2019 18:18
+
+Sorted image: https://s.put.re/WU5sYAGn.png
+-----------------------------------
+Starting image url: https://i.imgur.com/rfasPI6.jpg?1
+Int func: random
+Sort func: intensity
+Args:  -r 50 -c 250 -a 45
+Sorted on: 04-16-2019 18:25
+
+Sorted image: https://s.put.re/uoSkak1f.png
+-----------------------------------
