@@ -96,7 +96,8 @@ def read_preset(preset_input):
             '5': 'saturation'}
         return {
             "main": (("-r 50 -c 250 -a 45"), "random", "intensity", True, False, False, False, False),
-            "full random": (("-a "+str(random.randrange(0, 360))+" -c "+str(random.randrange(50, 500, 15))+" -u "+str((random.randrange(50, 100, 5)/100))+" -t "+str((random.randrange(5, 50, 5)/100))+" -r "+str(random.randrange(5, 100, 5))), int_func_input[str(random.randint(1, 4))], sort_func_input[str(random.randint(1, 5))], True, True, True, False, False)
+            "full random": (("-a "+str(random.randrange(0, 360))+" -c "+str(random.randrange(50, 500, 15))+" -u "+str((random.randrange(50, 100, 5)/100))+" -t "+str((random.randrange(5, 50, 5)/100))+" -r "+str(random.randrange(5, 100, 5))), int_func_input[str(random.randint(1, 4))], sort_func_input[str(random.randint(1, 5))], True, True, True, False, False),
+            "snap-sort": (("-r 50 -c 250 -a 45"), "snap", "intensity", True, False, False, False, True)
         }[preset_input]
     except KeyError:
         print("[WARNING] Invalid preset name, no preset will be applied")
@@ -137,19 +138,21 @@ def main():
     preset_q = input("\nDo you wish to apply a preset? (y/n)\n")
     clear()
     if preset_q in ['y', 'yes', '1']:
-        print("Preset options:\n-1|main -- Main args (r 50, c 250, a 45, random, intensity)\n-2|full random -- Randomness in every arg!")
+        print("Preset options:\n-1|main -- Main args (r 50, c 250, a 45, random, intensity)\n-2|full random -- Randomness in every arg!\n-3|snap-sort -- Run from it, dread it, destiny still arrives.")
         preset_input = input("\nChoice: ").lower()
-        preset_options = ['main', 'full random']
+        preset_options = ['main', 'full random', 'snap-sort']
         if preset_input in preset_options:
             preset_choices = {
                 'main': '1',
-                'full random': '2'
+                'full random': '2',
+                'snap-sort': '3'
             }
             preset_input = preset_choices[preset_input]
-        if preset_input in ['1', '2']:
+        if preset_input in ['1', '2', '3']:
             preset_input = {
                 '1': 'main',
-                '2': 'full random'
+                '2': 'full random',
+                '3': 'snap-sort'
             }[preset_input]
         # if presets are applied, they take over args
         arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped = read_preset(
@@ -308,7 +311,7 @@ def main():
 
     # even if they were never given, at some point they need to be assigned to default values properly
     if int_func_input in ['', ' ']:
-        int_func_input = 'threshold'
+        int_func_input = 'random'
     if sort_func_input in ['', ' ']:
         sort_func_input = 'lightness'
 
@@ -344,11 +347,42 @@ def main():
         for x in range(size0):
             pixels[y].append(data[x, y])
 
+    '''
     print("Determining intervals...")
     intervals = interval_function(pixels, __args, url)
 
     if shuffled or snapped:
-        sorted_pixels = intervals
+        if snapped:
+            print("Remembering those that sacrificed it all...")
+            intervals = interval.random(intervals, __args, url)
+            sorted_pixels = sorter.sort_image(pixels, intervals, randomness, sorting_function)
+        else:
+            sorted_pixels = intervals
+    else:
+        print("Sorting pixels...")
+        sorted_pixels = sorter.sort_image(pixels, intervals, randomness, sorting_function)
+    '''
+
+    if shuffled or snapped:
+        if snapped:
+            print("Determining intervals...")
+            intervals = interval.random(pixels, __args, url)
+            sorted_pixels = sorter.sort_image(
+                pixels, intervals, randomness, sorting_function)
+            print("Run from it. Dread it. Destiny still arrives.")
+            thanos_img = Image.new('RGBA', input_img.size)
+            size1 = thanos_img.size[1]
+            size0 = thanos_img.size[0]
+            for y in range(size1):
+                for x in range(size0):
+                    thanos_img.putpixel((x, y), sorted_pixels[y][x])
+            thanos_img.save("thanos_img.png")
+            print("Remembering those that sacrificed it all...")
+
+            sorted_pixels = interval_function(intervals, __args, url)
+        else:
+            print("Determining intervals...")
+            sorted_pixels = interval_function(pixels, __args, url)
     else:
         print("Sorting pixels...")
         sorted_pixels = sorter.sort_image(
@@ -403,7 +437,7 @@ def main():
     # output to 'output.txt'
     print("Saving config to 'output.txt'...")
     with open("output.txt", "a") as f:
-        f.write("\nStarting image url: "+url+resolution_msg+("\nInt func: " if not int_rand else "\nInt func (randomly chosen): ")+int_func_input+("\nSort func: " if not sort_rand else "\nSort func (randomly chosen): ") +
+        f.write("\nStarting image url: "+url+"\n"+resolution_msg+("\nInt func: " if not int_rand else "\nInt func (randomly chosen): ")+int_func_input+("\nSort func: " if not sort_rand else "\nSort func (randomly chosen): ") +
                 sort_func_input+"\nArgs: "+(arg_parse_input if arg_parse_input is not None else "No args")+"\nSorted on: "+date_time+"\n\nSorted image: "+link+"\n"+(35*'-'))
 
     print("Link to image: " + link)

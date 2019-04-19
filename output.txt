@@ -478,3 +478,65 @@ Sorted on: 04-16-2019 18:56
 
 Sorted image: https://s.put.re/ndXhp8Vk.png
 -----------------------------------
+Starting image url: https://i.imgur.com/rfasPI6.jpg?1Resolution: 2048x1364
+Int func: snap
+Sort func: intensity
+Args: No args
+Sorted on: 04-18-2019 23:59
+
+Sorted image: https://s.put.re/KjpHdFxf.png
+-----------------------------------
+Starting image url: https://i.imgur.com/rfasPI6.jpg?1
+Resolution: 2048x1364
+Int func: shuffle-total
+Sort func: lightness
+Args: No args
+Sorted on: 04-19-2019 00:08
+
+Sorted image: https://s.put.re/2JcBtF3J.png
+-----------------------------------
+Starting image url: https://i.imgur.com/rfasPI6.jpg?1
+Resolution: 2048x1364
+Int func: shuffle-axis
+Sort func: lightness
+Args: No args
+Sorted on: 04-19-2019 00:10
+
+Sorted image: https://s.put.re/dgWU5ZwC.png
+-----------------------------------
+Starting image url: https://i.imgur.com/rfasPI6.jpg?1
+Resolution: 2048x1364
+Int func: snap
+Sort func: intensity
+Args:  -r 50 -c 250 -a 45
+Sorted on: 04-19-2019 01:20
+
+Sorted image: https://s.put.re/omz7dDaH.png
+-----------------------------------
+Starting image url: https://i.imgur.com/rfasPI6.jpg?1
+Resolution: 2048x1364
+Int func: snap
+Sort func: intensity
+Args: No args
+Sorted on: 04-19-2019 01:22
+
+Sorted image: https://s.put.re/ZEN3d79g.png
+-----------------------------------
+Starting image url: https://i.imgur.com/rfasPI6.jpg?1
+Resolution: 2048x1364
+Int func: snap
+Sort func: intensity
+Args: No args
+Sorted on: 04-19-2019 01:24
+
+Sorted image: https://s.put.re/6w121Lgi.png
+-----------------------------------
+Starting image url: https://i.imgur.com/rfasPI6.jpg?1
+Resolution: 2048x1364
+Int func: snap
+Sort func: intensity
+Args:  -r 50 -c 250 -a 45
+Sorted on: 04-19-2019 01:31
+
+Sorted image: https://s.put.re/MLNf8VKT.png
+-----------------------------------

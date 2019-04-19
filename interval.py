@@ -189,8 +189,7 @@ def file_edges(pixels, args, url):
 
 
 def snap_sort(pixels, args, url):
-    print("Gaining power...")
-    input_img = Image.open(requests.get(url, stream=True).raw)
+    input_img = Image.open("thanos_img.png")
     input_img = input_img.convert("RGBA")
     width, height = input_img.size
     print("Opening the soul stone...")
@@ -199,16 +198,18 @@ def snap_sort(pixels, args, url):
     print("Balancing perfectly...")
     nx, ny = height, width
     xy = np.mgrid[:nx, :ny].reshape(2, -1).T
-    numbers_that_dont_feel_so_good = xy.take(np.random.choice(xy.shape[0], round(int(xy.shape[0] / 2), 0), replace=False), axis=0)
-    
+    numbers_that_dont_feel_so_good = xy.take(np.random.choice(
+        xy.shape[0], round(int(xy.shape[0] / 2), 0), replace=False), axis=0)
+
     pixels.setflags(write=1)
     for i in range(round(int(xy.shape[0] / 2), 0)):
-        pixels[numbers_that_dont_feel_so_good[i][0]][numbers_that_dont_feel_so_good[i][1]] = [0, 0, 0, 0]
+        pixels[numbers_that_dont_feel_so_good[i][0]
+               ][numbers_that_dont_feel_so_good[i][1]] = [0, 0, 0, 0]
 
-    print("Perfectly balanced, as all things should be.")
+    print("Sorted perfectly in half.")
     feel_better = Image.fromarray(pixels, 'RGBA')
     feel_better.save("pixels_that_dont_feel_so_good.png")
-    
+
     print("Allowing the saved to return...")
     input_img = Image.open("pixels_that_dont_feel_so_good.png")
     input_img = input_img.convert("RGBA")
@@ -222,10 +223,11 @@ def snap_sort(pixels, args, url):
         append([])
         for x in range(size0):
             pixels[y].append(data[x, y])
-    print("Removing dust from the snap...")
+
     os.remove("pixels_that_dont_feel_so_good.png")
-    print("Sorted perfectly in half.")
-    
+    os.remove("thanos_img.png")
+    print("Perfectly balanced, as all things should be.")
+
     return pixels
 
 
