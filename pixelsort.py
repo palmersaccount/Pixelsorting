@@ -347,22 +347,6 @@ def main():
         for x in range(size0):
             pixels[y].append(data[x, y])
 
-    '''
-    print("Determining intervals...")
-    intervals = interval_function(pixels, __args, url)
-
-    if shuffled or snapped:
-        if snapped:
-            print("Remembering those that sacrificed it all...")
-            intervals = interval.random(intervals, __args, url)
-            sorted_pixels = sorter.sort_image(pixels, intervals, randomness, sorting_function)
-        else:
-            sorted_pixels = intervals
-    else:
-        print("Sorting pixels...")
-        sorted_pixels = sorter.sort_image(pixels, intervals, randomness, sorting_function)
-    '''
-
     if shuffled or snapped:
         if snapped:
             print("Determining intervals...")
