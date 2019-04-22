@@ -368,6 +368,8 @@ def main():
             print("Determining intervals...")
             sorted_pixels = interval_function(pixels, __args, url)
     else:
+        print("Determining intervals")
+        intervals = interval_function(pixels, __args, url)
         print("Sorting pixels...")
         sorted_pixels = sorter.sort_image(
             pixels, intervals, randomness, sorting_function)
