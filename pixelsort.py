@@ -1,7 +1,4 @@
-try:
-    import Image
-except ImportError:
-    from PIL import Image
+from PIL import Image
 import argparse
 import os
 import random

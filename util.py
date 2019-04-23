@@ -1,7 +1,4 @@
-try:
-    import Image
-except ImportError:
-    from PIL import Image
+from PIL import Image
 import random
 import requests
 from colorsys import rgb_to_hsv

@@ -1,7 +1,4 @@
-try:
-    from PIL import Image
-except ImportError:
-    from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter
 import os
 import numpy as np
 import random as rand
