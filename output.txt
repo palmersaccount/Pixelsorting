@@ -549,3 +549,12 @@ Sorted on: 04-22-2019 11:35
 
 Sorted image: https://s.put.re/SMMSFjJ3.png
 -----------------------------------
+Starting image url: https://i.imgur.com/rfasPI6.jpg?1
+Resolution: 2048x1364
+Int func: snap
+Sort func: intensity
+Args:  -r 50 -c 250 -a 45
+Sorted on: 04-23-2019 13:50
+
+Sorted image: https://s.put.re/pLCirV7u.png
+-----------------------------------
