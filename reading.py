@@ -6,12 +6,19 @@ import interval
 import sorting
 
 
-def read_image_input(url_input):
+def read_image_input(url_input, internet):
     # return order: url, url_given, url_random, random_url
     try:
-        url = url_input
-        Image.open(requests.get(url, stream=True).raw)
-        return url, True, False, None
+        if internet:
+            url = url_input
+            Image.open(requests.get(url, stream=True).raw)
+            return url, True, False, None
+        else:
+            if url_input in ['', ' ']:
+                url = "images/default.jpg"
+            else:
+                url = url_input
+            return url, True, False, False
     except IOError:
         random_url = str(random.randint(0, 5))
         url_options = {

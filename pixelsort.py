@@ -4,6 +4,7 @@ import os
 import random
 import sys
 import time
+import socket
 
 import arrow
 import psutil
@@ -20,6 +21,21 @@ def clear():
     return os.system('cls' if os.name == 'nt' else 'clear')
 
 
+def has_internet(host="8.8.8.8", port=53, timeout=3):
+    """
+    host: 8.8.8.8 (google-public-dns-a.google.com)
+    OpenPort: 53/tcp
+    Service: domain (DNS/TCP)
+    """
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except Exception as ex:
+        print(ex)
+        return False
+
+
 def main():
     clear()
 
@@ -28,12 +44,22 @@ def main():
     input()
     clear()
 
-    # url input
-    url_input = input(
-        "Please input the URL of the image or the default image #:\n(this might take a while depending the image resolution)\n")
-    url, url_given, url_random, random_url = reading.read_image_input(
-        url_input)
-    input_img = Image.open(requests.get(url, stream=True).raw)
+    internet = has_internet()
+
+    if internet:
+        url_input = input(
+            "Please input the URL of the image or the default image #:\n(this might take a while depending the image resolution)\n")
+        url, url_given, url_random, random_url = reading.read_image_input(
+            url_input, internet)
+        input_img = Image.open(requests.get(url, stream=True).raw)
+    else:
+        print("Internet not connected! Local image must be used.")
+        image_input = input(
+            "Please input the location of the local file (default image in images folder):\n")
+        image_path, url_given, url_random, random_url = reading.read_image_input(
+            image_input, internet)
+        input_img = Image.open(image_path)
+
     width, height = input_img.size
     resolution_msg = "Resolution: "+str(width)+"x"+str(height)
     image_msg = (("[WARNING] No image url given, using " + ("random" if url_random else "chosen") + " default image " +
@@ -136,14 +162,26 @@ def main():
             "lightness", "hue", "intensity", "minimum", "saturation"] else "Sorting function: lightness (default)"
 
     # hosting site
-    site_input = input("Upload site:\n-1|put.re (recommended)\n-2|imgur.com\n")
-    if site_input in [1, 2]:
-        site_input = {
-            "1": "put.re",
-            "2": "imgur"
-        }
-    site_input = reading.read_site(site_input)
-    site_msg = ("Image host site: "+site_input)
+    if internet:
+        site_input = input(
+            "Upload site:\n-1|put.re (recommended)\n-2|imgur.com\n")
+        if site_input in ["1", "2"]:
+            site_input = {
+                "1": "put.re",
+                "2": "imgur"
+            }
+        site_input = reading.read_site(site_input)
+        site_msg = ("Image host site: " + site_input)
+        output_image_path = "image.png"
+    else:
+        print("Internet not connected! Image will be saved locally.")
+        file_name = input(
+            "Name of output file (leave empty for randomized name):\n(do not include the file extension, .png will always be used.)\n")
+        output_image_path = (util.id_generator()+".png") if file_name in [
+            '', ' '] else file_name
+        site_msg = ("Internet not connected, saving locally as " +
+                    output_image_path)
+        site_input = "This isn't needed, but will break if not present."
     clear()
 
     # args
@@ -200,7 +238,6 @@ def main():
 
     __args = p.parse_args(args_in)
 
-    output_image_path = "image.png"
     interval_function = reading.read_interval_function(int_func_input)
     sorting_function = reading.read_sorting_function(sort_func_input)
     angle = __args.angle
@@ -299,41 +336,46 @@ def main():
     print("Saving image...")
     output_img.save(output_image_path)
 
-    # choose upload site
-    date_time = str(arrow.utcnow().format('MM-DD-YYYY HH:mm'))
-    # upload sites
-    if site_input is "imgur":
-        import pyimgur
-        CLIENT_ID = "d7155a81c1e37bd"
-        PATH = output_image_path
+    if internet:
+        # choose upload site
+        date_time = str(arrow.utcnow().format('MM-DD-YYYY HH:mm'))
+        # upload sites
+        if site_input is "imgur":
+            import pyimgur
+            CLIENT_ID = "d7155a81c1e37bd"
+            PATH = output_image_path
 
-        out_msg = "\nStarting image url: "+url+("\nInt func: " if not int_rand else "\nInt func (randomly chosen): ")+int_func_input+(
-            "\nSort func: " if not sort_rand else "\nSort func (randomly chosen): ")+sort_func_input+"\nArgs: "+(arg_parse_input if arg_parse_input is not None else "No args")+"\nSorted on: "+date_time
-        im = pyimgur.Imgur(CLIENT_ID)
-        uploaded_image = im.upload_image(
-            PATH, title="Pixel sorted", description=out_msg)
-        link = uploaded_image.link
-        print("Image uploaded!")
+            out_msg = "\nStarting image url: "+url+("\nInt func: " if not int_rand else "\nInt func (randomly chosen): ")+int_func_input+(
+                "\nSort func: " if not sort_rand else "\nSort func (randomly chosen): ")+sort_func_input+"\nArgs: "+(arg_parse_input if arg_parse_input is not None else "No args")+"\nSorted on: "+date_time
+            im = pyimgur.Imgur(CLIENT_ID)
+            uploaded_image = im.upload_image(
+                PATH, title="Pixel sorted", description=out_msg)
+            link = uploaded_image.link
+            print("Image uploaded!")
+        else:
+            import json
+            print("Uploading...")
+            r = requests.post('https://api.put.re/upload',
+                              files={'file': ('image.png', open('image.png', 'rb'))})
+            output = json.loads(r.text)
+            link = output["data"]["link"]
+            print("Image uploaded!")
+
+        # delete old file, seeing as its uploaded
+        print("Removing local file...")
+        os.remove(output_image_path)
+
+        # output to 'output.txt'
+        print("Saving config to 'output.txt'...")
+        with open("output.txt", "a") as f:
+            f.write("\nStarting image url: "+url+"\n"+resolution_msg+("\nInt func: " if not int_rand else "\nInt func (randomly chosen): ")+int_func_input+("\nSort func: " if not sort_rand else "\nSort func (randomly chosen): ") +
+                    sort_func_input+"\nArgs: "+(arg_parse_input if arg_parse_input is not None else "No args")+"\nSorted on: "+date_time+"\n\nSorted image: "+link+"\n"+(35*'-'))
+
+        print("Done!")
+        print("Link to image: " + link)
     else:
-        import json
-        print("Uploading...")
-        r = requests.post('https://api.put.re/upload',
-                          files={'file': ('image.png', open('image.png', 'rb'))})
-        output = json.loads(r.text)
-        link = output["data"]["link"]
-        print("Image uploaded!")
-
-    # delete old file, seeing as its uploaded
-    print("Removing local file...")
-    os.remove(output_image_path)
-
-    # output to 'output.txt'
-    print("Saving config to 'output.txt'...")
-    with open("output.txt", "a") as f:
-        f.write("\nStarting image url: "+url+"\n"+resolution_msg+("\nInt func: " if not int_rand else "\nInt func (randomly chosen): ")+int_func_input+("\nSort func: " if not sort_rand else "\nSort func (randomly chosen): ") +
-                sort_func_input+"\nArgs: "+(arg_parse_input if arg_parse_input is not None else "No args")+"\nSorted on: "+date_time+"\n\nSorted image: "+link+"\n"+(35*'-'))
-
-    print("Link to image: " + link)
+        print("Not saving config to 'output.txt', as there is no internet.")
+        print("Done!")
     output_img.show()
 
 
