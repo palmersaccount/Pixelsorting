@@ -59,6 +59,7 @@ def main():
         image_path, url_given, url_random, random_url = reading.read_image_input(
             image_input, internet)
         input_img = Image.open(image_path)
+        url = image_path
 
     width, height = input_img.size
     resolution_msg = "Resolution: "+str(width)+"x"+str(height)
@@ -331,7 +332,7 @@ def main():
         output_img = output_img.rotate(360-angle, expand=True)
 
         print("Crop image to apropriate size...")
-        output_img = util.crop_to(output_img, url)
+        output_img = util.crop_to(output_img, url, internet)
 
     print("Saving image...")
     output_img.save(output_image_path)

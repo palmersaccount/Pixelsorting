@@ -26,14 +26,17 @@ def random_width(clength):
     return width
 
 
-def crop_to(image_to_crop, url):
+def crop_to(image_to_crop, url, internet):
     """
     Crops image to the size of a reference image. This function assumes that the relevant image is located in the center and you want to crop away equal sizes on both the left and right as well on both the top and bottom.
     :param image_to_crop
     :param reference_image
     :return: image cropped to the size of the reference image
     """
-    reference_image = Image.open(requests.get(url, stream=True).raw)
+    if internet:
+        reference_image = Image.open(requests.get(url, stream=True).raw)
+    else:
+        reference_image = Image.open(url)
     reference_size = reference_image.size
     current_size = image_to_crop.size
     dx = current_size[0] - reference_size[0]
