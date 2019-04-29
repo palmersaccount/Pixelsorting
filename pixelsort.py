@@ -7,7 +7,6 @@ from colorsys import rgb_to_hsv
 import argparse
 import os
 import random as rand
-import sys
 import socket
 import string
 
@@ -30,8 +29,7 @@ def has_internet(host="8.8.8.8", port=53, timeout=3):  # check for internet
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
         return True
-    except Exception as ex:
-        print(ex)
+    except Exception:
         return False
 
 
