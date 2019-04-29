@@ -1,26 +1,125 @@
-from PIL import Image
+from PIL import Image, ImageFilter
 import argparse
 import os
-import random
+import random as rand
 import sys
 import time
 import socket
+import string
+from colorsys import rgb_to_hsv
 
 import arrow
 import psutil
 import requests
-
-import interval
-import sorter
-import sorting
-import util
-import reading
+import numpy as np
 
 
+# clear screen
 def clear():
     return os.system('cls' if os.name == 'nt' else 'clear')
 
 
+# READING FUNCTIONS
+# reading image input
+def read_image_input(url_input, internet):
+    # return order: url, url_given, url_random, random_url
+    try:
+        if internet:
+            url = url_input
+            Image.open(requests.get(url, stream=True).raw)
+            return url, True, False, None
+        else:
+            if url_input in ['', ' ']:
+                url = "images/default.jpg"
+            else:
+                url = url_input
+            return url, True, False, False
+    except IOError:
+        random_url = str(rand.randint(0, 5))
+        url_options = {
+            '0': "https://i.imgur.com/1UBT6fK.png",
+            '1': "https://i.imgur.com/5VqeP6Y.jpg?1",
+            '2': "https://i.imgur.com/rfasPI6.jpg?1",
+            '3': "https://i.imgur.com/wFzJ6ua.jpg?1",
+            '4': "https://i.imgur.com/pZRkMzP.jpg?1",
+            '5': "https://i.imgur.com/HwchiaD.jpg?1",
+            '6': "https://i.imgur.com/Z438D1L.jpg"
+        }
+        try:
+            return ((url_options[(url_input if url_input in ['0', '1', '2', '3', '4', '5', '6'] else random_url)] if url_input in ['', ' ', '0', '1', '2', '3', '4', '5', '6'] else url_input),
+                    (False if url_input in [
+                     '', ' ', '0', '1', '2', '3', '4', '5', '6'] else True),
+                    (True if url_input in ['', ' '] else False),
+                    (random_url if url_input in ['', ' '] else None))
+        except KeyError:
+            return url_options[random_url], False, True, random_url
+
+# reading interval function
+def read_interval_function(int_func_input):
+    try:
+        return {
+            "random": random,
+            "threshold": threshold,
+            "edges": edge,
+            "waves": waves,
+            "snap": snap_sort,
+            "file": file_mask,
+            "file-edges": file_edges,
+            "shuffle-total": shuffle_total,
+            "shuffle-axis": shuffled_axis,
+            "none": none,
+        }[int_func_input]
+    except KeyError:
+        return random
+
+# reading sorting function
+def read_sorting_function(sort_func_input):
+    try:
+        return {
+            "lightness": lightness,
+            "hue": hue,
+            "intensity": intensity,
+            "minimum": minimum,
+            "saturation": saturation,
+        }[sort_func_input]
+    except KeyError:
+        return lightness
+
+# reading preset
+def read_preset(preset_input):
+    try:
+        #order-- arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped
+        int_func_input = {
+            '1': 'random',
+            '2': 'threshold',
+            '3': 'edges',
+            '4': 'waves'}
+        sort_func_input = {
+            '1': 'lightness',
+            '2': 'hue',
+            '3': 'intensity',
+            '4': 'minimum',
+            '5': 'saturation'}
+        return {
+            "main": (("-r 50 -c 250 -a 45"), "random", "intensity", True, False, False, False, False),
+            "full random": (("-a "+str(rand.randrange(0, 360))+" -c "+str(rand.randrange(50, 500, 15))+" -u "+str((rand.randrange(50, 100, 5)/100))+" -t "+str((rand.randrange(5, 50, 5)/100))+" -r "+str(rand.randrange(5, 100, 5))), int_func_input[str(rand.randint(1, 4))], sort_func_input[str(rand.randint(1, 5))], True, True, True, False, False),
+            "snap-sort": (("-r 50 -c 250 -a 45"), "snap", "intensity", True, False, False, False, True)
+        }[preset_input]
+    except KeyError:
+        print("[WARNING] Invalid preset name, no preset will be applied")
+        return None, None, None, False, None, None, False, False
+
+# reading site
+def read_site(site_input):
+    try:
+        return {
+            "put.re": "put.re",
+            "imgur": "imgur"
+        }[site_input]
+    except KeyError:
+        return "put.re"
+
+# internet
 def has_internet(host="8.8.8.8", port=53, timeout=3):
     """
     host: 8.8.8.8 (google-public-dns-a.google.com)
@@ -34,6 +133,365 @@ def has_internet(host="8.8.8.8", port=53, timeout=3):
     except Exception as ex:
         print(ex)
         return False
+
+#### SORTER
+# sorting image
+def sort_image(pixels, intervals, randomness, sorting_function):
+    sorted_pixels = []
+    for y in range(len(pixels)):
+        row = []
+        x_min = 0
+        for x_max in intervals[y]:
+            interval = []
+            for x in range(x_min, x_max):
+                interval.append(pixels[y][x])
+            if rand.randint(0, 100) >= randomness:
+                row += sort_interval(interval, sorting_function)
+            else:
+                row += interval
+            x_min = x_max
+        row.append(pixels[y][0])
+        sorted_pixels.append(row)
+    return sorted_pixels
+
+# sorting interval
+def sort_interval(interval, sorting_function):
+    return [] if interval == [] else sorted(interval, key=sorting_function)
+
+
+##### SORTING PIXELS
+def lightness(pixel):
+    return util_lightness(pixel)
+
+def intensity(pixel):
+    return pixel[0] + pixel[1] + pixel[2]
+
+def hue(pixel):
+    return util_hue(pixel)
+
+def saturation(pixel):
+    return util_saturation(pixel)
+
+def minimum(pixel):
+    return min(pixel[0], pixel[1], pixel[2])
+
+
+##### UTIL
+def id_generator(size=5, chars=string.ascii_lowercase + string.ascii_uppercase + string.digits):
+    return ''.join(rand.choice(chars) for _ in range(size))
+
+def util_lightness(pixel):
+    return rgb_to_hsv(pixel[0], pixel[1], pixel[2])[2] / 255.0
+
+def util_hue(pixel):
+    return rgb_to_hsv(pixel[0], pixel[1], pixel[2])[0] / 255.0
+
+def util_saturation(pixel):
+    return rgb_to_hsv(pixel[0], pixel[1], pixel[2])[1] / 255.0
+
+def random_width(clength):
+    width = int(clength * (1 - rand.random()))
+    return width
+
+def crop_to(image_to_crop, url, internet):
+    """
+    Crops image to the size of a reference image. This function assumes that the relevant image is located in the center and you want to crop away equal sizes on both the left and right as well on both the top and bottom.
+    :param image_to_crop
+    :param reference_image
+    :return: image cropped to the size of the reference image
+    """
+    if internet:
+        reference_image = Image.open(requests.get(url, stream=True).raw)
+    else:
+        reference_image = Image.open(url)
+    reference_size = reference_image.size
+    current_size = image_to_crop.size
+    dx = current_size[0] - reference_size[0]
+    dy = current_size[1] - reference_size[1]
+    left = dx / 2
+    upper = dy / 2
+    right = dx / 2 + reference_size[0]
+    lower = dy / 2 + reference_size[1]
+    return image_to_crop.crop(box=(int(left), int(upper), int(right), int(lower)))
+
+
+##### INTERVALS
+
+black_pixel = (0, 0, 0, 255)
+white_pixel = (255, 255, 255, 255)
+
+def edge(pixels, args, url):
+    img = Image.open(requests.get(url, stream=True).raw)
+    img = img.rotate(args.angle, expand=True)
+    edges = img.filter(ImageFilter.FIND_EDGES)
+    edges = edges.convert('RGBA')
+    edge_data = edges.load()
+
+    filter_pixels = []
+    appendF = filter_pixels.append
+    edge_pixels = []
+    appendE = edge_pixels.append
+    intervals = []
+    appendInt = intervals.append
+
+    size1 = img.size[1]
+    size0 = img.size[0]
+
+    print("Defining edges...")
+    for y in range(size1):
+        appendF([])
+        for x in range(size0):
+            filter_pixels[y].append(edge_data[x, y])
+
+    print("Thresholding...")
+    for y in range(len(pixels)):
+        appendE([])
+        for x in range(len(pixels[0])):
+            if lightness(filter_pixels[y][x]) < args.bottom_threshold:
+                edge_pixels[y].append(white_pixel)
+            else:
+                edge_pixels[y].append(black_pixel)
+
+    print("Cleaning up edges...")
+    for y in range(len(pixels) - 1, 1, -1):
+        for x in range(len(pixels[0]) - 1, 1, -1):
+            if edge_pixels[y][x] == black_pixel and edge_pixels[y][x - 1] == black_pixel:
+                edge_pixels[y][x] = white_pixel
+
+    print("Defining intervals...")
+    for y in range(len(pixels)):
+        appendInt([])
+        for x in range(len(pixels[0])):
+            if edge_pixels[y][x] == black_pixel:
+                intervals[y].append(x)
+        intervals[y].append(len(pixels[0]))
+    return intervals
+
+def threshold(pixels, args, url):
+    intervals = []
+    appendInt = intervals.append
+
+    print("Defining intervals...")
+    for y in range(len(pixels)):
+        appendInt([])
+        for x in range(len(pixels[0])):
+            if lightness(pixels[y][x]) < args.bottom_threshold or lightness(pixels[y][x]) > args.upper_threshold:
+                intervals[y].append(x)
+        intervals[y].append(len(pixels[0]))
+    return intervals
+
+def random(pixels, args, url):
+    intervals = []
+    appendInt = intervals.append
+
+    print("Defining intervals...")
+    for y in range(len(pixels)):
+        appendInt([])
+        x = 0
+        while True:
+            width = random_width(args.clength)
+            x += width
+            if x > len(pixels[0]):
+                intervals[y].append(len(pixels[0]))
+                break
+            else:
+                intervals[y].append(x)
+    return intervals
+
+def waves(pixels, args, url):
+    intervals = []
+    appendInt = intervals.append
+
+    print("Defining intervals...")
+    for y in range(len(pixels)):
+        appendInt([])
+        x = 0
+        while True:
+            width = args.clength + rand.randint(0, 10)
+            x += width
+            if x > len(pixels[0]):
+                intervals[y].append(len(pixels[0]))
+                break
+            else:
+                intervals[y].append(x)
+    return intervals
+
+def file_mask(pixels, args, url):
+    intervals = []
+    file_pixels = []
+
+    int_file = input(
+        "Please enter the URL of an int file or hit enter to randomly select one:\n")
+    img = Image.open(requests.get(int_file, stream=True).raw)
+    img = img.convert('RGBA')
+    img = img.rotate(args.angle, expand=True)
+    data = img.load()
+    for y in range(img.size[1]):
+        file_pixels.append([])
+        for x in range(img.size[0]):
+            file_pixels[y].append(data[x, y])
+
+    print("Cleaning up edges...")
+    for y in range(len(pixels) - 1, 1, -1):
+        for x in range(len(pixels[0]) - 1, 1, -1):
+            if file_pixels[y][x] == black_pixel and file_pixels[y][x - 1] == black_pixel:
+                file_pixels[y][x] = white_pixel
+
+    print("Defining intervals...")
+    for y in range(len(pixels)):
+        intervals.append([])
+        for x in range(len(pixels[0])):
+            if file_pixels[y][x] == black_pixel:
+                intervals[y].append(x)
+        intervals[y].append(len(pixels[0]))
+
+    return intervals
+
+def file_edges(pixels, args, url):
+    int_file = input("Please enter the URL of an int file:\n")
+    img = Image.open(requests.get(int_file, stream=True).raw)
+    img = img.rotate(args.angle, expand=True)
+    img = img.resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
+    edges = img.filter(ImageFilter.FIND_EDGES)
+    edges = edges.convert('RGBA')
+    edge_data = edges.load()
+
+    filter_pixels = []
+    edge_pixels = []
+    intervals = []
+
+    print("Defining edges...")
+    for y in range(img.size[1]):
+        filter_pixels.append([])
+        for x in range(img.size[0]):
+            filter_pixels[y].append(edge_data[x, y])
+
+    print("Thresholding...")
+    for y in range(len(pixels)):
+        edge_pixels.append([])
+        for x in range(len(pixels[0])):
+            if lightness(filter_pixels[y][x]) < args.bottom_threshold:
+                edge_pixels[y].append(white_pixel)
+            else:
+                edge_pixels[y].append(black_pixel)
+
+    print("Cleaning up edges...")
+    for y in range(len(pixels) - 1, 1, -1):
+        for x in range(len(pixels[0]) - 1, 1, -1):
+            if edge_pixels[y][x] == black_pixel and edge_pixels[y][x - 1] == black_pixel:
+                edge_pixels[y][x] = white_pixel
+
+    print("Defining intervals...")
+    for y in range(len(pixels)):
+        intervals.append([])
+        for x in range(len(pixels[0])):
+            if edge_pixels[y][x] == black_pixel:
+                intervals[y].append(x)
+        intervals[y].append(len(pixels[0]))
+    return intervals
+
+def snap_sort(pixels, args, url):
+    input_img = Image.open("thanos_img.png")
+    input_img = input_img.convert("RGBA")
+    width, height = input_img.size
+    print("Opening the soul stone...")
+    pixels = np.asarray(input_img)
+
+    print("Balancing perfectly...")
+    nx, ny = height, width
+    xy = np.mgrid[:nx, :ny].reshape(2, -1).T
+    numbers_that_dont_feel_so_good = xy.take(np.random.choice(
+        xy.shape[0], round(int(xy.shape[0] / 2), 0), replace=False), axis=0)
+
+    pixels.setflags(write=1)
+    for i in range(round(int(xy.shape[0] / 2), 0)):
+        pixels[numbers_that_dont_feel_so_good[i][0]
+               ][numbers_that_dont_feel_so_good[i][1]] = [0, 0, 0, 0]
+
+    print("Sorted perfectly in half.")
+    feel_better = Image.fromarray(pixels, 'RGBA')
+    feel_better.save("pixels_that_dont_feel_so_good.png")
+
+    print("Allowing the saved to return...")
+    input_img = Image.open("pixels_that_dont_feel_so_good.png")
+    input_img = input_img.convert("RGBA")
+    data = input_img.load()
+    pixels = []
+    append = pixels.append
+    size1 = input_img.size[1]
+    size0 = input_img.size[0]
+
+    for y in range(size1):
+        append([])
+        for x in range(size0):
+            pixels[y].append(data[x, y])
+
+    os.remove("pixels_that_dont_feel_so_good.png")
+    os.remove("thanos_img.png")
+    print("Perfectly balanced, as all things should be.")
+
+    return pixels
+
+def shuffle_total(pixels, args, url):
+    print("Creating array from image...")
+    input_img = Image.open(requests.get(url, stream=True).raw)
+    height = input_img.size[1]
+    shuffle = np.array(input_img)
+
+    print("Shuffling image...")
+    for i in range(int(height)):
+        np.random.shuffle(shuffle[i])
+    shuffled_out = Image.fromarray(shuffle, 'RGB')
+    shuffled_out.save("shuffled_total.png")
+    shuffled_img = Image.open("shuffled_total.png")
+    data = shuffled_img.load()
+
+    pixels = []
+    append = pixels.append
+    size1 = shuffled_img.size[1]
+    size0 = shuffled_img.size[0]
+
+    print("Recreating image from array...")
+    for y in range(size1):
+        append([])
+        for x in range(size0):
+            pixels[y].append(data[x, y])
+
+    os.remove("shuffled_total.png")
+    return pixels
+
+def shuffled_axis(pixels, args, url):
+    print("Getting image...")
+    input_img = Image.open(requests.get(url, stream=True).raw)
+    height = input_img.size[1]
+    shuffle = np.array(input_img)
+
+    print("Shuffling image...")
+    for i in range(int(height)):
+        np.random.shuffle(shuffle)
+    shuffled_out = Image.fromarray(shuffle, 'RGB')
+    shuffled_out.save("shuffled_axis.png")
+    shuffled_img = Image.open("shuffled_axis.png")
+    data = shuffled_img.load()
+    pixels = []
+    append = pixels.append
+    size1 = shuffled_img.size[1]
+    size0 = shuffled_img.size[0]
+
+    print("Recreating image from array...")
+    for y in range(size1):
+        append([])
+        for x in range(size0):
+            pixels[y].append(data[x, y])
+    os.remove("shuffled_axis.png")
+    return pixels
+
+def none(pixels, args, url):
+    intervals = []
+    appendInt = intervals.append
+    for y in range(len(pixels)):
+        appendInt([len(pixels[y])])
+    return intervals
 
 
 def main():
@@ -49,14 +507,14 @@ def main():
     if internet:
         url_input = input(
             "Please input the URL of the image or the default image #:\n(this might take a while depending the image resolution)\n")
-        url, url_given, url_random, random_url = reading.read_image_input(
+        url, url_given, url_random, random_url = read_image_input(
             url_input, internet)
         input_img = Image.open(requests.get(url, stream=True).raw)
     else:
         print("Internet not connected! Local image must be used.")
         image_input = input(
             "Please input the location of the local file (default image in images folder):\n")
-        image_path, url_given, url_random, random_url = reading.read_image_input(
+        image_path, url_given, url_random, random_url = read_image_input(
             image_input, internet)
         input_img = Image.open(image_path)
         url = image_path
@@ -89,7 +547,7 @@ def main():
                 '3': 'snap-sort'
             }[preset_input]
         # if presets are applied, they take over args
-        arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped = reading.read_preset(
+        arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped = read_preset(
             preset_input)
     else:
         preset_true = False
@@ -118,7 +576,7 @@ def main():
             }[int_func_input]
             int_rand = False
         elif int_func_input in ['11', 'random select']:
-            int_func_input = int_func_options[random.randint(0, 3)]
+            int_func_input = int_func_options[rand.randint(0, 3)]
             int_rand = True
         shuffled = True if int_func_input in [
             'shuffle-total', 'shuffle-axis'] else False
@@ -144,7 +602,7 @@ def main():
             }[sort_func_input]
             sort_rand = False
         elif sort_func_input in ['6', 'random select']:
-            sort_func_input = sort_func_options[random.randint(0, 4)]
+            sort_func_input = sort_func_options[rand.randint(0, 4)]
             sort_rand = True
         else:
             sort_rand = False
@@ -171,14 +629,14 @@ def main():
                 "1": "put.re",
                 "2": "imgur"
             }
-        site_input = reading.read_site(site_input)
+        site_input = read_site(site_input)
         site_msg = ("Image host site: " + site_input)
         output_image_path = "image.png"
     else:
         print("Internet not connected! Image will be saved locally.")
         file_name = input(
             "Name of output file (leave empty for randomized name):\n(do not include the file extension, .png will always be used.)\n")
-        output_image_path = (util.id_generator()+".png") if file_name in [
+        output_image_path = (id_generator()+".png") if file_name in [
             '', ' '] else file_name
         site_msg = ("Internet not connected, saving locally as " +
                     output_image_path)
@@ -239,8 +697,8 @@ def main():
 
     __args = p.parse_args(args_in)
 
-    interval_function = reading.read_interval_function(int_func_input)
-    sorting_function = reading.read_sorting_function(sort_func_input)
+    interval_function = read_interval_function(int_func_input)
+    sorting_function = read_sorting_function(sort_func_input)
     angle = __args.angle
     randomness = __args.randomness
 
@@ -295,8 +753,8 @@ def main():
     if shuffled or snapped:
         if snapped:
             print("Determining intervals...")
-            intervals = interval.random(pixels, __args, url)
-            sorted_pixels = sorter.sort_image(
+            intervals = random(pixels, __args, url)
+            sorted_pixels = sort_image(
                 pixels, intervals, randomness, sorting_function)
             print("Run from it. Dread it. Destiny still arrives.")
             thanos_img = Image.new('RGBA', input_img.size)
@@ -316,7 +774,7 @@ def main():
         print("Determining intervals")
         intervals = interval_function(pixels, __args, url)
         print("Sorting pixels...")
-        sorted_pixels = sorter.sort_image(
+        sorted_pixels = sort_image(
             pixels, intervals, randomness, sorting_function)
 
     print("Placing pixels in output image...")
@@ -332,7 +790,7 @@ def main():
         output_img = output_img.rotate(360-angle, expand=True)
 
         print("Crop image to apropriate size...")
-        output_img = util.crop_to(output_img, url, internet)
+        output_img = crop_to(output_img, url, internet)
 
     print("Saving image...")
     output_img.save(output_image_path)
