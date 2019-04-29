@@ -9,7 +9,6 @@ import string
 from colorsys import rgb_to_hsv
 
 import arrow
-import psutil
 import requests
 import numpy as np
 
@@ -19,7 +18,7 @@ def clear():
     return os.system('cls' if os.name == 'nt' else 'clear')
 
 
-# READING FUNCTIONS
+###### READING FUNCTIONS
 # reading image input
 def read_image_input(url_input, internet):
     # return order: url, url_given, url_random, random_url
@@ -37,7 +36,7 @@ def read_image_input(url_input, internet):
     except IOError:
         random_url = str(rand.randint(0, 5))
         url_options = {
-            '0': "https://i.imgur.com/1UBT6fK.png",
+            '0': "https://i.imgur.com/DYPjpkX.jpg",
             '1': "https://i.imgur.com/5VqeP6Y.jpg?1",
             '2': "https://i.imgur.com/rfasPI6.jpg?1",
             '3': "https://i.imgur.com/wFzJ6ua.jpg?1",
