@@ -752,7 +752,18 @@ def main():
             )
             + int_func_input
             if int_func_input
-            in ["random", "threshold", "edges", "waves", "file", "file-edges", "none"]
+            in [
+                "random",
+                "threshold",
+                "edges",
+                "waves",
+                "snap",
+                "shuffle-total",
+                "shuffle-axis",
+                "file",
+                "file-edges",
+                "none",
+            ]
             else "Interval function: random (default)"
         )
 
