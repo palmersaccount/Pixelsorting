@@ -495,7 +495,7 @@ def none(pixels, args, url):
 def main():
     clear()
 
-    print("Pixel sorting based on web hosted images.\nThe output image is uploaded to put.re/imgur after being sorted.\n"+(35*'--') +
+    print("Pixel sorting based on web hosted images.\nMost of the backend is sourced from https://github.com/satyarth/pixelsort\nThe output image is uploaded to put.re/imgur after being sorted.\n"+(35*'--') +
           "\nTo see any past runs, args used, and the result\nopen 'output.txt'\n"+(35*'--')+"\nThanks for using this program!\nPress any key to continue...")
     input()
     clear()
