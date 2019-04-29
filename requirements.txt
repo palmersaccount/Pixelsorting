@@ -1,5 +1,4 @@
 Pillow
 pyimgur
-psutil
-arrow
 requests
+numpy
