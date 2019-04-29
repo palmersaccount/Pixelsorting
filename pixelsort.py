@@ -35,13 +35,13 @@ def read_image_input(url_input, internet):
     except IOError:
         random_url = str(rand.randint(0, 5))
         url_options = {
-            '0': "https://i.imgur.com/DYPjpkX.jpg",
-            '1': "https://i.imgur.com/5VqeP6Y.jpg?1",
-            '2': "https://i.imgur.com/rfasPI6.jpg?1",
-            '3': "https://i.imgur.com/wFzJ6ua.jpg?1",
-            '4': "https://i.imgur.com/pZRkMzP.jpg?1",
-            '5': "https://i.imgur.com/HwchiaD.jpg?1",
-            '6': "https://i.imgur.com/Z438D1L.jpg"
+            '0': "https://s.put.re/TKnTHivM.jpg",
+            '1': "https://s.put.re/5hp4t1tR.jpg",
+            '2': "https://s.put.re/QsUQbC1R.jpg",
+            '3': "https://s.put.re/5zgcV3TT.jpg",
+            '4': "https://s.put.re/567w8wpK.jpg",
+            '5': "https://s.put.re/gcYkpmbd.jpg",
+            '6': "https://s.put.re/AXipZo53.jpg"
         }
         try:
             return ((url_options[(url_input if url_input in ['0', '1', '2', '3', '4', '5', '6'] else random_url)] if url_input in ['', ' ', '0', '1', '2', '3', '4', '5', '6'] else url_input),
