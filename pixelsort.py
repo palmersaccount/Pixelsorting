@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from PIL import Image, ImageFilter
 from datetime import datetime
 from colorsys import rgb_to_hsv
@@ -13,13 +16,11 @@ import numpy as np
 
 
 ##### MISC FUNCTIONS
-# clear screen
-def clear():
+def clear():  # clear screen
     return os.system("cls" if os.name == "nt" else "clear")
 
 
-# internet
-def has_internet(host="8.8.8.8", port=53, timeout=3):
+def has_internet(host="8.8.8.8", port=53, timeout=3):  # check for internet
     """
     host: 8.8.8.8 (google-public-dns-a.google.com)
     OpenPort: 53/tcp
@@ -35,7 +36,6 @@ def has_internet(host="8.8.8.8", port=53, timeout=3):
 
 
 ###### READING FUNCTIONS
-# reading image input
 def read_image_input(url_input, internet):
     # return order: url, url_given, url_random, random_url
     try:
@@ -85,7 +85,6 @@ def read_image_input(url_input, internet):
             return url_options[random_url], False, True, random_url
 
 
-# reading interval function
 def read_interval_function(int_func_input):
     try:
         return {
@@ -104,7 +103,6 @@ def read_interval_function(int_func_input):
         return random
 
 
-# reading sorting function
 def read_sorting_function(sort_func_input):
     try:
         return {
@@ -118,7 +116,6 @@ def read_sorting_function(sort_func_input):
         return lightness
 
 
-# reading preset
 def read_preset(preset_input):
     try:
         # order-- arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped
@@ -178,7 +175,6 @@ def read_preset(preset_input):
         return None, None, None, False, None, None, False, False
 
 
-# reading site
 def read_site(site_input):
     try:
         return {"put.re": "put.re", "imgur": "imgur"}[site_input]
@@ -187,7 +183,6 @@ def read_site(site_input):
 
 
 ##### SORTER
-# sorting image
 def sort_image(pixels, intervals, randomness, sorting_function):
     sorted_pixels = []
     for y in range(len(pixels)):
@@ -207,7 +202,6 @@ def sort_image(pixels, intervals, randomness, sorting_function):
     return sorted_pixels
 
 
-# sorting interval
 def sort_interval(interval, sorting_function):
     return [] if interval == [] else sorted(interval, key=sorting_function)
 
@@ -234,7 +228,7 @@ def minimum(pixel):
 
 
 ##### UTIL
-def id_generator():
+def id_generator():  # random file name (for offline)
     size = 5
     chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
     return "".join(rand.choice(chars) for _ in range(size))
@@ -582,6 +576,7 @@ def none(pixels, args, url):
     return intervals
 
 
+##### MAIN
 def main():
     clear()
 
