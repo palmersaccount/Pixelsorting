@@ -3,12 +3,11 @@ import argparse
 import os
 import random as rand
 import sys
-import time
+from datetime import datetime
 import socket
 import string
 from colorsys import rgb_to_hsv
 
-import arrow
 import requests
 import numpy as np
 
@@ -796,7 +795,7 @@ def main():
 
     if internet:
         # choose upload site
-        date_time = str(arrow.utcnow().format('MM-DD-YYYY HH:mm'))
+        date_time = datetime.now().strftime('%m/%d/%Y %H:%M')
         # upload sites
         if site_input is "imgur":
             import pyimgur
