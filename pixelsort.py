@@ -1,12 +1,12 @@
 from PIL import Image, ImageFilter
+from datetime import datetime
+from colorsys import rgb_to_hsv
 import argparse
 import os
 import random as rand
 import sys
-from datetime import datetime
 import socket
 import string
-from colorsys import rgb_to_hsv
 
 import requests
 import numpy as np
