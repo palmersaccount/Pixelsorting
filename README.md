@@ -8,10 +8,12 @@ Have a look at [this post](http://satyarth.me/articles/pixel-sorting/) or [/r/pi
 
 Tested with python3. Should work with python2 as well.
 
-Requires Pillow. `pip install Pillow` should work. If not, see [here](https://pillow.readthedocs.org/en/3.0.0/installation.html#linux-installation) for details.
-Requires requests. `pip install requests`
+Requires Pillow. `pip install Pillow` should work. If not, see [here](https://pillow.readthedocs.org/en/3.0.0/installation.html#linux-installation) for details. 
+
+Requires requests. `pip install requests` 
+
 Requires pyimgur. `pip install pyimgur`
-Requires arrow. `pip install arrow`
+
 
 There is also a requirements file which pretty much does the same via `pip install -r requirements.txt`.
 
