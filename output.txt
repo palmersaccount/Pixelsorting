@@ -558,3 +558,21 @@ Sorted on: 04-23-2019 13:50
 
 Sorted image: https://s.put.re/pLCirV7u.png
 -----------------------------------
+Starting image url: https://s.put.re/5zgcV3TT.jpg
+Resolution: 1804x1200
+Int func: shuffle-axis
+Sort func: intensity
+Args: No args
+Sorted on: 04/29/2019 15:50
+
+Sorted image: https://s.put.re/9PmrrBsA.png
+-----------------------------------
+Starting image url: https://s.put.re/QsUQbC1R.jpg
+Resolution: 2048x1364
+Int func (randomly chosen): threshold
+Sort func (randomly chosen): saturation
+Args:  -a 202 -c 230 -u 0.55 -t 0.15 -r 5
+Sorted on: 04/29/2019 16:24
+
+Sorted image: https://s.put.re/mZhHt21b.png
+-----------------------------------
