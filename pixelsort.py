@@ -1,3 +1,4 @@
+# !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from PIL import Image, ImageFilter
@@ -39,10 +40,10 @@ def parse_args_full(url, int_func_input, sort_func_input, arg_parse_input):
     and combines them into one for easy use in the argparse module.
     """
     full_args = []
-    full_args.append("-l "+url)
-    full_args.append("-i "+int_func_input)
-    full_args.append("-s "+sort_func_input)
-    full_args+=arg_parse_input
+    full_args.append("-l " + url)
+    full_args.append("-i " + int_func_input)
+    full_args.append("-s " + sort_func_input)
+    full_args += arg_parse_input
     return full_args
 
 
@@ -973,7 +974,7 @@ def main():
     else:
         print("No args given")
         args_in = ""
-        
+
     args_full = parse_args_full(url, int_func_input, sort_func_input, args_in)
 
     __args = parse.parse_args(args_full)
