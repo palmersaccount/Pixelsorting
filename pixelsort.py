@@ -252,7 +252,9 @@ def random_width(clength):
 
 def crop_to(image_to_crop, url, internet):
     """
-    Crops image to the size of a reference image. This function assumes that the relevant image is located in the center and you want to crop away equal sizes on both the left and right as well on both the top and bottom.
+    Crops image to the size of a reference image. This function assumes 
+    that the relevant image is located in the center and you want to crop away 
+    equal sizes on both the left and right as well on both the top and bottom.
     :param image_to_crop
     :param reference_image
     :return: image cropped to the size of the reference image
@@ -276,8 +278,8 @@ black_pixel = (0, 0, 0, 255)
 white_pixel = (255, 255, 255, 255)
 
 
-def edge(pixels, args, url):
-    img = Image.open(requests.get(url, stream=True).raw)
+def edge(pixels, args, url, internet):
+    img = Image.open((requests.get(url, stream=True).raw) if internet else url)
     img = img.rotate(args.angle, expand=True)
     edges = img.filter(ImageFilter.FIND_EDGES)
     edges = edges.convert("RGBA")
@@ -325,7 +327,7 @@ def edge(pixels, args, url):
     return intervals
 
 
-def threshold(pixels, args, url):
+def threshold(pixels, args, url, internet):
     intervals = []
     appendInt = intervals.append
 
@@ -343,7 +345,7 @@ def threshold(pixels, args, url):
     return intervals
 
 
-def random(pixels, args, url):
+def random(pixels, args, url, internet):
     intervals = []
     appendInt = intervals.append
 
@@ -363,7 +365,7 @@ def random(pixels, args, url):
     return intervals
 
 
-def waves(pixels, args, url):
+def waves(pixels, args, url, internet):
     intervals = []
     appendInt = intervals.append
 
@@ -383,7 +385,7 @@ def waves(pixels, args, url):
     return intervals
 
 
-def file_mask(pixels, args, url):
+def file_mask(pixels, args, url, internet):
     intervals = []
     file_pixels = []
 
@@ -419,7 +421,7 @@ def file_mask(pixels, args, url):
     return intervals
 
 
-def file_edges(pixels, args, url):
+def file_edges(pixels, args, url, internet):
     int_file = input("Please enter the URL of an int file:\n")
     img = Image.open(requests.get(int_file, stream=True).raw)
     img = img.rotate(args.angle, expand=True)
@@ -466,7 +468,7 @@ def file_edges(pixels, args, url):
     return intervals
 
 
-def snap_sort(pixels, args, url):
+def snap_sort(pixels, args, url, internet):
     input_img = Image.open("thanos_img.png")
     input_img = input_img.convert("RGBA")
     width, height = input_img.size
@@ -515,9 +517,9 @@ def snap_sort(pixels, args, url):
     return pixels
 
 
-def shuffle_total(pixels, args, url):
+def shuffle_total(pixels, args, url, internet):
     print("Creating array from image...")
-    input_img = Image.open(requests.get(url, stream=True).raw)
+    input_img = Image.open((requests.get(url, stream=True).raw) if internet else url)
     height = input_img.size[1]
     shuffle = np.array(input_img)
 
@@ -542,9 +544,9 @@ def shuffle_total(pixels, args, url):
     return pixels
 
 
-def shuffled_axis(pixels, args, url):
+def shuffled_axis(pixels, args, url, internet):
     print("Getting image...")
-    input_img = Image.open(requests.get(url, stream=True).raw)
+    input_img = Image.open((requests.get(url, stream=True).raw) if internet else url)
     height = input_img.size[1]
     shuffle = np.array(input_img)
 
@@ -567,7 +569,7 @@ def shuffled_axis(pixels, args, url):
     return pixels
 
 
-def none(pixels, args, url):
+def none(pixels, args, url, internet):
     intervals = []
     appendInt = intervals.append
     for y in tqdm(
@@ -1015,7 +1017,7 @@ def main():
 
     if shuffled or snapped:
         if snapped:
-            intervals = random(pixels, __args, url)
+            intervals = random(pixels, __args, url, internet)
             sorted_pixels = sort_image(pixels, intervals, randomness, sorting_function)
             print(
                 ("///" * 15)
@@ -1031,11 +1033,11 @@ def main():
                 for x in range(size0):
                     thanos_img.putpixel((x, y), sorted_pixels[y][x])
             thanos_img.save("thanos_img.png")
-            sorted_pixels = interval_function(intervals, __args, url)
+            sorted_pixels = interval_function(intervals, __args, url, internet)
         else:
-            sorted_pixels = interval_function(pixels, __args, url)
+            sorted_pixels = interval_function(pixels, __args, url, internet)
     else:
-        intervals = interval_function(pixels, __args, url)
+        intervals = interval_function(pixels, __args, url, internet)
         sorted_pixels = sort_image(pixels, intervals, randomness, sorting_function)
 
     output_img = Image.new("RGBA", input_img.size)
