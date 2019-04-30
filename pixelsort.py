@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from PIL import Image, ImageFilter
@@ -32,6 +31,19 @@ def has_internet(host="8.8.8.8", port=53, timeout=3):  # check for internet
         return True
     except Exception:
         return False
+
+
+def parse_args_full(url, int_func_input, sort_func_input, arg_parse_input):
+    """
+    Takes all the current "args" (int func, sort func, arg parse input, url)
+    and combines them into one for easy use in the argparse module.
+    """
+    full_args = []
+    full_args.append("-l "+url)
+    full_args.append("-i "+int_func_input)
+    full_args.append("-s "+sort_func_input)
+    full_args+=arg_parse_input
+    return full_args
 
 
 ###### READING FUNCTIONS
@@ -584,7 +596,8 @@ def main():
     clear()
 
     print(
-        "Pixel sorting based on web hosted images.\nMost of the backend is sourced from https://github.com/satyarth/pixelsort\nThe output image is uploaded to put.re/imgur after being sorted.\n"
+        "Pixel sorting based on web hosted images.\nMost of the backend is sourced from https://github.com/satyarth/pixelsort"
+        + "\nThe output image is uploaded to put.re/imgur after being sorted.\n"
         + "\nTo see any past runs, args used, and the result\nopen 'output.txt'\n"
         + (35 * "--")
         + "\nThanks for using this program!\nPress any key to continue..."
@@ -893,6 +906,24 @@ def main():
     # args
     parse = argparse.ArgumentParser(description="pixel mangle an image")
     parse.add_argument(
+        "-l",
+        "--url",
+        help="URL of a given image. Used as the input image.",
+        default="https://s.put.re/QsUQbC1R.jpg",
+    )
+    parse.add_argument(
+        "-i",
+        "--int_function",
+        help="random, threshold, edges, waves, snap, shuffle-total, shuffle-axis, file, file-edges, none",
+        default="random",
+    )
+    parse.add_argument(
+        "-s",
+        "--sorting_function",
+        help="lightness, intensity, hue, saturation, minimum",
+        default="lightness",
+    )
+    parse.add_argument(
         "-t",
         "--bottom_threshold",
         type=float,
@@ -942,8 +973,10 @@ def main():
     else:
         print("No args given")
         args_in = ""
+        
+    args_full = parse_args_full(url, int_func_input, sort_func_input, args_in)
 
-    __args = parse.parse_args(args_in)
+    __args = parse.parse_args(args_full)
 
     interval_function = read_interval_function(int_func_input)
     sorting_function = read_sorting_function(sort_func_input)
