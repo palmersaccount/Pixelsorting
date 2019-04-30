@@ -12,6 +12,8 @@ Requires Pillow. `pip install Pillow` should work. If not, see [here](https://pi
 
 Requires requests. `pip install requests` 
 
+Requires tqdm. `pip install tqdm`
+
 Requires pyimgur. `pip install pyimgur`
 
 

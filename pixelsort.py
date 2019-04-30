@@ -12,6 +12,7 @@ import string
 
 import requests
 import numpy as np
+from tqdm import tqdm
 
 
 ##### MISC FUNCTIONS
@@ -183,7 +184,7 @@ def read_site(site_input):
 ##### SORTER
 def sort_image(pixels, intervals, randomness, sorting_function):
     sorted_pixels = []
-    for y in range(len(pixels)):
+    for y in tqdm(range(len(pixels)), desc=("{:30}".format("Sorting..."))):
         row = []
         x_min = 0
         for x_max in intervals[y]:
@@ -292,14 +293,12 @@ def edge(pixels, args, url):
     size1 = img.size[1]
     size0 = img.size[0]
 
-    print("Defining edges...")
     for y in range(size1):
         appendF([])
         for x in range(size0):
             filter_pixels[y].append(edge_data[x, y])
 
-    print("Thresholding...")
-    for y in range(len(pixels)):
+    for y in tqdm(range(len(pixels)), desc=("{:30}".format("Thresholding..."))):
         appendE([])
         for x in range(len(pixels[0])):
             if lightness(filter_pixels[y][x]) < args.bottom_threshold:
@@ -307,8 +306,9 @@ def edge(pixels, args, url):
             else:
                 edge_pixels[y].append(black_pixel)
 
-    print("Cleaning up edges...")
-    for y in range(len(pixels) - 1, 1, -1):
+    for y in tqdm(
+        range(len(pixels) - 1, 1, -1), desc=("{:30}".format("Cleaning up..."))
+    ):
         for x in range(len(pixels[0]) - 1, 1, -1):
             if (
                 edge_pixels[y][x] == black_pixel
@@ -316,8 +316,7 @@ def edge(pixels, args, url):
             ):
                 edge_pixels[y][x] = white_pixel
 
-    print("Defining intervals...")
-    for y in range(len(pixels)):
+    for y in tqdm(range(len(pixels)), desc=("{:30}".format("Defining intervals..."))):
         appendInt([])
         for x in range(len(pixels[0])):
             if edge_pixels[y][x] == black_pixel:
@@ -330,8 +329,9 @@ def threshold(pixels, args, url):
     intervals = []
     appendInt = intervals.append
 
-    print("Defining intervals...")
-    for y in range(len(pixels)):
+    for y in tqdm(
+        range(len(pixels)), desc=("{:30}".format("Determining intervals..."))
+    ):
         appendInt([])
         for x in range(len(pixels[0])):
             if (
@@ -347,8 +347,9 @@ def random(pixels, args, url):
     intervals = []
     appendInt = intervals.append
 
-    print("Defining intervals...")
-    for y in range(len(pixels)):
+    for y in tqdm(
+        range(len(pixels)), desc=("{:30}".format("Determining intervals..."))
+    ):
         appendInt([])
         x = 0
         while True:
@@ -366,8 +367,9 @@ def waves(pixels, args, url):
     intervals = []
     appendInt = intervals.append
 
-    print("Defining intervals...")
-    for y in range(len(pixels)):
+    for y in tqdm(
+        range(len(pixels)), desc=("{:30}".format("Determining intervals..."))
+    ):
         appendInt([])
         x = 0
         while True:
@@ -471,7 +473,7 @@ def snap_sort(pixels, args, url):
     print("Opening the soul stone...")
     pixels = np.asarray(input_img)
 
-    print("Balancing perfectly...")
+    print("Preparing for balance...")
     nx, ny = height, width
     xy = np.mgrid[:nx, :ny].reshape(2, -1).T
     numbers_that_dont_feel_so_good = xy.take(
@@ -480,7 +482,9 @@ def snap_sort(pixels, args, url):
     )
 
     pixels.setflags(write=1)
-    for i in range(round(int(xy.shape[0] / 2), 0)):
+    for i in tqdm(
+        range(round(int(xy.shape[0] / 2), 0)), desc=("{:30}".format("Snapping..."))
+    ):
         pixels[numbers_that_dont_feel_so_good[i][0]][
             numbers_that_dont_feel_so_good[i][1]
         ] = [0, 0, 0, 0]
@@ -489,7 +493,6 @@ def snap_sort(pixels, args, url):
     feel_better = Image.fromarray(pixels, "RGBA")
     feel_better.save("pixels_that_dont_feel_so_good.png")
 
-    print("Allowing the saved to return...")
     input_img = Image.open("pixels_that_dont_feel_so_good.png")
     input_img = input_img.convert("RGBA")
     data = input_img.load()
@@ -498,14 +501,16 @@ def snap_sort(pixels, args, url):
     size1 = input_img.size[1]
     size0 = input_img.size[0]
 
-    for y in range(size1):
+    for y in tqdm(range(size1), desc=("{:30}".format("Returning saved..."))):
         append([])
         for x in range(size0):
             pixels[y].append(data[x, y])
 
     os.remove("pixels_that_dont_feel_so_good.png")
     os.remove("thanos_img.png")
-    print("Perfectly balanced, as all things should be.")
+    print(
+        ("///" * 15) + "\nPerfectly balanced, as all things should be.\n" + ("///" * 15)
+    )
 
     return pixels
 
@@ -516,8 +521,7 @@ def shuffle_total(pixels, args, url):
     height = input_img.size[1]
     shuffle = np.array(input_img)
 
-    print("Shuffling image...")
-    for i in range(int(height)):
+    for i in tqdm(range(int(height)), desc=("{:30}".format("Shuffling image..."))):
         np.random.shuffle(shuffle[i])
     shuffled_out = Image.fromarray(shuffle, "RGB")
     shuffled_out.save("shuffled_total.png")
@@ -529,8 +533,7 @@ def shuffle_total(pixels, args, url):
     size1 = shuffled_img.size[1]
     size0 = shuffled_img.size[0]
 
-    print("Recreating image from array...")
-    for y in range(size1):
+    for y in tqdm(range(size1), desc=("{:30}".format("Recreating image..."))):
         append([])
         for x in range(size0):
             pixels[y].append(data[x, y])
@@ -545,8 +548,7 @@ def shuffled_axis(pixels, args, url):
     height = input_img.size[1]
     shuffle = np.array(input_img)
 
-    print("Shuffling image...")
-    for i in range(int(height)):
+    for i in tqdm(range(int(height)), desc=("{:30}".format("Shuffling image..."))):
         np.random.shuffle(shuffle)
     shuffled_out = Image.fromarray(shuffle, "RGB")
     shuffled_out.save("shuffled_axis.png")
@@ -557,8 +559,7 @@ def shuffled_axis(pixels, args, url):
     size1 = shuffled_img.size[1]
     size0 = shuffled_img.size[0]
 
-    print("Recreating image from array...")
-    for y in range(size1):
+    for y in tqdm(range(size1), desc=("{:30}".format("Recreating image..."))):
         append([])
         for x in range(size0):
             pixels[y].append(data[x, y])
@@ -569,7 +570,9 @@ def shuffled_axis(pixels, args, url):
 def none(pixels, args, url):
     intervals = []
     appendInt = intervals.append
-    for y in range(len(pixels)):
+    for y in tqdm(
+        range(len(pixels)), desc=("{:30}".format("Determining intervals..."))
+    ):
         appendInt([len(pixels[y])])
     return intervals
 
@@ -783,7 +786,7 @@ def main():
     if internet:
         site_input = input("Upload site:\n-1|put.re (recommended)\n-2|imgur.com\n")
         if site_input in ["1", "2"]:
-            site_input = {"1": "put.re", "2": "imgur"}
+            site_input = {"1": "put.re", "2": "imgur"}[site_input]
         site_input = read_site(site_input)
         site_msg = "Image host site: " + site_input
         output_image_path = "image.png"
@@ -1000,47 +1003,45 @@ def main():
     print("Getting data...")
     data = input_img.load()
 
-    print("Getting pixels...")
     pixels = []
     append = pixels.append
     size1 = input_img.size[1]
     size0 = input_img.size[0]
 
-    for y in range(size1):
+    for y in tqdm(range(size1), desc=("{:30}".format("Getting pixels..."))):
         append([])
         for x in range(size0):
             pixels[y].append(data[x, y])
 
     if shuffled or snapped:
         if snapped:
-            print("Determining intervals...")
             intervals = random(pixels, __args, url)
             sorted_pixels = sort_image(pixels, intervals, randomness, sorting_function)
-            print("Run from it. Dread it. Destiny still arrives.")
+            print(
+                ("///" * 15)
+                + "\nRun from it. Dread it. Destiny still arrives.\n"
+                + ("///" * 15)
+            )
             thanos_img = Image.new("RGBA", input_img.size)
             size1 = thanos_img.size[1]
             size0 = thanos_img.size[0]
-            for y in range(size1):
+            for y in tqdm(
+                range(size1), desc=("{:30}".format("Finding the infinity stones..."))
+            ):
                 for x in range(size0):
                     thanos_img.putpixel((x, y), sorted_pixels[y][x])
             thanos_img.save("thanos_img.png")
-            print("Remembering those that sacrificed it all...")
-
             sorted_pixels = interval_function(intervals, __args, url)
         else:
-            print("Determining intervals...")
             sorted_pixels = interval_function(pixels, __args, url)
     else:
-        print("Determining intervals")
         intervals = interval_function(pixels, __args, url)
-        print("Sorting pixels...")
         sorted_pixels = sort_image(pixels, intervals, randomness, sorting_function)
 
-    print("Placing pixels in output image...")
     output_img = Image.new("RGBA", input_img.size)
     size1 = output_img.size[1]
     size0 = output_img.size[0]
-    for y in range(size1):
+    for y in tqdm(range(size1), desc=("{:30}".format("Building output image..."))):
         for x in range(size0):
             output_img.putpixel((x, y), sorted_pixels[y][x])
 
