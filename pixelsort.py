@@ -34,7 +34,7 @@ def has_internet(host="8.8.8.8", port=53, timeout=3):  # check for internet
         return False
 
 
-def parse_args_full(url, int_func_input, sort_func_input, arg_parse_input):
+def parse_args_full(url, int_func_input, sort_func_input, arg_parse_input, internet):
     """
     Takes all the current "args" (int func, sort func, arg parse input, url)
     and combines them into one for easy use in the argparse module.
@@ -43,6 +43,7 @@ def parse_args_full(url, int_func_input, sort_func_input, arg_parse_input):
     full_args.append("-l " + url)
     full_args.append("-i " + int_func_input)
     full_args.append("-s " + sort_func_input)
+    full_args.append("-y " + str(internet))
     full_args += arg_parse_input
     return full_args
 
@@ -195,7 +196,7 @@ def read_site(site_input):
 
 
 ##### SORTER
-def sort_image(pixels, intervals, randomness, sorting_function):
+def sort_image(pixels, intervals, args, sorting_function):
     sorted_pixels = []
     for y in tqdm(range(len(pixels)), desc=("{:30}".format("Sorting..."))):
         row = []
@@ -204,7 +205,7 @@ def sort_image(pixels, intervals, randomness, sorting_function):
             interval = []
             for x in range(x_min, x_max):
                 interval.append(pixels[y][x])
-            if rand.randint(0, 100) >= randomness:
+            if rand.randint(0, 100) >= args.randomness:
                 row += sort_interval(interval, sorting_function)
             else:
                 row += interval
@@ -263,7 +264,7 @@ def random_width(clength):
     return width
 
 
-def crop_to(image_to_crop, url, internet):
+def crop_to(image_to_crop, args):
     """
     Crops image to the size of a reference image. This function assumes 
     that the relevant image is located in the center and you want to crop away 
@@ -273,7 +274,7 @@ def crop_to(image_to_crop, url, internet):
     :return: image cropped to the size of the reference image
     """
     reference_image = Image.open(
-        (requests.get(url, stream=True).raw) if internet else (url)
+        (requests.get(args.url, stream=True).raw) if args.internet else (args.url)
     )
     reference_size = reference_image.size
     current_size = image_to_crop.size
@@ -291,8 +292,10 @@ black_pixel = (0, 0, 0, 255)
 white_pixel = (255, 255, 255, 255)
 
 
-def edge(pixels, args, url, internet):
-    img = Image.open((requests.get(url, stream=True).raw) if internet else url)
+def edge(pixels, args):
+    img = Image.open(
+        (requests.get(args.url, stream=True).raw) if args.internet else args.url
+    )
     img = img.rotate(args.angle, expand=True)
     edges = img.filter(ImageFilter.FIND_EDGES)
     edges = edges.convert("RGBA")
@@ -340,7 +343,7 @@ def edge(pixels, args, url, internet):
     return intervals
 
 
-def threshold(pixels, args, url, internet):
+def threshold(pixels, args):
     intervals = []
     appendInt = intervals.append
 
@@ -358,7 +361,7 @@ def threshold(pixels, args, url, internet):
     return intervals
 
 
-def random(pixels, args, url, internet):
+def random(pixels, args):
     intervals = []
     appendInt = intervals.append
 
@@ -378,7 +381,7 @@ def random(pixels, args, url, internet):
     return intervals
 
 
-def waves(pixels, args, url, internet):
+def waves(pixels, args):
     intervals = []
     appendInt = intervals.append
 
@@ -398,7 +401,7 @@ def waves(pixels, args, url, internet):
     return intervals
 
 
-def file_mask(pixels, args, url, internet):
+def file_mask(pixels, args):
     intervals = []
     file_pixels = []
 
@@ -434,7 +437,7 @@ def file_mask(pixels, args, url, internet):
     return intervals
 
 
-def file_edges(pixels, args, url, internet):
+def file_edges(pixels, args):
     int_file = input("Please enter the URL of an int file:\n")
     img = Image.open(requests.get(int_file, stream=True).raw)
     img = img.rotate(args.angle, expand=True)
@@ -481,7 +484,7 @@ def file_edges(pixels, args, url, internet):
     return intervals
 
 
-def snap_sort(pixels, args, url, internet):
+def snap_sort(pixels, args):
     input_img = Image.open("thanos_img.png")
     input_img = input_img.convert("RGBA")
     width, height = input_img.size
@@ -530,9 +533,11 @@ def snap_sort(pixels, args, url, internet):
     return pixels
 
 
-def shuffle_total(pixels, args, url, internet):
+def shuffle_total(pixels, args):
     print("Creating array from image...")
-    input_img = Image.open((requests.get(url, stream=True).raw) if internet else url)
+    input_img = Image.open(
+        (requests.get(args.url, stream=True).raw) if args.internet else args.url
+    )
     height = input_img.size[1]
     shuffle = np.array(input_img)
 
@@ -557,9 +562,11 @@ def shuffle_total(pixels, args, url, internet):
     return pixels
 
 
-def shuffled_axis(pixels, args, url, internet):
+def shuffled_axis(pixels, args):
     print("Getting image...")
-    input_img = Image.open((requests.get(url, stream=True).raw) if internet else url)
+    input_img = Image.open(
+        (requests.get(args.url, stream=True).raw) if args.internet else args.url
+    )
     height = input_img.size[1]
     shuffle = np.array(input_img)
 
@@ -582,7 +589,7 @@ def shuffled_axis(pixels, args, url, internet):
     return pixels
 
 
-def none(pixels, args, url, internet):
+def none(pixels, args):
     intervals = []
     appendInt = intervals.append
     for y in tqdm(
@@ -906,6 +913,18 @@ def main():
 
     # args
     parse = argparse.ArgumentParser(description="pixel mangle an image")
+    """
+    (Taken args)
+    :-l,--url -> url
+    :-i,--int_function -> interval function
+    :-s,--sorting_function -> sorting function
+    :-t,--bottom_threshold -> bottom/lower threshold
+    :-u,--upper_threshold -> top/upper threshold
+    :-c,--clength -> character length
+    :-a,--angle -> angle for rotation
+    :-r,--randomness -> randomness
+    :-y,--internet -> is internet connected
+    """
     parse.add_argument(
         "-l",
         "--url",
@@ -959,6 +978,9 @@ def main():
         help="What percentage of intervals are NOT sorted",
         default=15,
     )
+    parse.add_argument(
+        "-y", "--internet", type=bool, help="Is internet connected or not", default=True
+    )
 
     # add a space in front of arg parse unless there is one or none was entered
     arg_parse_input = (
@@ -975,14 +997,13 @@ def main():
         print("No args given")
         args_in = ""
 
-    args_full = parse_args_full(url, int_func_input, sort_func_input, args_in)
+    args_full = parse_args_full(url, int_func_input, sort_func_input, args_in, internet)
 
     __args = parse.parse_args(args_full)
 
     interval_function = read_interval_function(int_func_input)
     sorting_function = read_sorting_function(sort_func_input)
-    angle = __args.angle
-    randomness = __args.randomness
+    internet = __args.internet
 
     # remove old image files that didn't get deleted before
     if os.path.isfile(output_image_path):
@@ -1034,7 +1055,7 @@ def main():
     input_img.convert("RGBA")
 
     print("Rotating image...")
-    input_img = input_img.rotate(angle, expand=True)
+    input_img = input_img.rotate(__args.angle, expand=True)
 
     print("Getting data...")
     data = input_img.load()
@@ -1051,8 +1072,8 @@ def main():
 
     if shuffled or snapped:
         if snapped:
-            intervals = random(pixels, __args, url, internet)
-            sorted_pixels = sort_image(pixels, intervals, randomness, sorting_function)
+            intervals = random(pixels, __args)
+            sorted_pixels = sort_image(pixels, intervals, __args, sorting_function)
             print(
                 ("///" * 15)
                 + "\nRun from it. Dread it. Destiny still arrives.\n"
@@ -1067,12 +1088,12 @@ def main():
                 for x in range(size0):
                     thanos_img.putpixel((x, y), sorted_pixels[y][x])
             thanos_img.save("thanos_img.png")
-            sorted_pixels = interval_function(intervals, __args, url, internet)
+            sorted_pixels = interval_function(intervals, __args)
         else:
-            sorted_pixels = interval_function(pixels, __args, url, internet)
+            sorted_pixels = interval_function(pixels, __args)
     else:
-        intervals = interval_function(pixels, __args, url, internet)
-        sorted_pixels = sort_image(pixels, intervals, randomness, sorting_function)
+        intervals = interval_function(pixels, __args)
+        sorted_pixels = sort_image(pixels, intervals, __args, sorting_function)
 
     output_img = Image.new("RGBA", input_img.size)
     size1 = output_img.size[1]
@@ -1081,12 +1102,12 @@ def main():
         for x in range(size0):
             output_img.putpixel((x, y), sorted_pixels[y][x])
 
-    if angle is not 0:
+    if __args.angle is not 0:
         print("Rotating output image back to original orientation...")
-        output_img = output_img.rotate(360 - angle, expand=True)
+        output_img = output_img.rotate(360 - __args.angle, expand=True)
 
         print("Crop image to apropriate size...")
-        output_img = crop_to(output_img, url, internet)
+        output_img = crop_to(output_img, __args)
 
     print("Saving image...")
     output_img.save(output_image_path)
