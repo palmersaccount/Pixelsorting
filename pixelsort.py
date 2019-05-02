@@ -48,6 +48,22 @@ def parse_args_full(url, int_func_input, sort_func_input, arg_parse_input, inter
     return full_args
 
 
+##### LAMBDA FUNCTIONS
+imgOpen = lambda url, internet: (Image.open(requests.get(url, stream=True).raw) if internet else url).convert("RGBA")
+Append = lambda l, obj: l.append(obj)
+AppendData = lambda l, x, y, d: l[y].append(d[x, y])
+AppendPartial = lambda l, y, d: l[y].append(d)
+imgPixels = lambda img, x, y, data: img.putpixel((x, y), data[y][x])
+random_width = lambda c: int(c * (1 - rand.random()))
+
+
+##### SORTING PIXELS
+lightness = lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0
+intensity = lambda p: p[0] + p[1] + p[2]
+hue = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0
+saturation = lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0
+minimum = lambda p: min(p[0], p[1], p[2])
+
 ###### READING FUNCTIONS
 def read_image_input(url_input, internet):
     # return order: url, url_given, url_random, random_url
@@ -219,49 +235,11 @@ def sort_interval(interval, sorting_function):
     return [] if interval == [] else sorted(interval, key=sorting_function)
 
 
-##### SORTING PIXELS
-def lightness(pixel):
-    return util_lightness(pixel)
-
-
-def intensity(pixel):
-    return pixel[0] + pixel[1] + pixel[2]
-
-
-def hue(pixel):
-    return util_hue(pixel)
-
-
-def saturation(pixel):
-    return util_saturation(pixel)
-
-
-def minimum(pixel):
-    return min(pixel[0], pixel[1], pixel[2])
-
-
 ##### UTIL
 def id_generator():  # random file name (for offline)
     size = 5
     chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
     return "".join(rand.choice(chars) for _ in range(size))
-
-
-def util_lightness(pixel):
-    return rgb_to_hsv(pixel[0], pixel[1], pixel[2])[2] / 255.0
-
-
-def util_hue(pixel):
-    return rgb_to_hsv(pixel[0], pixel[1], pixel[2])[0] / 255.0
-
-
-def util_saturation(pixel):
-    return rgb_to_hsv(pixel[0], pixel[1], pixel[2])[1] / 255.0
-
-
-def random_width(clength):
-    width = int(clength * (1 - rand.random()))
-    return width
 
 
 def crop_to(image_to_crop, args):
@@ -293,36 +271,28 @@ white_pixel = (255, 255, 255, 255)
 
 
 def edge(pixels, args):
-    img = Image.open(
-        (requests.get(args.url, stream=True).raw) if args.internet else args.url
-    )
+    img = imgOpen(args.url, args.internet)
     img = img.rotate(args.angle, expand=True)
-    edges = img.filter(ImageFilter.FIND_EDGES)
-    edges = edges.convert("RGBA")
-    edge_data = edges.load()
+    edge_data = img.filter(ImageFilter.FIND_EDGES).convert("RGBA").load()
 
     filter_pixels = []
-    appendF = filter_pixels.append
     edge_pixels = []
-    appendE = edge_pixels.append
     intervals = []
-    appendInt = intervals.append
 
     size1 = img.size[1]
     size0 = img.size[0]
 
-    for y in range(size1):
-        appendF([])
+    for y in tqdm(range(size1), desc=("{:30}".format("Finding threshold..."))):
+        Append(filter_pixels, [])
         for x in range(size0):
-            filter_pixels[y].append(edge_data[x, y])
+            AppendData(filter_pixels, x, y, edge_data)
+
+    AppendBW = lambda l, x, y: AppendPartial(l, y, white_pixel) if (lightness(filter_pixels[y][x]) < args.bottom_threshold ) else AppendPartial(l, y, black_pixel)
 
     for y in tqdm(range(len(pixels)), desc=("{:30}".format("Thresholding..."))):
-        appendE([])
+        Append(edge_pixels, [])
         for x in range(len(pixels[0])):
-            if lightness(filter_pixels[y][x]) < args.bottom_threshold:
-                edge_pixels[y].append(white_pixel)
-            else:
-                edge_pixels[y].append(black_pixel)
+            AppendBW(edge_pixels, x, y)
 
     for y in tqdm(
         range(len(pixels) - 1, 1, -1), desc=("{:30}".format("Cleaning up..."))
@@ -335,69 +305,77 @@ def edge(pixels, args):
                 edge_pixels[y][x] = white_pixel
 
     for y in tqdm(range(len(pixels)), desc=("{:30}".format("Defining intervals..."))):
-        appendInt([])
+        Append(intervals, [])
         for x in range(len(pixels[0])):
             if edge_pixels[y][x] == black_pixel:
-                intervals[y].append(x)
-        intervals[y].append(len(pixels[0]))
+                #intervals[y].append(x)
+                AppendPartial(intervals, y, x)
+        #intervals[y].append(len(pixels[0]))
+        AppendPartial(intervals, y, len(pixels[0]))
     return intervals
 
 
 def threshold(pixels, args):
     intervals = []
-    appendInt = intervals.append
+    #appendInt = intervals.append
 
     for y in tqdm(
         range(len(pixels)), desc=("{:30}".format("Determining intervals..."))
     ):
-        appendInt([])
+        Append(intervals, [])
         for x in range(len(pixels[0])):
             if (
                 lightness(pixels[y][x]) < args.bottom_threshold
                 or lightness(pixels[y][x]) > args.upper_threshold
             ):
-                intervals[y].append(x)
-        intervals[y].append(len(pixels[0]))
+                #intervals[y].append(x)
+                AppendPartial(intervals, y, x)
+        #intervals[y].append(len(pixels[0]))
+        AppendPartial(intervals, y, len(pixels[0]))
     return intervals
 
 
 def random(pixels, args):
     intervals = []
-    appendInt = intervals.append
+    #appendInt = intervals.append
 
     for y in tqdm(
         range(len(pixels)), desc=("{:30}".format("Determining intervals..."))
     ):
-        appendInt([])
+        Append(intervals, [])
         x = 0
         while True:
             width = random_width(args.clength)
             x += width
             if x > len(pixels[0]):
-                intervals[y].append(len(pixels[0]))
+                #intervals[y].append(len(pixels[0]))
+                AppendPartial(intervals, y, len(pixels[0]))
                 break
             else:
-                intervals[y].append(x)
+                #intervals[y].append(x)
+                AppendPartial(intervals, y, x)
     return intervals
 
 
 def waves(pixels, args):
     intervals = []
-    appendInt = intervals.append
+    #appendInt = intervals.append
 
     for y in tqdm(
         range(len(pixels)), desc=("{:30}".format("Determining intervals..."))
     ):
-        appendInt([])
+        Append(intervals, [])
         x = 0
         while True:
             width = args.clength + rand.randint(0, 10)
             x += width
             if x > len(pixels[0]):
-                intervals[y].append(len(pixels[0]))
+                #intervals[y].append(len(pixels[0]))
+                AppendPartial(intervals, y, len(pixels[0]))
                 break
             else:
-                intervals[y].append(x)
+                #intervals[y].append(x)
+                AppendPartial(intervals, y, x)
     return intervals
 
 
@@ -485,8 +463,7 @@ def file_edges(pixels, args):
 
 
 def snap_sort(pixels, args):
-    input_img = Image.open("thanos_img.png")
-    input_img = input_img.convert("RGBA")
+    input_img = Image.open("thanos_img.png").convert("RGBA")
     width, height = input_img.size
     print("Opening the soul stone...")
     pixels = np.asarray(input_img)
@@ -511,18 +488,16 @@ def snap_sort(pixels, args):
     feel_better = Image.fromarray(pixels, "RGBA")
     feel_better.save("pixels_that_dont_feel_so_good.png")
 
-    input_img = Image.open("pixels_that_dont_feel_so_good.png")
-    input_img = input_img.convert("RGBA")
+    input_img = Image.open("pixels_that_dont_feel_so_good.png").convert("RGBA")
     data = input_img.load()
     pixels = []
-    append = pixels.append
     size1 = input_img.size[1]
     size0 = input_img.size[0]
 
     for y in tqdm(range(size1), desc=("{:30}".format("Returning saved..."))):
-        append([])
+        Append(pixels, [])
         for x in range(size0):
-            pixels[y].append(data[x, y])
+            AppendData(pixels, x, y, data)
 
     os.remove("pixels_that_dont_feel_so_good.png")
     os.remove("thanos_img.png")
@@ -535,9 +510,7 @@ def snap_sort(pixels, args):
 
 def shuffle_total(pixels, args):
     print("Creating array from image...")
-    input_img = Image.open(
-        (requests.get(args.url, stream=True).raw) if args.internet else args.url
-    )
+    input_img = imgOpen(args.url, args.internet)
     height = input_img.size[1]
     shuffle = np.array(input_img)
 
@@ -549,53 +522,50 @@ def shuffle_total(pixels, args):
     data = shuffled_img.load()
 
     pixels = []
-    append = pixels.append
     size1 = shuffled_img.size[1]
     size0 = shuffled_img.size[0]
 
     for y in tqdm(range(size1), desc=("{:30}".format("Recreating image..."))):
-        append([])
+        Append(pixels, [])
         for x in range(size0):
-            pixels[y].append(data[x, y])
+            #pixels[y].append(data[x, y])
+            AppendData(pixels, x, y, data)
 
     os.remove("shuffled_total.png")
     return pixels
 
 
 def shuffled_axis(pixels, args):
-    print("Getting image...")
-    input_img = Image.open(
-        (requests.get(args.url, stream=True).raw) if args.internet else args.url
-    )
+    print("Creating array from image...")
+    input_img = imgOpen(args.url, args.internet)
     height = input_img.size[1]
     shuffle = np.array(input_img)
 
-    for i in tqdm(range(int(height)), desc=("{:30}".format("Shuffling image..."))):
+    for _ in tqdm(range(int(height)), desc=("{:30}".format("Shuffling image..."))):
         np.random.shuffle(shuffle)
     shuffled_out = Image.fromarray(shuffle, "RGB")
     shuffled_out.save("shuffled_axis.png")
     shuffled_img = Image.open("shuffled_axis.png")
     data = shuffled_img.load()
     pixels = []
-    append = pixels.append
     size1 = shuffled_img.size[1]
     size0 = shuffled_img.size[0]
 
     for y in tqdm(range(size1), desc=("{:30}".format("Recreating image..."))):
-        append([])
+        Append(pixels, [])
         for x in range(size0):
-            pixels[y].append(data[x, y])
+            AppendData(pixels, x, y, data)
     os.remove("shuffled_axis.png")
     return pixels
 
 
 def none(pixels, args):
     intervals = []
-    appendInt = intervals.append
     for y in tqdm(
         range(len(pixels)), desc=("{:30}".format("Determining intervals..."))
     ):
-        appendInt([len(pixels[y])])
+        #appendInt([len(pixels[y])])
+        Append(intervals, [len(pixels[y])])
     return intervals
 
 
@@ -620,17 +590,13 @@ def main():
             "Please input the URL of the image or the default image #:\n(this might take a while depending the image resolution)\n"
         )
         url, url_given, url_random, random_url = read_image_input(url_input, internet)
-        input_img = Image.open(requests.get(url, stream=True).raw)
     else:
         print("Internet not connected! Local image must be used.")
-        image_input = input(
+        url_input = input(
             "Please input the location of the local file (default image in images folder):\n"
         )
-        image_path, url_given, url_random, random_url = read_image_input(
-            image_input, internet
-        )
-        input_img = Image.open(image_path)
-        url = image_path
+        url, url_given, url_random, random_url = read_image_input(url_input, internet)
+    input_img = imgOpen(url, internet)
 
     width, height = input_img.size
     resolution_msg = "Resolution: " + str(width) + "x" + str(height)
@@ -1045,14 +1011,13 @@ def main():
         "random",
         "waves",
     ] else None
-    print("Randomness: ", __args.randomness, "%")
-    print("Angle: ", __args.angle, "°")
+    # print("Randomness: ", __args.randomness, "%")
+    print(f"Randomness: {__args.randomness} %")
+    # print("Angle: ", __args.angle, "°")
+    print(f"Angle: {__args.angle} °")
     print("------------------------------")
 
     print("Opening image...")
-
-    print("Converting to RGBA...")
-    input_img.convert("RGBA")
 
     print("Rotating image...")
     input_img = input_img.rotate(__args.angle, expand=True)
@@ -1061,14 +1026,13 @@ def main():
     data = input_img.load()
 
     pixels = []
-    append = pixels.append
     size1 = input_img.size[1]
     size0 = input_img.size[0]
 
     for y in tqdm(range(size1), desc=("{:30}".format("Getting pixels..."))):
-        append([])
+        Append(pixels, [])
         for x in range(size0):
-            pixels[y].append(data[x, y])
+            AppendData(pixels, x, y, data)
 
     if shuffled or snapped:
         if snapped:
@@ -1086,7 +1050,7 @@ def main():
                 range(size1), desc=("{:30}".format("Finding the infinity stones..."))
             ):
                 for x in range(size0):
-                    thanos_img.putpixel((x, y), sorted_pixels[y][x])
+                    imgPixels(thanos_img, x, y, sorted_pixels)
             thanos_img.save("thanos_img.png")
             sorted_pixels = interval_function(intervals, __args)
         else:
@@ -1100,7 +1064,7 @@ def main():
     size0 = output_img.size[0]
     for y in tqdm(range(size1), desc=("{:30}".format("Building output image..."))):
         for x in range(size0):
-            output_img.putpixel((x, y), sorted_pixels[y][x])
+            imgPixels(output_img, x, y, sorted_pixels)
 
     if __args.angle is not 0:
         print("Rotating output image back to original orientation...")
