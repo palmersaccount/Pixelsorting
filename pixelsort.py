@@ -55,6 +55,7 @@ AppendData = lambda l, x, y, d: l[y].append(d[x, y])
 AppendPartial = lambda l, y, d: l[y].append(d)
 imgPixels = lambda img, x, y, data: img.putpixel((x, y), data[y][x])
 random_width = lambda c: int(c * (1 - rand.random()))
+progressBars = lambda r, d: tqdm(range((r)), desc=("{:30}".format(d)))
 
 
 ##### SORTING PIXELS
@@ -214,7 +215,7 @@ def read_site(site_input):
 ##### SORTER
 def sort_image(pixels, intervals, args, sorting_function):
     sorted_pixels = []
-    for y in tqdm(range(len(pixels)), desc=("{:30}".format("Sorting..."))):
+    for y in progressBars(len(pixels), "Sorting..."):
         row = []
         x_min = 0
         for x_max in intervals[y]:
@@ -227,7 +228,7 @@ def sort_image(pixels, intervals, args, sorting_function):
                 row += interval
             x_min = x_max
         row.append(pixels[y][0])
-        sorted_pixels.append(row)
+        Append(sorted_pixels, row)
     return sorted_pixels
 
 
@@ -282,21 +283,19 @@ def edge(pixels, args):
     size1 = img.size[1]
     size0 = img.size[0]
 
-    for y in tqdm(range(size1), desc=("{:30}".format("Finding threshold..."))):
+    for y in progressBars(size1, "Finding threshold..."):
         Append(filter_pixels, [])
         for x in range(size0):
             AppendData(filter_pixels, x, y, edge_data)
 
     AppendBW = lambda l, x, y: AppendPartial(l, y, white_pixel) if (lightness(filter_pixels[y][x]) < args.bottom_threshold ) else AppendPartial(l, y, black_pixel)
 
-    for y in tqdm(range(len(pixels)), desc=("{:30}".format("Thresholding..."))):
+    for y in progressBars(len(pixels), "Thresholding..."):
         Append(edge_pixels, [])
         for x in range(len(pixels[0])):
             AppendBW(edge_pixels, x, y)
 
-    for y in tqdm(
-        range(len(pixels) - 1, 1, -1), desc=("{:30}".format("Cleaning up..."))
-    ):
+    for y in progressBars((len(pixels) - 1, 1, -1), "Cleaning up..."):
         for x in range(len(pixels[0]) - 1, 1, -1):
             if (
                 edge_pixels[y][x] == black_pixel
@@ -304,82 +303,65 @@ def edge(pixels, args):
             ):
                 edge_pixels[y][x] = white_pixel
 
-    for y in tqdm(range(len(pixels)), desc=("{:30}".format("Defining intervals..."))):
+    for y in progressBars(len(pixels), "Defining intervals..."):
         Append(intervals, [])
         for x in range(len(pixels[0])):
             if edge_pixels[y][x] == black_pixel:
-                #intervals[y].append(x)
                 AppendPartial(intervals, y, x)
-        #intervals[y].append(len(pixels[0]))
         AppendPartial(intervals, y, len(pixels[0]))
     return intervals
 
 
 def threshold(pixels, args):
     intervals = []
-    #appendInt = intervals.append
 
-    for y in tqdm(
-        range(len(pixels)), desc=("{:30}".format("Determining intervals..."))
-    ):
+    for y in progressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [])
         for x in range(len(pixels[0])):
             if (
                 lightness(pixels[y][x]) < args.bottom_threshold
                 or lightness(pixels[y][x]) > args.upper_threshold
             ):
-                #intervals[y].append(x)
                 AppendPartial(intervals, y, x)
-        #intervals[y].append(len(pixels[0]))
         AppendPartial(intervals, y, len(pixels[0]))
     return intervals
 
 
 def random(pixels, args):
     intervals = []
-    #appendInt = intervals.append
 
-    for y in tqdm(
-        range(len(pixels)), desc=("{:30}".format("Determining intervals..."))
-    ):
+    for y in progressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [])
         x = 0
         while True:
             width = random_width(args.clength)
             x += width
             if x > len(pixels[0]):
-                #intervals[y].append(len(pixels[0]))
                 AppendPartial(intervals, y, len(pixels[0]))
                 break
             else:
-                #intervals[y].append(x)
                 AppendPartial(intervals, y, x)
     return intervals
 
 
 def waves(pixels, args):
     intervals = []
-    #appendInt = intervals.append
 
-    for y in tqdm(
-        range(len(pixels)), desc=("{:30}".format("Determining intervals..."))
-    ):
+    for y in progressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [])
         x = 0
         while True:
             width = args.clength + rand.randint(0, 10)
             x += width
             if x > len(pixels[0]):
-                #intervals[y].append(len(pixels[0]))
                 AppendPartial(intervals, y, len(pixels[0]))
                 break
             else:
-                #intervals[y].append(x)
                 AppendPartial(intervals, y, x)
     return intervals
 
 
-def file_mask(pixels, args):
+def file_mask(pixels, args): # NEEDS TO BE UPDATED
     intervals = []
     file_pixels = []
 
@@ -415,7 +397,7 @@ def file_mask(pixels, args):
     return intervals
 
 
-def file_edges(pixels, args):
+def file_edges(pixels, args): # NEEDS TO BE UPDATED
     int_file = input("Please enter the URL of an int file:\n")
     img = Image.open(requests.get(int_file, stream=True).raw)
     img = img.rotate(args.angle, expand=True)
@@ -477,9 +459,7 @@ def snap_sort(pixels, args):
     )
 
     pixels.setflags(write=1)
-    for i in tqdm(
-        range(round(int(xy.shape[0] / 2), 0)), desc=("{:30}".format("Snapping..."))
-    ):
+    for i in progressBars(round(int(xy.shape[0] / 2), 0), "Snapping..."):
         pixels[numbers_that_dont_feel_so_good[i][0]][
             numbers_that_dont_feel_so_good[i][1]
         ] = [0, 0, 0, 0]
@@ -494,7 +474,7 @@ def snap_sort(pixels, args):
     size1 = input_img.size[1]
     size0 = input_img.size[0]
 
-    for y in tqdm(range(size1), desc=("{:30}".format("Returning saved..."))):
+    for y in progressBars(size1, "Returning saved..."):
         Append(pixels, [])
         for x in range(size0):
             AppendData(pixels, x, y, data)
@@ -514,7 +494,7 @@ def shuffle_total(pixels, args):
     height = input_img.size[1]
     shuffle = np.array(input_img)
 
-    for i in tqdm(range(int(height)), desc=("{:30}".format("Shuffling image..."))):
+    for i in progressBars(int(height), "Shuffling image..."):
         np.random.shuffle(shuffle[i])
     shuffled_out = Image.fromarray(shuffle, "RGB")
     shuffled_out.save("shuffled_total.png")
@@ -525,10 +505,9 @@ def shuffle_total(pixels, args):
     size1 = shuffled_img.size[1]
     size0 = shuffled_img.size[0]
 
-    for y in tqdm(range(size1), desc=("{:30}".format("Recreating image..."))):
+    for y in progressBars(size1, "Recreating image..."):
         Append(pixels, [])
         for x in range(size0):
-            #pixels[y].append(data[x, y])
             AppendData(pixels, x, y, data)
 
     os.remove("shuffled_total.png")
@@ -541,7 +520,7 @@ def shuffled_axis(pixels, args):
     height = input_img.size[1]
     shuffle = np.array(input_img)
 
-    for _ in tqdm(range(int(height)), desc=("{:30}".format("Shuffling image..."))):
+    for _ in progressBars(int(height), "Shuffling image..."):
         np.random.shuffle(shuffle)
     shuffled_out = Image.fromarray(shuffle, "RGB")
     shuffled_out.save("shuffled_axis.png")
@@ -551,7 +530,8 @@ def shuffled_axis(pixels, args):
     size1 = shuffled_img.size[1]
     size0 = shuffled_img.size[0]
 
-    for y in tqdm(range(size1), desc=("{:30}".format("Recreating image..."))):
+    #for y in tqdm(range(size1), desc=("{:30}".format("Recreating image..."))):
+    for y in progressBars(size1, "Recreating image..."):
         Append(pixels, [])
         for x in range(size0):
             AppendData(pixels, x, y, data)
@@ -561,10 +541,7 @@ def shuffled_axis(pixels, args):
 
 def none(pixels, args):
     intervals = []
-    for y in tqdm(
-        range(len(pixels)), desc=("{:30}".format("Determining intervals..."))
-    ):
-        #appendInt([len(pixels[y])])
+    for y in progressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [len(pixels[y])])
     return intervals
 
@@ -1011,9 +988,7 @@ def main():
         "random",
         "waves",
     ] else None
-    # print("Randomness: ", __args.randomness, "%")
     print(f"Randomness: {__args.randomness} %")
-    # print("Angle: ", __args.angle, "°")
     print(f"Angle: {__args.angle} °")
     print("------------------------------")
 
@@ -1029,7 +1004,7 @@ def main():
     size1 = input_img.size[1]
     size0 = input_img.size[0]
 
-    for y in tqdm(range(size1), desc=("{:30}".format("Getting pixels..."))):
+    for y in progressBars(size1, "Getting pixels..."):
         Append(pixels, [])
         for x in range(size0):
             AppendData(pixels, x, y, data)
@@ -1046,9 +1021,7 @@ def main():
             thanos_img = Image.new("RGBA", input_img.size)
             size1 = thanos_img.size[1]
             size0 = thanos_img.size[0]
-            for y in tqdm(
-                range(size1), desc=("{:30}".format("Finding the infinity stones..."))
-            ):
+            for y in progressBars(size1, "Finding the inifinity stones..."):
                 for x in range(size0):
                     imgPixels(thanos_img, x, y, sorted_pixels)
             thanos_img.save("thanos_img.png")
@@ -1062,7 +1035,7 @@ def main():
     output_img = Image.new("RGBA", input_img.size)
     size1 = output_img.size[1]
     size0 = output_img.size[0]
-    for y in tqdm(range(size1), desc=("{:30}".format("Building output image..."))):
+    for y in progressBars(size1, "Building output image..."):
         for x in range(size0):
             imgPixels(output_img, x, y, sorted_pixels)
 
