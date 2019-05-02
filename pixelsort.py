@@ -49,9 +49,12 @@ def parse_args_full(url, int_func_input, sort_func_input, arg_parse_input, inter
 
 
 ##### LAMBDA FUNCTIONS
-imgOpen = lambda url, internet: (Image.open(requests.get(url, stream=True).raw) if internet else url).convert("RGBA")
+imgOpen = lambda url, internet: (
+    Image.open(requests.get(url, stream=True).raw) if internet else url
+).convert("RGBA")
 Append = lambda l, obj: l.append(obj)
-AppendData = lambda l, x, y, d: l[y].append(d[x, y])
+AppendDataPIL = lambda l, x, y, d: l[y].append(d[x, y])
+AppendDataList = lambda l, x, y, d: l.append(d[y][x])
 AppendPartial = lambda l, y, d: l[y].append(d)
 imgPixels = lambda img, x, y, data: img.putpixel((x, y), data[y][x])
 random_width = lambda c: int(c * (1 - rand.random()))
@@ -64,6 +67,7 @@ intensity = lambda p: p[0] + p[1] + p[2]
 hue = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0
 saturation = lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0
 minimum = lambda p: min(p[0], p[1], p[2])
+
 
 ###### READING FUNCTIONS
 def read_image_input(url_input, internet):
@@ -215,25 +219,22 @@ def read_site(site_input):
 ##### SORTER
 def sort_image(pixels, intervals, args, sorting_function):
     sorted_pixels = []
+    sort_interval = lambda l, func: [] if l == [] else sorted(l, key=func)
     for y in progressBars(len(pixels), "Sorting..."):
         row = []
         x_min = 0
         for x_max in intervals[y]:
             interval = []
             for x in range(x_min, x_max):
-                interval.append(pixels[y][x])
+                AppendDataList(interval, x, y, pixels)
             if rand.randint(0, 100) >= args.randomness:
                 row += sort_interval(interval, sorting_function)
             else:
                 row += interval
             x_min = x_max
-        row.append(pixels[y][0])
+        AppendDataList(row, 0, y, pixels)
         Append(sorted_pixels, row)
     return sorted_pixels
-
-
-def sort_interval(interval, sorting_function):
-    return [] if interval == [] else sorted(interval, key=sorting_function)
 
 
 ##### UTIL
@@ -280,15 +281,16 @@ def edge(pixels, args):
     edge_pixels = []
     intervals = []
 
-    size1 = img.size[1]
-    size0 = img.size[0]
-
-    for y in progressBars(size1, "Finding threshold..."):
+    for y in progressBars(len(pixels), "Finding threshold..."):
         Append(filter_pixels, [])
-        for x in range(size0):
-            AppendData(filter_pixels, x, y, edge_data)
+        for x in range(len(pixels[0])):
+            AppendDataPIL(filter_pixels, x, y, edge_data)
 
-    AppendBW = lambda l, x, y: AppendPartial(l, y, white_pixel) if (lightness(filter_pixels[y][x]) < args.bottom_threshold ) else AppendPartial(l, y, black_pixel)
+    AppendBW = (
+        lambda l, x, y: AppendPartial(l, y, white_pixel)
+        if (lightness(filter_pixels[y][x]) < args.bottom_threshold)
+        else AppendPartial(l, y, black_pixel)
+    )
 
     for y in progressBars(len(pixels), "Thresholding..."):
         Append(edge_pixels, [])
@@ -361,7 +363,7 @@ def waves(pixels, args):
     return intervals
 
 
-def file_mask(pixels, args): # NEEDS TO BE UPDATED
+def file_mask(pixels, args):  # NEEDS TO BE UPDATED
     intervals = []
     file_pixels = []
 
@@ -397,7 +399,7 @@ def file_mask(pixels, args): # NEEDS TO BE UPDATED
     return intervals
 
 
-def file_edges(pixels, args): # NEEDS TO BE UPDATED
+def file_edges(pixels, args):  # NEEDS TO BE UPDATED
     int_file = input("Please enter the URL of an int file:\n")
     img = Image.open(requests.get(int_file, stream=True).raw)
     img = img.rotate(args.angle, expand=True)
@@ -453,33 +455,32 @@ def snap_sort(pixels, args):
     print("Preparing for balance...")
     nx, ny = height, width
     xy = np.mgrid[:nx, :ny].reshape(2, -1).T
+    rounded = round(int(xy.shape[0] / 2), 0)
     numbers_that_dont_feel_so_good = xy.take(
-        np.random.choice(xy.shape[0], round(int(xy.shape[0] / 2), 0), replace=False),
-        axis=0,
+        np.random.choice(xy.shape[0], rounded, replace=False), axis=0
     )
 
     pixels.setflags(write=1)
-    for i in progressBars(round(int(xy.shape[0] / 2), 0), "Snapping..."):
+    for i in progressBars(rounded, "Snapping..."):
         pixels[numbers_that_dont_feel_so_good[i][0]][
             numbers_that_dont_feel_so_good[i][1]
         ] = [0, 0, 0, 0]
 
     print("Sorted perfectly in half.")
     feel_better = Image.fromarray(pixels, "RGBA")
-    feel_better.save("pixels_that_dont_feel_so_good.png")
+    feel_better.save("snapped_pixels.png")
 
-    input_img = Image.open("pixels_that_dont_feel_so_good.png").convert("RGBA")
+    input_img = Image.open("snapped_pixels.png").convert("RGBA")
     data = input_img.load()
     pixels = []
-    size1 = input_img.size[1]
-    size0 = input_img.size[0]
+    size0, size1 = input_img.size
 
     for y in progressBars(size1, "Returning saved..."):
         Append(pixels, [])
         for x in range(size0):
-            AppendData(pixels, x, y, data)
+            AppendDataPIL(pixels, x, y, data)
 
-    os.remove("pixels_that_dont_feel_so_good.png")
+    os.remove("snapped_pixels.png")
     os.remove("thanos_img.png")
     print(
         ("///" * 15) + "\nPerfectly balanced, as all things should be.\n" + ("///" * 15)
@@ -497,20 +498,19 @@ def shuffle_total(pixels, args):
     for i in progressBars(int(height), "Shuffling image..."):
         np.random.shuffle(shuffle[i])
     shuffled_out = Image.fromarray(shuffle, "RGB")
-    shuffled_out.save("shuffled_total.png")
-    shuffled_img = Image.open("shuffled_total.png")
+    shuffled_out.save("shuffled.png")
+    shuffled_img = Image.open("shuffled.png")
     data = shuffled_img.load()
 
     pixels = []
-    size1 = shuffled_img.size[1]
-    size0 = shuffled_img.size[0]
+    size0, size1 = input_img.size
 
     for y in progressBars(size1, "Recreating image..."):
         Append(pixels, [])
         for x in range(size0):
-            AppendData(pixels, x, y, data)
+            AppendDataPIL(pixels, x, y, data)
 
-    os.remove("shuffled_total.png")
+    os.remove("shuffled.png")
     return pixels
 
 
@@ -523,19 +523,17 @@ def shuffled_axis(pixels, args):
     for _ in progressBars(int(height), "Shuffling image..."):
         np.random.shuffle(shuffle)
     shuffled_out = Image.fromarray(shuffle, "RGB")
-    shuffled_out.save("shuffled_axis.png")
-    shuffled_img = Image.open("shuffled_axis.png")
+    shuffled_out.save("shuffled.png")
+    shuffled_img = Image.open("shuffled.png")
     data = shuffled_img.load()
     pixels = []
-    size1 = shuffled_img.size[1]
-    size0 = shuffled_img.size[0]
+    size0, size1 = input_img.size
 
-    #for y in tqdm(range(size1), desc=("{:30}".format("Recreating image..."))):
     for y in progressBars(size1, "Recreating image..."):
         Append(pixels, [])
         for x in range(size0):
-            AppendData(pixels, x, y, data)
-    os.remove("shuffled_axis.png")
+            AppendDataPIL(pixels, x, y, data)
+    os.remove("shuffled.png")
     return pixels
 
 
@@ -590,7 +588,7 @@ def main():
     clear()
 
     # preset input
-    print(image_msg + "\n" + resolution_msg)
+    print(f"{image_msg} \n {resolution_msg}")
     preset_q = input("\nDo you wish to apply a preset? (y/n)\n")
     clear()
     if preset_q in ["y", "yes", "1"]:
@@ -613,7 +611,7 @@ def main():
     # int func, sort func
     if not preset_true:
         # int func input
-        print(image_msg + "\n" + resolution_msg)
+        print(f"{image_msg} \n {resolution_msg}")
         print(
             "\nWhat interval function are you using?\nOptions (default is random):\n-1|random\n-2|threshold\n-3|edges\n-4|waves\n-5|snap\n-6|shuffle-total\n-7|shuffle-axis\n-8|file\n-9|file-edges\n-10|none\n-11|random select"
         )
@@ -631,7 +629,7 @@ def main():
             "none",
         ]
         if int_func_input in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]:
-            int_func_input = {
+            """int_func_input = {
                 "1": "random",
                 "2": "threshold",
                 "3": "edges",
@@ -642,7 +640,8 @@ def main():
                 "8": "file",
                 "9": "file-edges",
                 "10": "none",
-            }[int_func_input]
+            }[int_func_input]"""
+            int_func_input = int_func_options[int(int_func_input - 1)]
             int_rand = False
         elif int_func_input in ["11", "random select"]:
             int_func_input = int_func_options[rand.randint(0, 3)]
@@ -665,27 +664,28 @@ def main():
         clear()
 
         # sort func input
-        print(image_msg + "\n" + int_msg + "\n" + resolution_msg)
+        print(f"{image_msg} \n {int_msg} \n {resolution_msg}")
         print(
             "\nWhat sorting function are you using?\nOptions (default is lightness):\n-1|lightness\n-2|hue\n-3|intensity\n-4|minimum\n-5|saturation\n-6|random select"
         )
         sort_func_input = input("\nChoice: ").lower()
         sort_func_options = ["lightness", "hue", "intensity", "minimum", "saturation"]
         if sort_func_input in ["1", "2", "3", "4", "5"]:
-            sort_func_input = {
+            """sort_func_input = {
                 "1": "lightness",
                 "2": "hue",
                 "3": "intensity",
                 "4": "minimum",
                 "5": "saturation",
-            }[sort_func_input]
+            }[sort_func_input]"""
+            sort_func_input = sort_func_options[int(sort_func_input - 1)]
             sort_rand = False
         elif sort_func_input in ["6", "random select"]:
             sort_func_input = sort_func_options[rand.randint(0, 4)]
             sort_rand = True
         else:
             sort_rand = False
-        sort_rand is False if sort_func_input in [
+        """sort_rand is False if sort_func_input in [
             "1",
             "2",
             "3",
@@ -698,7 +698,7 @@ def main():
             "saturation",
         ] else (
             sort_rand is True if sort_func_input in ["6", "random select"] else False
-        )
+        )"""
         sort_msg = (
             (
                 "Sorting function: "
@@ -754,7 +754,7 @@ def main():
         if site_input in ["1", "2"]:
             site_input = {"1": "put.re", "2": "imgur"}[site_input]
         site_input = read_site(site_input)
-        site_msg = "Image host site: " + site_input
+        site_msg = f"Image host site: {site_input}"
         output_image_path = "image.png"
     else:
         print("Internet not connected! Image will be saved locally.\n")
@@ -764,7 +764,7 @@ def main():
         output_image_path = (
             (id_generator() + ".png") if file_name in ["", " "] else file_name
         )
-        site_msg = "Internet not connected, saving locally as " + output_image_path
+        site_msg = f"Internet not connected, saving locally as {output_image_path}"
         site_input = "This isn't needed, but will break if not present."
     clear()
 
@@ -949,11 +949,10 @@ def main():
     internet = __args.internet
 
     # remove old image files that didn't get deleted before
-    if os.path.isfile(output_image_path):
-        print("Detected old files...")
-        os.remove(output_image_path)
-        print("Removed old files!")
-        clear()
+    os.remove(output_image_path) if os.path.isfile(output_image_path) else None
+    os.remove("thanos_img.png") if os.path.isfile("thanos_img.png") else None
+    os.remove("shuffled.png") if os.path.isfile("shuffled.png") else None
+    os.remove("snapped_pixels.png") if os.path.isfile("snapped_pixels.png") else None
 
     print(
         image_msg
@@ -975,16 +974,16 @@ def main():
     if sort_func_input in ["", " "]:
         sort_func_input = "lightness"
 
-    print("Lower threshold: ", __args.bottom_threshold) if int_func_input in [
+    print(f"Lower threshold: {__args.bottom_threshold}") if int_func_input in [
         "threshold",
         "edges",
         "file-edges",
     ] else None
-    print("Upper threshold: ", __args.upper_threshold) if int_func_input in [
+    print(f"Upper threshold: {__args.upper_threshold}") if int_func_input in [
         "random",
         "waves",
     ] else None
-    print("Characteristic length: ", __args.clength) if int_func_input in [
+    print(f"Characteristic length: {__args.clength}") if int_func_input in [
         "random",
         "waves",
     ] else None
@@ -1001,13 +1000,12 @@ def main():
     data = input_img.load()
 
     pixels = []
-    size1 = input_img.size[1]
-    size0 = input_img.size[0]
+    size0, size1 = input_img.size
 
     for y in progressBars(size1, "Getting pixels..."):
         Append(pixels, [])
         for x in range(size0):
-            AppendData(pixels, x, y, data)
+            AppendDataPIL(pixels, x, y, data)
 
     if shuffled or snapped:
         if snapped:
@@ -1019,9 +1017,8 @@ def main():
                 + ("///" * 15)
             )
             thanos_img = Image.new("RGBA", input_img.size)
-            size1 = thanos_img.size[1]
-            size0 = thanos_img.size[0]
-            for y in progressBars(size1, "Finding the inifinity stones..."):
+            size0, size1 = thanos_img.size
+            for y in progressBars(size1, "Finding the infinity stones..."):
                 for x in range(size0):
                     imgPixels(thanos_img, x, y, sorted_pixels)
             thanos_img.save("thanos_img.png")
@@ -1033,8 +1030,7 @@ def main():
         sorted_pixels = sort_image(pixels, intervals, __args, sorting_function)
 
     output_img = Image.new("RGBA", input_img.size)
-    size1 = output_img.size[1]
-    size0 = output_img.size[0]
+    size0, size1 = output_img.size
     for y in progressBars(size1, "Building output image..."):
         for x in range(size0):
             imgPixels(output_img, x, y, sorted_pixels)
@@ -1050,9 +1046,7 @@ def main():
     output_img.save(output_image_path)
 
     if internet:
-        # choose upload site
         date_time = datetime.now().strftime("%m/%d/%Y %H:%M")
-        # upload sites
         if site_input is "imgur":
             import pyimgur
 
@@ -1124,7 +1118,7 @@ def main():
             )
 
         print("Done!")
-        print("Link to image: " + link)
+        print(f"Link to image: {link}")
     else:
         print("Not saving config to 'output.txt', as there is no internet.")
         print("Done!")
