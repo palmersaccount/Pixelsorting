@@ -1,18 +1,20 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from PIL import Image, ImageFilter
+from string import ascii_lowercase, ascii_uppercase, digits
+from typing import List, Tuple, Any
 from datetime import datetime
 from colorsys import rgb_to_hsv
+import random as rand
 import argparse
 import os
-import random as rand
 import socket
-import string
+import json
 
-import requests
-import numpy as np
+from PIL import Image, ImageFilter
+from requests import get, post
 from tqdm import tqdm
+import numpy as np
 
 
 ##### MISC FUNCTIONS
@@ -20,10 +22,13 @@ def clear():  # clear screen
     return os.system("cls" if os.name == "nt" else "clear")
 
 
-def has_internet(host="8.8.8.8", port=53, timeout=3):  # check for internet
+def has_internet(host: str, port: int, timeout: int) -> bool:
     """
-    host: 8.8.8.8 (google-public-dns-a.google.com)
-    OpenPort: 53/tcp
+    Checks for internet. 
+    ------
+    :param host: 8.8.8.8 (google-public-dns-a.google.com)
+    :param port: 53
+    :param timeout: 3
     Service: domain (DNS/TCP)
     """
     try:
@@ -34,10 +39,22 @@ def has_internet(host="8.8.8.8", port=53, timeout=3):  # check for internet
         return False
 
 
-def parse_args_full(url, int_func_input, sort_func_input, arg_parse_input, internet):
+def parse_args_full(
+    url: str,
+    int_func_input: str,
+    sort_func_input: str,
+    arg_parse_input: list,
+    internet: bool,
+) -> List[Any]:
     """
-    Takes all the current "args" (int func, sort func, arg parse input, url)
-    and combines them into one for easy use in the argparse module.
+    Combining the misc. args.
+    -----
+    :param url: The inputted URL, number of default image, or local file path.
+    :param int_func_input: The interval function used.
+    :param sort_func_input: The sorting function used.
+    :param arg_parse_input: Other args (angle, char. length, etc.)
+    :param internet: true/false for having internet.
+    :returns: List of args.
     """
     full_args = []
     full_args.append("-l " + url)
@@ -50,8 +67,10 @@ def parse_args_full(url, int_func_input, sort_func_input, arg_parse_input, inter
 
 ##### LAMBDA FUNCTIONS
 imgOpen = lambda url, internet: (
-    Image.open(requests.get(url, stream=True).raw) if internet else url
-).convert("RGBA")
+    Image.open((get(url, stream=True).raw) if internet else url)
+).convert(
+    "RGBA"
+)  # type: Any
 Append = lambda l, obj: l.append(obj)
 AppendDataPIL = lambda l, x, y, d: l[y].append(d[x, y])
 AppendDataList = lambda l, x, y, d: l.append(d[y][x])
@@ -70,13 +89,18 @@ minimum = lambda p: min(p[0], p[1], p[2])
 
 
 ###### READING FUNCTIONS
-def read_image_input(url_input, internet):
-    # return order: url, url_given, url_random, random_url
+def read_image_input(url_input: str, internet: bool) -> Tuple[str, bool, bool, str]:
+    """
+    Reading the image input.
+    -----
+    :param url_input: The inputted URL, number of default image, or local file path.
+    :param internet: true/false for having internet.
+    :returns: (in order) url[str], url_given[bool], url_random[bool], random_url[str]
+    """
     try:
         if internet:
-            url = url_input
-            Image.open(requests.get(url, stream=True).raw)
-            return url, True, False, None
+            imgOpen(url_input, internet)
+            return url_input, True, False, None
         else:
             if url_input in ["", " "]:
                 url = "images/default.jpg"
@@ -119,7 +143,14 @@ def read_image_input(url_input, internet):
             return url_options[random_url], False, True, random_url
 
 
-def read_interval_function(int_func_input):
+def read_interval_function(int_func_input: str) -> Any:
+    """
+    Reading the interval function.
+    -----
+    :param int_func_input: A (lowercase) string.
+    :returns: Interval function.
+    :raises KeyError: String not in selection.
+    """
     try:
         return {
             "random": random,
@@ -137,7 +168,14 @@ def read_interval_function(int_func_input):
         return random
 
 
-def read_sorting_function(sort_func_input):
+def read_sorting_function(sort_func_input: str) -> Any:
+    """
+    Reading the sorting function.
+    -----
+    :param sort_func_input: A (lowercase) string.
+    :returns: Sorting function.
+    :raises KeyError: String not in selection.
+    """
     try:
         return {
             "lightness": lightness,
@@ -150,7 +188,16 @@ def read_sorting_function(sort_func_input):
         return lightness
 
 
-def read_preset(preset_input):
+def read_preset(
+    preset_input: str
+) -> Tuple[str, str, str, bool, bool, bool, bool, bool]:
+    """
+    Returning values for 'presets'.
+    -----
+    :param preset_input: A (lowercase) string.
+    :returns: (in order) arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped
+    :raises KeyError: String not in selection.
+    """
     try:
         # order-- arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped
         int_func_input = {"1": "random", "2": "threshold", "3": "edges", "4": "waves"}
@@ -209,15 +256,19 @@ def read_preset(preset_input):
         return None, None, None, False, None, None, False, False
 
 
-def read_site(site_input):
-    try:
-        return {"put.re": "put.re", "imgur": "imgur"}[site_input]
-    except KeyError:
-        return "put.re"
-
-
 ##### SORTER
-def sort_image(pixels, intervals, args, sorting_function):
+def sort_image(
+    pixels: List, intervals: List, args: List, sorting_function: Any
+) -> List:
+    """
+    Sorts the image.
+    -----
+    :param pixels: List of pixel values.
+    :param intervals: List of pixel values after being run through selected interval function.
+    :param args: Arguments.
+    :param sorting_function: Sorting function used in sorting of pixels.
+    :returns: List of sorted pixels.
+    """
     sorted_pixels = []
     sort_interval = lambda l, func: [] if l == [] else sorted(l, key=func)
     for y in progressBars(len(pixels), "Sorting..."):
@@ -238,13 +289,12 @@ def sort_image(pixels, intervals, args, sorting_function):
 
 
 ##### UTIL
-def id_generator():  # random file name (for offline)
-    size = 5
-    chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
-    return "".join(rand.choice(chars) for _ in range(size))
+id_generator = lambda n: "".join(
+    rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(n)
+)  # type: int
 
 
-def crop_to(image_to_crop, args):
+def crop_to(image_to_crop: Any, args: Any) -> Any:
     """
     Crops image to the size of a reference image. This function assumes 
     that the relevant image is located in the center and you want to crop away 
@@ -253,11 +303,9 @@ def crop_to(image_to_crop, args):
     :param reference_image
     :return: image cropped to the size of the reference image
     """
-    reference_image = Image.open(
-        (requests.get(args.url, stream=True).raw) if args.internet else (args.url)
-    )
-    reference_size = reference_image.size
-    current_size = image_to_crop.size
+    reference_image = imgOpen(args.url, args.internet)
+    reference_size = reference_image.size  # type: Tuple[int, int]
+    current_size = image_to_crop.size  # type: Tuple[int, int]
     dx = current_size[0] - reference_size[0]
     dy = current_size[1] - reference_size[1]
     left = dx / 2
@@ -268,14 +316,18 @@ def crop_to(image_to_crop, args):
 
 
 ##### INTERVALS
-black_pixel = (0, 0, 0, 255)
-white_pixel = (255, 255, 255, 255)
+black_pixel = (0, 0, 0, 255)  # type: Tuple[int, int, int, int]
+white_pixel = (255, 255, 255, 255)  # type: Tuple[int, int, int, int]
 
 
-def edge(pixels, args):
-    img = imgOpen(args.url, args.internet)
-    img = img.rotate(args.angle, expand=True)
-    edge_data = img.filter(ImageFilter.FIND_EDGES).convert("RGBA").load()
+def edge(pixels: List, args: Any) -> List:
+    edge_data = (
+        imgOpen(args.url, args.internet)
+        .rotate(args.angle, expand=True)
+        .filter(ImageFilter.FIND_EDGES)
+        .convert("RGBA")
+        .load()
+    )  # type: Any
 
     filter_pixels = []
     edge_pixels = []
@@ -290,7 +342,7 @@ def edge(pixels, args):
         lambda l, x, y: AppendPartial(l, y, white_pixel)
         if (lightness(filter_pixels[y][x]) < args.bottom_threshold)
         else AppendPartial(l, y, black_pixel)
-    )
+    )  # type: Any
 
     for y in progressBars(len(pixels), "Thresholding..."):
         Append(edge_pixels, [])
@@ -314,7 +366,7 @@ def edge(pixels, args):
     return intervals
 
 
-def threshold(pixels, args):
+def threshold(pixels: List, args: Any) -> List:
     intervals = []
 
     for y in progressBars(len(pixels), "Determining intervals..."):
@@ -329,7 +381,7 @@ def threshold(pixels, args):
     return intervals
 
 
-def random(pixels, args):
+def random(pixels: List, args: Any) -> List:
     intervals = []
 
     for y in progressBars(len(pixels), "Determining intervals..."):
@@ -346,7 +398,7 @@ def random(pixels, args):
     return intervals
 
 
-def waves(pixels, args):
+def waves(pixels: List, args: Any) -> List:
     intervals = []
 
     for y in progressBars(len(pixels), "Determining intervals..."):
@@ -363,14 +415,14 @@ def waves(pixels, args):
     return intervals
 
 
-def file_mask(pixels, args):  # NEEDS TO BE UPDATED
+def file_mask(pixels: List, args: Any) -> List:  # NEEDS TO BE UPDATED
     intervals = []
     file_pixels = []
 
     int_file = input(
         "Please enter the URL of an int file or hit enter to randomly select one:\n"
     )
-    img = Image.open(requests.get(int_file, stream=True).raw)
+    img = Image.open(get(int_file, stream=True).raw)
     img = img.convert("RGBA")
     img = img.rotate(args.angle, expand=True)
     data = img.load()
@@ -399,9 +451,9 @@ def file_mask(pixels, args):  # NEEDS TO BE UPDATED
     return intervals
 
 
-def file_edges(pixels, args):  # NEEDS TO BE UPDATED
+def file_edges(pixels: List, args: Any) -> List:  # NEEDS TO BE UPDATED
     int_file = input("Please enter the URL of an int file:\n")
-    img = Image.open(requests.get(int_file, stream=True).raw)
+    img = Image.open(get(int_file, stream=True).raw)
     img = img.rotate(args.angle, expand=True)
     img = img.resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
     edges = img.filter(ImageFilter.FIND_EDGES)
@@ -446,19 +498,20 @@ def file_edges(pixels, args):  # NEEDS TO BE UPDATED
     return intervals
 
 
-def snap_sort(pixels, args):
-    input_img = Image.open("thanos_img.png").convert("RGBA")
-    width, height = input_img.size
+def snap_sort(pixels: List, args: Any) -> List:
+    input_img = imgOpen("thanos_img.png", False)
     print("Opening the soul stone...")
-    pixels = np.asarray(input_img)
+    pixels = np.asarray(input_img)  # type: List
 
     print("Preparing for balance...")
-    nx, ny = height, width
-    xy = np.mgrid[:nx, :ny].reshape(2, -1).T
-    rounded = round(int(xy.shape[0] / 2), 0)
+    nx, ny = input_img.size
+    xy = np.mgrid[:nx, :ny].reshape(2, -1).T  # type: Any
+    rounded = round(int(xy.shape[0] / 2), 0)  # type: int
+
     numbers_that_dont_feel_so_good = xy.take(
         np.random.choice(xy.shape[0], rounded, replace=False), axis=0
-    )
+    )  # type: Any
+    print(f'Number of those worthy of the sacrifice: {("{:,}".format(rounded))}')
 
     pixels.setflags(write=1)
     for i in progressBars(rounded, "Snapping..."):
@@ -467,13 +520,13 @@ def snap_sort(pixels, args):
         ] = [0, 0, 0, 0]
 
     print("Sorted perfectly in half.")
-    feel_better = Image.fromarray(pixels, "RGBA")
+    feel_better = Image.fromarray(pixels, "RGBA")  # type: Any
     feel_better.save("snapped_pixels.png")
 
-    input_img = Image.open("snapped_pixels.png").convert("RGBA")
-    data = input_img.load()
+    snapped_img = imgOpen("snapped_pixels.png", False)
+    data = input_img.load()  # type: Any
     pixels = []
-    size0, size1 = input_img.size
+    size0, size1 = snapped_img.size
 
     for y in progressBars(size1, "Returning saved..."):
         Append(pixels, [])
@@ -483,24 +536,24 @@ def snap_sort(pixels, args):
     os.remove("snapped_pixels.png")
     os.remove("thanos_img.png")
     print(
-        ("///" * 15) + "\nPerfectly balanced, as all things should be.\n" + ("///" * 15)
+        f"{('///' * 15)}\nPerfectly balanced, as all things should be.\n{('///' * 15)}"
     )
 
     return pixels
 
 
-def shuffle_total(pixels, args):
+def shuffle_total(pixels: List, args: Any) -> List:
     print("Creating array from image...")
     input_img = imgOpen(args.url, args.internet)
-    height = input_img.size[1]
-    shuffle = np.array(input_img)
+    height = input_img.size[1]  # type: int
+    shuffle = np.array(input_img)  # type: ndarray
 
     for i in progressBars(int(height), "Shuffling image..."):
         np.random.shuffle(shuffle[i])
-    shuffled_out = Image.fromarray(shuffle, "RGB")
+    shuffled_out = Image.fromarray(shuffle, "RGB")  # type: Any
     shuffled_out.save("shuffled.png")
-    shuffled_img = Image.open("shuffled.png")
-    data = shuffled_img.load()
+    shuffled_img = imgOpen("shuffled.png", False)
+    data = shuffled_img.load()  # type: any
 
     pixels = []
     size0, size1 = input_img.size
@@ -514,18 +567,18 @@ def shuffle_total(pixels, args):
     return pixels
 
 
-def shuffled_axis(pixels, args):
+def shuffled_axis(pixels: List, args: Any) -> List:
     print("Creating array from image...")
     input_img = imgOpen(args.url, args.internet)
-    height = input_img.size[1]
-    shuffle = np.array(input_img)
+    height = input_img.size[1]  # type: int
+    shuffle = np.array(input_img)  # type: ndarray
 
     for _ in progressBars(int(height), "Shuffling image..."):
         np.random.shuffle(shuffle)
-    shuffled_out = Image.fromarray(shuffle, "RGB")
+    shuffled_out = Image.fromarray(shuffle, "RGB")  # type: Any
     shuffled_out.save("shuffled.png")
-    shuffled_img = Image.open("shuffled.png")
-    data = shuffled_img.load()
+    shuffled_img = imgOpen("shuffled.png", False)
+    data = shuffled_img.load()  # type: Any
     pixels = []
     size0, size1 = input_img.size
 
@@ -537,7 +590,7 @@ def shuffled_axis(pixels, args):
     return pixels
 
 
-def none(pixels, args):
+def none(pixels: List, args: Any) -> List:
     intervals = []
     for y in progressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [len(pixels[y])])
@@ -546,19 +599,27 @@ def none(pixels, args):
 
 ##### MAIN
 def main():
+    """
+    Pixelsorting an image.
+    """
     clear()
+    # remove old image files that didn'tget deleted before
+    os.remove("image.png") if os.path.isfile("image.png") else None
+    os.remove("thanos_img.png") if os.path.isfile("thanos_img.png") else None
+    os.remove("shuffled.png") if os.path.isfile("shuffled.png") else None
+    os.remove("snapped_pixels.png") if os.path.isfile("snapped_pixels.png") else None
 
     print(
         "Pixel sorting based on web hosted images.\nMost of the backend is sourced from https://github.com/satyarth/pixelsort"
-        + "\nThe output image is uploaded to put.re/imgur after being sorted.\n"
-        + "\nTo see any past runs, args used, and the result\nopen 'output.txt'\n"
+        + "\nThe output image is uploaded to put.re after being sorted.\n"
+        + "\nTo see any past runs, args used, and the result image, open 'output.txt'\n"
         + (35 * "--")
         + "\nThanks for using this program!\nPress any key to continue..."
     )
     input()
     clear()
 
-    internet = has_internet()
+    internet = has_internet("8.8.8.8", 53, 3)
 
     if internet:
         url_input = input(
@@ -574,13 +635,10 @@ def main():
     input_img = imgOpen(url, internet)
 
     width, height = input_img.size
-    resolution_msg = "Resolution: " + str(width) + "x" + str(height)
+    resolution_msg = f"Resolution: {str(width)}x{str(height)}"
     image_msg = (
         (
-            "[WARNING] No image url given, using "
-            + ("random" if url_random else "chosen")
-            + " default image "
-            + (random_url if url_random else str(url_input))
+            f"[WARNING] No image url given, using {('random' if url_random else 'chosen')} default image {(random_url if url_random else str(url_input))}"
         )
         if not url_given
         else "Using given image "
@@ -588,12 +646,15 @@ def main():
     clear()
 
     # preset input
-    print(f"{image_msg} \n {resolution_msg}")
+    print(f"{image_msg}\n{resolution_msg}")
     preset_q = input("\nDo you wish to apply a preset? (y/n)\n")
     clear()
     if preset_q in ["y", "yes", "1"]:
         print(
-            "Preset options:\n-1|main -- Main args (r 50, c 250, a 45, random, intensity)\n-2|full random -- Randomness in every arg!\n-3|snap-sort -- Run from it, dread it, destiny still arrives."
+            "Preset options:\n"
+            "-1|main -- Main args (r 50, c 250, a 45, random, intensity)\n"
+            "-2|full random -- Randomness in every arg!\n"
+            "-3|snap-sort -- Run from it, dread it, destiny still arrives."
         )
         preset_input = input("\nChoice: ").lower()
         if preset_input in ["1", "2", "3"]:
@@ -608,12 +669,23 @@ def main():
         preset_true = False
     clear()
 
-    # int func, sort func
+    # int func, sort func & int msg, sort msg
     if not preset_true:
         # int func input
-        print(f"{image_msg} \n {resolution_msg}")
+        print(f"{image_msg}\n{resolution_msg}")
         print(
-            "\nWhat interval function are you using?\nOptions (default is random):\n-1|random\n-2|threshold\n-3|edges\n-4|waves\n-5|snap\n-6|shuffle-total\n-7|shuffle-axis\n-8|file\n-9|file-edges\n-10|none\n-11|random select"
+            "\nWhat interval function are you using?\nOptions (default is random):\n"
+            "-1|random\n"
+            "-2|threshold\n"
+            "-3|edges\n"
+            "-4|waves\n"
+            "-5|snap\n"
+            "-6|shuffle-total\n"
+            "-7|shuffle-axis\n"
+            "-8|file\n"
+            "-9|file-edges\n"
+            "-10|none\n"
+            "-11|random select"
         )
         int_func_input = input("\nChoice: ").lower()
         int_func_options = [
@@ -641,7 +713,7 @@ def main():
                 "9": "file-edges",
                 "10": "none",
             }[int_func_input]"""
-            int_func_input = int_func_options[int(int_func_input - 1)]
+            int_func_input = int_func_options[int(int_func_input) - 1]
             int_rand = False
         elif int_func_input in ["11", "random select"]:
             int_func_input = int_func_options[rand.randint(0, 3)]
@@ -664,41 +736,26 @@ def main():
         clear()
 
         # sort func input
-        print(f"{image_msg} \n {int_msg} \n {resolution_msg}")
+        print(f"{image_msg}\n{int_msg}\n{resolution_msg}")
         print(
-            "\nWhat sorting function are you using?\nOptions (default is lightness):\n-1|lightness\n-2|hue\n-3|intensity\n-4|minimum\n-5|saturation\n-6|random select"
+            "\nWhat sorting function are you using?\nOptions (default is lightness):\n"
+            "-1|lightness\n"
+            "-2|hue\n"
+            "-3|intensity\n"
+            "-4|minimum\n"
+            "-5|saturation\n"
+            "-6|random select"
         )
         sort_func_input = input("\nChoice: ").lower()
         sort_func_options = ["lightness", "hue", "intensity", "minimum", "saturation"]
         if sort_func_input in ["1", "2", "3", "4", "5"]:
-            """sort_func_input = {
-                "1": "lightness",
-                "2": "hue",
-                "3": "intensity",
-                "4": "minimum",
-                "5": "saturation",
-            }[sort_func_input]"""
-            sort_func_input = sort_func_options[int(sort_func_input - 1)]
+            sort_func_input = sort_func_options[int(sort_func_input) - 1]
             sort_rand = False
         elif sort_func_input in ["6", "random select"]:
             sort_func_input = sort_func_options[rand.randint(0, 4)]
             sort_rand = True
         else:
             sort_rand = False
-        """sort_rand is False if sort_func_input in [
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "lightness",
-            "hue",
-            "intensity",
-            "minimum",
-            "saturation",
-        ] else (
-            sort_rand is True if sort_func_input in ["6", "random select"] else False
-        )"""
         sort_msg = (
             (
                 "Sorting function: "
@@ -750,22 +807,17 @@ def main():
 
     # hosting site
     if internet:
-        site_input = input("Upload site:\n-1|put.re (recommended)\n-2|imgur.com\n")
-        if site_input in ["1", "2"]:
-            site_input = {"1": "put.re", "2": "imgur"}[site_input]
-        site_input = read_site(site_input)
-        site_msg = f"Image host site: {site_input}"
         output_image_path = "image.png"
+        site_msg = "Uploading sorted image to put.re"
     else:
         print("Internet not connected! Image will be saved locally.\n")
         file_name = input(
             "Name of output file (leave empty for randomized name):\n(do not include the file extension, .png will always be used.)\n"
         )
         output_image_path = (
-            (id_generator() + ".png") if file_name in ["", " "] else file_name
+            (id_generator(5) + ".png") if file_name in ["", " "] else file_name
         )
         site_msg = f"Internet not connected, saving locally as {output_image_path}"
-        site_input = "This isn't needed, but will break if not present."
     clear()
 
     # args
@@ -774,84 +826,29 @@ def main():
         clear()
         if needs_help in ["y", "yes", "1"]:
             print(
-                image_msg
-                + "\n"
-                + resolution_msg
-                + "\n"
-                + int_msg
-                + "\n"
-                + sort_msg
-                + "\n"
-                + site_msg
-                + "\n\nWhat args will you be adding?\n"
-                + "{:21}".format("Parameter")
-                + "{:>6}".format("| Flag |")
-                + "{:>12}".format("Description")
-                + "\n"
-                + "{:21}".format("---------------------")
-                + "{:>6}".format("|------|")
-                + "{:>12}".format("------------")
-                + "\n"
-                + "{:21}".format("Randomness")
-                + "{:>6}".format("| -r   |")
-                + "What percentage of intervals not to sort. 0 by default."
-                + "\n"
-                + "{:21}".format("Char. length")
-                + "{:>6}".format("| -c   |")
-                + "Characteristic length for the random width generator.\n"
-                + 29 * " "
-                + "Used in mode random."
-                + "\n"
-                + "{:21}".format("Angle")
-                + "{:>6}".format("| -a   |")
-                + "Angle at which you're pixel sorting in degrees. 0 (horizontal) by default."
-                + "\n"
-                + "{:21}".format("Threshold (lower)")
-                + "{:>6}".format("| -t   |")
-                + "How dark must a pixel be to be considered as a 'border' for sorting?\n"
-                + 29 * " "
-                + "Takes values from 0-1. 0.25 by default. Used in edges and threshold modes."
-                + "\n"
-                + "{:21}".format("Threshold (upper)")
-                + "{:>6}".format("| -u   |")
-                + "How bright must a pixel be to be considered as a 'border' for sorting?\n"
-                + 29 * " "
-                + "Takes values from 0-1. 0.8 by default. Used in threshold mode."
+                f"{image_msg}\n{resolution_msg}\n{int_msg}\n{sort_msg}\n{site_msg}\n"
+                + "\nWhat args will you be adding?\n"
+                + f'{("{:21}".format("Parameter"))}{("{:>6}".format("| Flag |"))}{("{:>12}".format("Description"))}\n'
+                + f'{("{:21}".format("---------------------"))}{("{:>6}".format("|------|"))}{("{:>12}".format("------------"))}\n'
+                + f'{("{:21}".format("Randomness"))}{("{:>6}".format("| -r   |"))}What percentage of intervals not to sort. 0 by default.\n'
+                + f'{("{:21}".format("Char. length"))}{("{:>6}".format("| -c   |"))}Characteristic length for the random width generator.\n{29 * " "}Used in mode random.\n'
+                + f'{("{:21}".format("Angle"))}{("{:>6}".format("| -a   |"))}Angle at which you\'re pixel sorting in degrees. 0 (horizontal) by default.\n'
+                + f'{("{:21}".format("Threshold (lower)"))}{("{:>6}".format("| -t   |"))}How dark must a pixel be to be considered as a \'border\' for sorting?\n{29 * " "}Takes values from 0-1. 0.25 by default. Used in edges and threshold modes.\n'
+                + f'{("{:21}".format("Threshold (upper)"))}{("{:>6}".format("| -u   |"))}How bright must a pixel be to be considered as a \'border\' for sorting?\n{29 * " "}Takes values from 0-1. 0.8 by default. Used in threshold mode.\n'
             )
         else:
             print(
-                image_msg
-                + "\n"
-                + resolution_msg
-                + "\n"
-                + int_msg
-                + "\n"
-                + sort_msg
-                + "\n"
-                + site_msg
-                + "\n\nWhat args will you be adding?\n"
-                + "{:21}".format("Parameter")
-                + "{:>6}".format("| Flag |")
-                + "\n"
-                + "{:21}".format("---------------------")
-                + "{:>6}".format("|------|")
-                + "\n"
-                + "{:21}".format("Randomness")
-                + "{:>6}".format("| -r   |")
-                + "\n"
-                + "{:21}".format("Char. length")
-                + "{:>6}".format("| -c   |")
-                + "\n"
-                + "{:21}".format("Angle")
-                + "{:>6}".format("| -a   |")
-                + "\n"
-                + "{:21}".format("Threshold (lower)")
-                + "{:>6}".format("| -t   |")
-                + "\n"
-                + "{:21}".format("Threshold (upper)")
-                + "{:>6}".format("| -u   |")
+                f"{image_msg}\n{resolution_msg}\n{int_msg}\n{sort_msg}\n{site_msg}\n"
+                + "\nWhat args will you be adding?\n"
+                + f'{("{:21}".format("Parameter"))}{("{:>6}".format("| Flag |"))}\n'
+                + f'{("{:21}".format("---------------------"))}{("{:>6}".format("|------|"))}\n'
+                + f'{("{:21}".format("Randomness"))}{("{:>6}".format("| -r   |"))}\n'
+                + f'{("{:21}".format("Char. length"))}{("{:>6}".format("| -c   |"))}\n'
+                + f'{("{:21}".format("Angle"))}{("{:>6}".format("| -a   |"))}\n'
+                + f'{("{:21}".format("Threshold (lower)"))}{("{:>6}".format("| -t   |"))}\n'
+                + f'{("{:21}".format("Threshold (upper)"))}{("{:>6}".format("| -u   |"))}\n'
             )
-        arg_parse_input = input("\n\nArgs: ")
+        arg_parse_input = input("\nArgs: ")
         clear()
 
     # args
@@ -925,14 +922,11 @@ def main():
         "-y", "--internet", type=bool, help="Is internet connected or not", default=True
     )
 
-    # add a space in front of arg parse unless there is one or none was entered
-    arg_parse_input = (
-        None
-        if (arg_parse_input in ["", " "] or arg_parse_input[0] == " ")
-        else (" " + arg_parse_input)
-    )
+    # add a space to start of arg_parse_in, used for splitting
+    if arg_parse_input not in ["", " "] and arg_parse_input[0] is not " ":
+        arg_parse_input = " " + arg_parse_input
 
-    if arg_parse_input is not None:
+    if arg_parse_input not in [None, "", " "]:
         args_in = arg_parse_input.split(" -")
         args_in[:] = ["-" + x for x in args_in]
         args_in.pop(0)
@@ -946,26 +940,11 @@ def main():
 
     interval_function = read_interval_function(int_func_input)
     sorting_function = read_sorting_function(sort_func_input)
-    internet = __args.internet
-
-    # remove old image files that didn't get deleted before
-    os.remove(output_image_path) if os.path.isfile(output_image_path) else None
-    os.remove("thanos_img.png") if os.path.isfile("thanos_img.png") else None
-    os.remove("shuffled.png") if os.path.isfile("shuffled.png") else None
-    os.remove("snapped_pixels.png") if os.path.isfile("snapped_pixels.png") else None
 
     print(
-        image_msg
-        + "\n"
-        + resolution_msg
-        + "\n"
-        + ("Preset: " + preset_input if preset_true else "No preset applied")
-        + "\n"
-        + int_msg
-        + "\n"
-        + sort_msg
-        + "\n"
-        + site_msg
+        f"{image_msg}\n{resolution_msg}\n"
+        f'{("Preset: " + preset_input if preset_true else "No preset applied")}'
+        f"\n{int_msg}\n{sort_msg}\n{site_msg}"
     )
 
     # even if they were never given, at some point they need to be assigned to default values properly
@@ -997,7 +976,7 @@ def main():
     input_img = input_img.rotate(__args.angle, expand=True)
 
     print("Getting data...")
-    data = input_img.load()
+    data = input_img.load()  # type: Any
 
     pixels = []
     size0, size1 = input_img.size
@@ -1012,9 +991,7 @@ def main():
             intervals = random(pixels, __args)
             sorted_pixels = sort_image(pixels, intervals, __args, sorting_function)
             print(
-                ("///" * 15)
-                + "\nRun from it. Dread it. Destiny still arrives.\n"
-                + ("///" * 15)
+                f"{('///' * 15)}\nRun from it. Dread it. Destiny still arrives.\n{('///' * 15)}"
             )
             thanos_img = Image.new("RGBA", input_img.size)
             size0, size1 = thanos_img.size
@@ -1047,45 +1024,15 @@ def main():
 
     if internet:
         date_time = datetime.now().strftime("%m/%d/%Y %H:%M")
-        if site_input is "imgur":
-            import pyimgur
 
-            CLIENT_ID = "d7155a81c1e37bd"
-            PATH = output_image_path
-
-            out_msg = (
-                "\nStarting image url: "
-                + url
-                + ("\nInt func: " if not int_rand else "\nInt func (randomly chosen): ")
-                + int_func_input
-                + (
-                    "\nSort func: "
-                    if not sort_rand
-                    else "\nSort func (randomly chosen): "
-                )
-                + sort_func_input
-                + "\nArgs: "
-                + (arg_parse_input if arg_parse_input is not None else "No args")
-                + "\nSorted on: "
-                + date_time
-            )
-            im = pyimgur.Imgur(CLIENT_ID)
-            uploaded_image = im.upload_image(
-                PATH, title="Pixel sorted", description=out_msg
-            )
-            link = uploaded_image.link
-            print("Image uploaded!")
-        else:
-            import json
-
-            print("Uploading...")
-            r = requests.post(
-                "https://api.put.re/upload",
-                files={"file": ("image.png", open("image.png", "rb"))},
-            )
-            output = json.loads(r.text)
-            link = output["data"]["link"]
-            print("Image uploaded!")
+        print("Uploading...")
+        r = post(
+            "https://api.put.re/upload",
+            files={"file": ("image.png", open("image.png", "rb"))},
+        )
+        output = json.loads(r.text)
+        link = output["data"]["link"]
+        print("Image uploaded!")
 
         # delete old file, seeing as its uploaded
         print("Removing local file...")
@@ -1095,33 +1042,16 @@ def main():
         print("Saving config to 'output.txt'...")
         with open("output.txt", "a") as f:
             f.write(
-                "\nStarting image url: "
-                + url
-                + "\n"
-                + resolution_msg
-                + ("\nInt func: " if not int_rand else "\nInt func (randomly chosen): ")
-                + int_func_input
-                + (
-                    "\nSort func: "
-                    if not sort_rand
-                    else "\nSort func (randomly chosen): "
-                )
-                + sort_func_input
-                + "\nArgs: "
-                + (arg_parse_input if arg_parse_input is not None else "No args")
-                + "\nSorted on: "
-                + date_time
-                + "\n\nSorted image: "
-                + link
-                + "\n"
-                + (35 * "-")
+                f"\nStarting image url: {url}\n{resolution_msg}\n"
+                + f'{("Int func: " if not int_rand else "Int func (randomly chosen): ")}{int_func_input}\n'
+                + f'{("Sort func: " if not sort_rand else "Sort func (randomly chosen): ")}{sort_func_input}\n'
+                + f'Args: {(arg_parse_input if arg_parse_input is not None else "No args")}\nSorted on: {date_time}\n\nSorted image: {link}\n{(35 * "-")}'
             )
 
         print("Done!")
         print(f"Link to image: {link}")
     else:
-        print("Not saving config to 'output.txt', as there is no internet.")
-        print("Done!")
+        print("Not saving config to 'output.txt', as there is no internet.\nDone!")
     output_img.show()
 
 
