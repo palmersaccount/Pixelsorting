@@ -24,7 +24,7 @@ def clear():  # clear screen
 
 def has_internet(host: str, port: int, timeout: int) -> bool:
     """
-    Checks for internet. 
+    Checks for internet.
     ------
     :param host: 8.8.8.8 (google-public-dns-a.google.com)
     :param port: 53
@@ -65,19 +65,24 @@ def parse_args_full(
     return full_args
 
 
+black_pixel = (0, 0, 0, 255)  # type: Tuple[int, int, int, int]
+white_pixel = (255, 255, 255, 255)  # type: Tuple[int, int, int, int]
 ##### LAMBDA FUNCTIONS
-imgOpen = lambda url, internet: (
-    Image.open((get(url, stream=True).raw) if internet else url)
-).convert(
+imgOpen = lambda u, i: (Image.open((get(u, stream=True).raw) if i else u)).convert(
     "RGBA"
 )  # type: Any
 Append = lambda l, obj: l.append(obj)
 AppendDataPIL = lambda l, x, y, d: l[y].append(d[x, y])
 AppendDataList = lambda l, x, y, d: l.append(d[y][x])
-AppendPartial = lambda l, y, d: l[y].append(d)
+AppendPartial = lambda l, y, x: l[y].append(x)
 imgPixels = lambda img, x, y, data: img.putpixel((x, y), data[y][x])
 random_width = lambda c: int(c * (1 - rand.random()))
 progressBars = lambda r, d: tqdm(range((r)), desc=("{:30}".format(d)))
+AppendBW = (
+    lambda l, x, y, d, t: AppendPartial(l, y, white_pixel)
+    if (lightness(d[y][x]) < t)
+    else AppendPartial(l, y, black_pixel)
+)  # type: Any
 
 
 ##### SORTING PIXELS
@@ -291,13 +296,13 @@ def sort_image(
 ##### UTIL
 id_generator = lambda n: "".join(
     rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(n)
-)  # type: int
+)  # type: str
 
 
 def crop_to(image_to_crop: Any, args: Any) -> Any:
     """
-    Crops image to the size of a reference image. This function assumes 
-    that the relevant image is located in the center and you want to crop away 
+    Crops image to the size of a reference image. This function assumes
+    that the relevant image is located in the center and you want to crop away
     equal sizes on both the left and right as well on both the top and bottom.
     :param image_to_crop
     :param reference_image
@@ -316,10 +321,6 @@ def crop_to(image_to_crop: Any, args: Any) -> Any:
 
 
 ##### INTERVALS
-black_pixel = (0, 0, 0, 255)  # type: Tuple[int, int, int, int]
-white_pixel = (255, 255, 255, 255)  # type: Tuple[int, int, int, int]
-
-
 def edge(pixels: List, args: Any) -> List:
     edge_data = (
         imgOpen(args.url, args.internet)
@@ -338,16 +339,10 @@ def edge(pixels: List, args: Any) -> List:
         for x in range(len(pixels[0])):
             AppendDataPIL(filter_pixels, x, y, edge_data)
 
-    AppendBW = (
-        lambda l, x, y: AppendPartial(l, y, white_pixel)
-        if (lightness(filter_pixels[y][x]) < args.bottom_threshold)
-        else AppendPartial(l, y, black_pixel)
-    )  # type: Any
-
     for y in progressBars(len(pixels), "Thresholding..."):
         Append(edge_pixels, [])
         for x in range(len(pixels[0])):
-            AppendBW(edge_pixels, x, y)
+            AppendBW(edge_pixels, x, y, filter_pixels, args.bottom_threshold)
 
     for y in progressBars((len(pixels) - 1, 1, -1), "Cleaning up..."):
         for x in range(len(pixels[0]) - 1, 1, -1):
@@ -415,24 +410,24 @@ def waves(pixels: List, args: Any) -> List:
     return intervals
 
 
-def file_mask(pixels: List, args: Any) -> List:  # NEEDS TO BE UPDATED
+def file_mask(pixels: List, args: Any) -> List:
     intervals = []
     file_pixels = []
 
     int_file = input(
-        "Please enter the URL of an int file or hit enter to randomly select one:\n"
+        "Please enter the URL of an int file:\n"
+        if args.internet
+        else "Please input the local int file:\n"
     )
-    img = Image.open(get(int_file, stream=True).raw)
-    img = img.convert("RGBA")
-    img = img.rotate(args.angle, expand=True)
-    data = img.load()
-    for y in range(img.size[1]):
-        file_pixels.append([])
-        for x in range(img.size[0]):
-            file_pixels[y].append(data[x, y])
+    img = imgOpen(int_file, args.internet).rotate(args.angle, expand=True)
+    data = img.load()  # type: Any
+    size0, size1 = img.size
+    for y in progressBars(size1, "Defining edges..."):
+        Append(file_pixels, [])
+        for x in range(size0):
+            AppendDataPIL(file_pixels, x, y, data)
 
-    print("Cleaning up edges...")
-    for y in range(len(pixels) - 1, 1, -1):
+    for y in progressBars((len(pixels) - 1, 1, -1), "Cleaning up edges..."):
         for x in range(len(pixels[0]) - 1, 1, -1):
             if (
                 file_pixels[y][x] == black_pixel
@@ -440,47 +435,46 @@ def file_mask(pixels: List, args: Any) -> List:  # NEEDS TO BE UPDATED
             ):
                 file_pixels[y][x] = white_pixel
 
-    print("Defining intervals...")
-    for y in range(len(pixels)):
-        intervals.append([])
+    for y in progressBars(len(pixels), "Defining intervals..."):
+        Append(intervals, [])
         for x in range(len(pixels[0])):
             if file_pixels[y][x] == black_pixel:
-                intervals[y].append(x)
-        intervals[y].append(len(pixels[0]))
+                AppendPartial(intervals, y, x)
+        AppendPartial(intervals, y, len(pixels[0]))
 
     return intervals
 
 
-def file_edges(pixels: List, args: Any) -> List:  # NEEDS TO BE UPDATED
-    int_file = input("Please enter the URL of an int file:\n")
-    img = Image.open(get(int_file, stream=True).raw)
-    img = img.rotate(args.angle, expand=True)
-    img = img.resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
-    edges = img.filter(ImageFilter.FIND_EDGES)
-    edges = edges.convert("RGBA")
-    edge_data = edges.load()
+def file_edges(pixels: List, args: Any) -> List:
+    int_file = input(
+        "Please enter the URL of an int file:\n"
+        if args.internet
+        else "Please enter the local int file:\n"
+    )
+    edge_data = (
+        imgOpen(int_file, args.internet)
+        .rotate(args.angle, expand=True)
+        .resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
+        .filter(ImageFilter.FIND_EDGES)
+        .convert("RGBA")
+        .load()
+    )
 
     filter_pixels = []
     edge_pixels = []
     intervals = []
 
-    print("Defining edges...")
-    for y in range(img.size[1]):
-        filter_pixels.append([])
-        for x in range(img.size[0]):
-            filter_pixels[y].append(edge_data[x, y])
+    for y in progressBars(len(pixels), "Defining edges..."):
+        Append(filter_pixels, [])
+        for x in range(len(pixels(0))):
+            AppendDataPIL(filter_pixels, x, y, edge_data)
 
-    print("Thresholding...")
-    for y in range(len(pixels)):
-        edge_pixels.append([])
+    for y in progressBars(len(pixels), "Thresholding..."):
+        Append(edge_pixels, [])
         for x in range(len(pixels[0])):
-            if lightness(filter_pixels[y][x]) < args.bottom_threshold:
-                edge_pixels[y].append(white_pixel)
-            else:
-                edge_pixels[y].append(black_pixel)
+            AppendBW(edge_pixels, x, y, filter_pixels, args.bottom_threshold)
 
-    print("Cleaning up edges...")
-    for y in range(len(pixels) - 1, 1, -1):
+    for y in progressBars((len(pixels) - 1, 1, -1), "Cleaning up edges..."):
         for x in range(len(pixels[0]) - 1, 1, -1):
             if (
                 edge_pixels[y][x] == black_pixel
@@ -488,13 +482,12 @@ def file_edges(pixels: List, args: Any) -> List:  # NEEDS TO BE UPDATED
             ):
                 edge_pixels[y][x] = white_pixel
 
-    print("Defining intervals...")
-    for y in range(len(pixels)):
-        intervals.append([])
+    for y in progressBars(len(pixels), "Defining intervals..."):
+        Append(intervals, [])
         for x in range(len(pixels[0])):
             if edge_pixels[y][x] == black_pixel:
-                intervals[y].append(x)
-        intervals[y].append(len(pixels[0]))
+                AppendPartial(intervals, y, x)
+        AppendPartial(intervals, y, len(pixels[0]))
     return intervals
 
 
