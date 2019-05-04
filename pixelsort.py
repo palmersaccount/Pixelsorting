@@ -77,9 +77,9 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
     """
     pixels = []  # type: List
     for y in ProgressBars(size1, msg):
-            Append(pixels, [])
-            for x in range(size0):
-                AppendDataPIL(pixels, x, y, data)
+        Append(pixels, [])
+        for x in range(size0):
+            AppendDataPIL(pixels, x, y, data)
     return pixels
 
 
@@ -91,20 +91,36 @@ ImgOpen = lambda u, i: (Image.open((get(u, stream=True).raw) if i else u)).conve
     "RGBA"
 )  # type: Callable[[str, bool], Any]
 Append = lambda l, obj: l.append(obj)  # type: Callable[[Any, Any], Any]
-AppendDataPIL = lambda l, x, y, d: l[y].append(d[x, y])  # type: Callable[[List, int, int, Any], List]
-AppendDataList = lambda l, x, y, d: l.append(d[y][x])  # type: Callable[[List, int, int, Any], Any]
+AppendDataPIL = lambda l, x, y, d: l[y].append(
+    d[x, y]
+)  # type: Callable[[List, int, int, Any], List]
+AppendDataList = lambda l, x, y, d: l.append(
+    d[y][x]
+)  # type: Callable[[List, int, int, Any], Any]
 AppendPartial = lambda l, y, x: l[y].append(x)  # type: Callable[[List, int, Any], List]
-ImgPixels = lambda img, x, y, data: img.putpixel((x, y), data[y][x])  # type: Callable[[Any, int, int, Any], Any]
+ImgPixels = lambda img, x, y, data: img.putpixel(
+    (x, y), data[y][x]
+)  # type: Callable[[Any, int, int, Any], Any]
 RandomWidth = lambda c: int(c * (1 - rand.random()))  # type: Callable[[int], int]
-ProgressBars = lambda r, d: tqdm(range((r)), desc=("{:30}".format(d)))  # type: Callable[[Any, str], Any]
-AppendBW = (lambda l, x, y, d, t: AppendPartial(l, y, white_pixel) if (lightness(d[y][x]) < t) else AppendPartial(l, y, black_pixel))  # type: Callable[[List, int, int, Any, float], List]
+ProgressBars = lambda r, d: tqdm(
+    range((r)), desc=("{:30}".format(d))
+)  # type: Callable[[Any, str], Any]
+AppendBW = (
+    lambda l, x, y, d, t: AppendPartial(l, y, white_pixel)
+    if (lightness(d[y][x]) < t)
+    else AppendPartial(l, y, black_pixel)
+)  # type: Callable[[List, int, int, Any, float], List]
 
 
 ##### SORTING PIXELS
-lightness = lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0  # type: Callable[[Any], float]
+lightness = (
+    lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0
+)  # type: Callable[[Any], float]
 intensity = lambda p: p[0] + p[1] + p[2]  # type: Callable[[Any], float]
 hue = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0  # type: Callable[[Any], float]
-saturation = lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0  # type: Callable[[Any], float]
+saturation = (
+    lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0
+)  # type: Callable[[Any], float]
 minimum = lambda p: min(p[0], p[1], p[2])  # type: Callable[[Any], float]
 
 
@@ -277,7 +293,9 @@ def read_preset(
 
 
 ##### SORTER
-def sort_image(pixels: List, intervals: List, args: Any, sorting_function: Callable[[Any], float]) -> List:
+def sort_image(
+    pixels: List, intervals: List, args: Any, sorting_function: Callable[[Any], float]
+) -> List:
     """
     Sorts the image.
     -----
@@ -288,7 +306,9 @@ def sort_image(pixels: List, intervals: List, args: Any, sorting_function: Calla
     :returns: List of sorted pixels.
     """
     sorted_pixels = []  # type: List
-    sort_interval = lambda l, func: [] if l == [] else sorted(l, key=func)  # type: Callable[[List[Any], Callable[[Any], float]], List[Any]]
+    sort_interval = (
+        lambda l, func: [] if l == [] else sorted(l, key=func)
+    )  # type: Callable[[List[Any], Callable[[Any], float]], List[Any]]
     for y in ProgressBars(len(pixels), "Sorting..."):
         row = []  # type: List
         x_min = 0
@@ -343,7 +363,9 @@ def edge(pixels: Any, args: Any) -> List:
         .load()
     )  # type: Any
 
-    filter_pixels = PixelAppend(len(pixels), len(pixels[0]), edge_data, "Finding threshold...")
+    filter_pixels = PixelAppend(
+        len(pixels), len(pixels[0]), edge_data, "Finding threshold..."
+    )
     edge_pixels = []  # type: List
     intervals = []  # type: List
 
@@ -463,7 +485,9 @@ def file_edges(pixels: Any, args: Any) -> List:
         .load()
     )  # type: Any
 
-    filter_pixels = PixelAppend(len(pixels), len(pixels[0]), edge_data, "Defining edges...")
+    filter_pixels = PixelAppend(
+        len(pixels), len(pixels[0]), edge_data, "Defining edges..."
+    )
     edge_pixels = []  # type: List
     intervals = []  # type: List
 
@@ -959,7 +983,6 @@ def main():
 
     size0, size1 = input_img.size
     pixels = PixelAppend(size1, size0, data, "Getting pixels...")
-
 
     if shuffled or snapped:
         if snapped:
