@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from string import ascii_lowercase, ascii_uppercase, digits
-from typing import List, Tuple, Any
+from typing import List, Tuple, Any, Callable
 from datetime import datetime
 from colorsys import rgb_to_hsv
 import random as rand
@@ -65,37 +65,51 @@ def parse_args_full(
     return full_args
 
 
+def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
+    """
+    Making a 3D array of pixel values from a PIL image.
+    -----
+    :param size1: img.size[1]/height
+    :param size0: img.size[0]/width
+    :param data: PixelAccess object from img.load()
+    :param msg: Message for the progress bar
+    :returns: 3D array of pixel values.
+    """
+    pixels = []  # type: List
+    for y in ProgressBars(size1, msg):
+            Append(pixels, [])
+            for x in range(size0):
+                AppendDataPIL(pixels, x, y, data)
+    return pixels
+
+
 black_pixel = (0, 0, 0, 255)  # type: Tuple[int, int, int, int]
 white_pixel = (255, 255, 255, 255)  # type: Tuple[int, int, int, int]
 
 ##### LAMBDA FUNCTIONS
 ImgOpen = lambda u, i: (Image.open((get(u, stream=True).raw) if i else u)).convert(
     "RGBA"
-)  # type: Any
-Append = lambda l, obj: l.append(obj)  # type: List
-AppendDataPIL = lambda l, x, y, d: l[y].append(d[x, y])  # type: Any
-AppendDataList = lambda l, x, y, d: l.append(d[y][x])  # type: List
-AppendPartial = lambda l, y, x: l[y].append(x)  # type: List
-ImgPixels = lambda img, x, y, data: img.putpixel((x, y), data[y][x])  # type: Any
-RandomWidth = lambda c: int(c * (1 - rand.random()))  # type: Int
-ProgressBars = lambda r, d: tqdm(range((r)), desc=("{:30}".format(d)))  # type: Any
-AppendBW = (
-    lambda l, x, y, d, t: AppendPartial(l, y, white_pixel)
-    if (lightness(d[y][x]) < t)
-    else AppendPartial(l, y, black_pixel)
-)  # type: Any
+)  # type: Callable[[str, bool], Any]
+Append = lambda l, obj: l.append(obj)  # type: Callable[[Any, Any], Any]
+AppendDataPIL = lambda l, x, y, d: l[y].append(d[x, y])  # type: Callable[[List, int, int, Any], List]
+AppendDataList = lambda l, x, y, d: l.append(d[y][x])  # type: Callable[[List, int, int, Any], Any]
+AppendPartial = lambda l, y, x: l[y].append(x)  # type: Callable[[List, int, Any], List]
+ImgPixels = lambda img, x, y, data: img.putpixel((x, y), data[y][x])  # type: Callable[[Any, int, int, Any], Any]
+RandomWidth = lambda c: int(c * (1 - rand.random()))  # type: Callable[[int], int]
+ProgressBars = lambda r, d: tqdm(range((r)), desc=("{:30}".format(d)))  # type: Callable[[Any, str], Any]
+AppendBW = (lambda l, x, y, d, t: AppendPartial(l, y, white_pixel) if (lightness(d[y][x]) < t) else AppendPartial(l, y, black_pixel))  # type: Callable[[List, int, int, Any, float], List]
 
 
 ##### SORTING PIXELS
-lightness = lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0
-intensity = lambda p: p[0] + p[1] + p[2]
-hue = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0
-saturation = lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0
-minimum = lambda p: min(p[0], p[1], p[2])
+lightness = lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0  # type: Callable[[Any], float]
+intensity = lambda p: p[0] + p[1] + p[2]  # type: Callable[[Any], float]
+hue = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0  # type: Callable[[Any], float]
+saturation = lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0  # type: Callable[[Any], float]
+minimum = lambda p: min(p[0], p[1], p[2])  # type: Callable[[Any], float]
 
 
 ###### READING FUNCTIONS
-def read_image_input(url_input: str, internet: bool) -> Tuple[str, bool, bool, str]:
+def read_image_input(url_input: str, internet: bool) -> Tuple[str, bool, bool, Any]:
     """
     Reading the image input.
     -----
@@ -259,13 +273,11 @@ def read_preset(
         }[preset_input]
     except KeyError:
         print("[WARNING] Invalid preset name, no preset will be applied")
-        return None, None, None, False, None, None, False, False
+        return "", "", "", False, False, False, False, False
 
 
 ##### SORTER
-def sort_image(
-    pixels: List, intervals: List, args: List, sorting_function: Any
-) -> List:
+def sort_image(pixels: List, intervals: List, args: Any, sorting_function: Callable[[Any], float]) -> List:
     """
     Sorts the image.
     -----
@@ -275,13 +287,13 @@ def sort_image(
     :param sorting_function: Sorting function used in sorting of pixels.
     :returns: List of sorted pixels.
     """
-    sorted_pixels = []
-    sort_interval = lambda l, func: [] if l == [] else sorted(l, key=func)
+    sorted_pixels = []  # type: List
+    sort_interval = lambda l, func: [] if l == [] else sorted(l, key=func)  # type: Callable[[List[Any], Callable[[Any], float]], List[Any]]
     for y in ProgressBars(len(pixels), "Sorting..."):
-        row = []
+        row = []  # type: List
         x_min = 0
         for x_max in intervals[y]:
-            interval = []
+            interval = []  # type: List
             for x in range(x_min, x_max):
                 AppendDataList(interval, x, y, pixels)
             if rand.randint(0, 100) >= args.randomness:
@@ -297,7 +309,7 @@ def sort_image(
 ##### UTIL
 id_generator = lambda n: "".join(
     rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(n)
-)  # type: str
+)  # type: Callable[[int], str]
 
 
 def crop_to(image_to_crop: Any, args: Any) -> Any:
@@ -322,7 +334,7 @@ def crop_to(image_to_crop: Any, args: Any) -> Any:
 
 
 ##### INTERVALS
-def edge(pixels: List, args: Any) -> List:
+def edge(pixels: Any, args: Any) -> List:
     edge_data = (
         ImgOpen(args.url, args.internet)
         .rotate(args.angle, expand=True)
@@ -331,14 +343,9 @@ def edge(pixels: List, args: Any) -> List:
         .load()
     )  # type: Any
 
-    filter_pixels = []
-    edge_pixels = []
-    intervals = []
-
-    for y in ProgressBars(len(pixels), "Finding threshold..."):
-        Append(filter_pixels, [])
-        for x in range(len(pixels[0])):
-            AppendDataPIL(filter_pixels, x, y, edge_data)
+    filter_pixels = PixelAppend(len(pixels), len(pixels[0]), edge_data, "Finding threshold...")
+    edge_pixels = []  # type: List
+    intervals = []  # type: List
 
     for y in ProgressBars(len(pixels), "Thresholding..."):
         Append(edge_pixels, [])
@@ -362,8 +369,8 @@ def edge(pixels: List, args: Any) -> List:
     return intervals
 
 
-def threshold(pixels: List, args: Any) -> List:
-    intervals = []
+def threshold(pixels: Any, args: Any) -> List:
+    intervals = []  # type: List
 
     for y in ProgressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [])
@@ -377,8 +384,8 @@ def threshold(pixels: List, args: Any) -> List:
     return intervals
 
 
-def random(pixels: List, args: Any) -> List:
-    intervals = []
+def random(pixels: Any, args: Any) -> List:
+    intervals = []  # type: List
 
     for y in ProgressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [])
@@ -394,8 +401,8 @@ def random(pixels: List, args: Any) -> List:
     return intervals
 
 
-def waves(pixels: List, args: Any) -> List:
-    intervals = []
+def waves(pixels: Any, args: Any) -> List:
+    intervals = []  # type: List
 
     for y in ProgressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [])
@@ -411,10 +418,7 @@ def waves(pixels: List, args: Any) -> List:
     return intervals
 
 
-def file_mask(pixels: List, args: Any) -> List:
-    intervals = []
-    file_pixels = []
-
+def file_mask(pixels: Any, args: Any) -> List:
     int_file = input(
         "Please enter the URL of an int file:\n"
         if args.internet
@@ -422,11 +426,9 @@ def file_mask(pixels: List, args: Any) -> List:
     )
     img = ImgOpen(int_file, args.internet).rotate(args.angle, expand=True)
     data = img.load()  # type: Any
-    size0, size1 = img.size
-    for y in ProgressBars(size1, "Defining edges..."):
-        Append(file_pixels, [])
-        for x in range(size0):
-            AppendDataPIL(file_pixels, x, y, data)
+
+    file_pixels = PixelAppend(len(pixels), len(pixels[0]), data, "Defining edges...")
+    intervals = []  # type: List
 
     for y in ProgressBars((len(pixels) - 1, 1, -1), "Cleaning up edges..."):
         for x in range(len(pixels[0]) - 1, 1, -1):
@@ -446,7 +448,7 @@ def file_mask(pixels: List, args: Any) -> List:
     return intervals
 
 
-def file_edges(pixels: List, args: Any) -> List:
+def file_edges(pixels: Any, args: Any) -> List:
     int_file = input(
         "Please enter the URL of an int file:\n"
         if args.internet
@@ -459,16 +461,11 @@ def file_edges(pixels: List, args: Any) -> List:
         .filter(ImageFilter.FIND_EDGES)
         .convert("RGBA")
         .load()
-    )
+    )  # type: Any
 
-    filter_pixels = []
-    edge_pixels = []
-    intervals = []
-
-    for y in ProgressBars(len(pixels), "Defining edges..."):
-        Append(filter_pixels, [])
-        for x in range(len(pixels(0))):
-            AppendDataPIL(filter_pixels, x, y, edge_data)
+    filter_pixels = PixelAppend(len(pixels), len(pixels[0]), edge_data, "Defining edges...")
+    edge_pixels = []  # type: List
+    intervals = []  # type: List
 
     for y in ProgressBars(len(pixels), "Thresholding..."):
         Append(edge_pixels, [])
@@ -492,22 +489,22 @@ def file_edges(pixels: List, args: Any) -> List:
     return intervals
 
 
-def snap_sort(pixels: List, args: Any) -> List:
+def snap_sort(pixels: Any, args: Any) -> List:
     input_img = ImgOpen("thanos_img.png", False)
     print("Opening the soul stone...")
-    pixels = np.asarray(input_img)  # type: List
+    pixels_snap = np.asarray(input_img)  # type: Any
 
     print("Preparing for balance...")
     nx, ny = input_img.size
     xy = np.mgrid[:nx, :ny].reshape(2, -1).T  # type: Any
-    rounded = round(int(xy.shape[0] / 2), 0)  # type: int
+    rounded = int(round(int(xy.shape[0] / 2), 0))  # type: int
 
     numbers_that_dont_feel_so_good = xy.take(
         np.random.choice(xy.shape[0], rounded, replace=False), axis=0
     )  # type: Any
     print(f'Number of those worthy of the sacrifice: {("{:,}".format(rounded))}')
 
-    pixels.setflags(write=1)
+    pixels_snap.setflags(write=1)
     for i in ProgressBars(rounded, "Snapping..."):
         pixels[numbers_that_dont_feel_so_good[i][0]][
             numbers_that_dont_feel_so_good[i][1]
@@ -519,13 +516,8 @@ def snap_sort(pixels: List, args: Any) -> List:
 
     snapped_img = ImgOpen("snapped_pixels.png", False)
     data = input_img.load()  # type: Any
-    pixels = []
     size0, size1 = snapped_img.size
-
-    for y in ProgressBars(size1, "Returning saved..."):
-        Append(pixels, [])
-        for x in range(size0):
-            AppendDataPIL(pixels, x, y, data)
+    pixels = PixelAppend(size1, size0, data, "Returning saved...")
 
     os.remove("snapped_pixels.png")
     os.remove("thanos_img.png")
@@ -536,36 +528,31 @@ def snap_sort(pixels: List, args: Any) -> List:
     return pixels
 
 
-def shuffle_total(pixels: List, args: Any) -> List:
+def shuffle_total(pixels: Any, args: Any) -> List:
     print("Creating array from image...")
     input_img = ImgOpen(args.url, args.internet)
     height = input_img.size[1]  # type: int
-    shuffle = np.array(input_img)  # type: ndarray
+    shuffle = np.array(input_img)  # type: Any
 
     for i in ProgressBars(int(height), "Shuffling image..."):
         np.random.shuffle(shuffle[i])
     shuffled_out = Image.fromarray(shuffle, "RGB")  # type: Any
     shuffled_out.save("shuffled.png")
     shuffled_img = ImgOpen("shuffled.png", False)
-    data = shuffled_img.load()  # type: any
+    data = shuffled_img.load()  # type: Any
 
-    pixels = []
     size0, size1 = input_img.size
-
-    for y in ProgressBars(size1, "Recreating image..."):
-        Append(pixels, [])
-        for x in range(size0):
-            AppendDataPIL(pixels, x, y, data)
+    pixels = PixelAppend(size1, size0, data, "Recreating image...")
 
     os.remove("shuffled.png")
     return pixels
 
 
-def shuffled_axis(pixels: List, args: Any) -> List:
+def shuffled_axis(pixels: Any, args: Any) -> List:
     print("Creating array from image...")
     input_img = ImgOpen(args.url, args.internet)
     height = input_img.size[1]  # type: int
-    shuffle = np.array(input_img)  # type: ndarray
+    shuffle = np.array(input_img)  # type: Any
 
     for _ in ProgressBars(int(height), "Shuffling image..."):
         np.random.shuffle(shuffle)
@@ -573,19 +560,16 @@ def shuffled_axis(pixels: List, args: Any) -> List:
     shuffled_out.save("shuffled.png")
     shuffled_img = ImgOpen("shuffled.png", False)
     data = shuffled_img.load()  # type: Any
-    pixels = []
-    size0, size1 = input_img.size
 
-    for y in ProgressBars(size1, "Recreating image..."):
-        Append(pixels, [])
-        for x in range(size0):
-            AppendDataPIL(pixels, x, y, data)
+    size0, size1 = input_img.size
+    pixels = PixelAppend(size1, size0, data, "Recreating image...")
+
     os.remove("shuffled.png")
     return pixels
 
 
-def none(pixels: List, args: Any) -> List:
-    intervals = []
+def none(pixels: Any, args: Any) -> List:
+    intervals = []  # type: List
     for y in ProgressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [len(pixels[y])])
     return intervals
@@ -597,11 +581,12 @@ def main():
     Pixelsorting an image.
     """
     clear()
-    # remove old image files that didn'tget deleted before
-    os.remove("image.png") if os.path.isfile("image.png") else None
-    os.remove("thanos_img.png") if os.path.isfile("thanos_img.png") else None
-    os.remove("shuffled.png") if os.path.isfile("shuffled.png") else None
-    os.remove("snapped_pixels.png") if os.path.isfile("snapped_pixels.png") else None
+    # remove old image files that didn't get deleted before
+    removeOld = lambda f: os.remove(f) if os.path.isfile(f) else None
+    removeOld("image.png")
+    removeOld("thanos_img.png")
+    removeOld("shuffled.png")
+    removeOld("snapped_pixels.png")
 
     print(
         "Pixel sorting based on web hosted images.\nMost of the backend is sourced from https://github.com/satyarth/pixelsort"
@@ -972,13 +957,9 @@ def main():
     print("Getting data...")
     data = input_img.load()  # type: Any
 
-    pixels = []
     size0, size1 = input_img.size
+    pixels = PixelAppend(size1, size0, data, "Getting pixels...")
 
-    for y in ProgressBars(size1, "Getting pixels..."):
-        Append(pixels, [])
-        for x in range(size0):
-            AppendDataPIL(pixels, x, y, data)
 
     if shuffled or snapped:
         if snapped:
