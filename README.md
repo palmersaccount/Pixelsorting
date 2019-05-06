@@ -11,14 +11,13 @@ All credit goes to [this repo](https://github.com/satyarth/pixelsort) for all th
 
 ### Dependencies
 
-Requires Pillow. `pip install Pillow` should work. If not, see [here](https://pillow.readthedocs.org/en/3.0.0/installation.html#linux-installation) for details. 
+Requires Pillow. `pip install Pillow` should work. If not, see [here](https://pillow.readthedocs.org/en/3.0.0/installation.html#linux-installation) for details.
 
-Requires requests. `pip install requests` 
+Requires requests. `pip install requests`
 
 Requires tqdm. `pip install tqdm`
 
-Requires pyimgur. `pip install pyimgur`
-
+Requires numpy. `pip install numpy`
 
 There is also a requirements file which pretty much does the same via `pip install -r requirements.txt`.
 

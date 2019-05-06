@@ -1,5 +1,4 @@
 Pillow
-pyimgur
 requests
 numpy
 tqdm
