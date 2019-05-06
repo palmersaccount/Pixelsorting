@@ -7,9 +7,9 @@
 
 Have a look at [this post](http://satyarth.me/articles/pixel-sorting/) or [/r/pixelsorting](http://www.reddit.com/r/pixelsorting/top/)
 
-### Dependencies
+All credit goes to [this repo](https://github.com/satyarth/pixelsort) for all the basic parts of this program! This program wouldn't be anything without it.
 
-Tested with python3. Should work with python2 as well.
+### Dependencies
 
 Requires Pillow. `pip install Pillow` should work. If not, see [here](https://pillow.readthedocs.org/en/3.0.0/installation.html#linux-installation) for details. 
 
