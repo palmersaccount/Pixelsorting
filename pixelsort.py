@@ -103,7 +103,7 @@ ImgPixels = lambda img, x, y, data: img.putpixel(
 )  # type: Callable[[Any, int, int, Any], Any]
 RandomWidth = lambda c: int(c * (1 - rand.random()))  # type: Callable[[int], int]
 ProgressBars = lambda r, d: tqdm(
-    range((r)), desc=("{:30}".format(d))
+    range(r), desc=("{:30}".format(d))
 )  # type: Callable[[Any, str], Any]
 AppendBW = (
     lambda l, x, y, d, t: AppendPartial(l, y, white_pixel)
@@ -377,7 +377,9 @@ def edge(pixels: Any, args: Any) -> List:
         for x in range(len(pixels[0])):
             AppendBW(edge_pixels, x, y, filter_pixels, args.bottom_threshold)
 
-    for y in ProgressBars((len(pixels) - 1, 1, -1), "Cleaning up..."):
+    for y in tqdm(
+        range(len(pixels) - 1, 1, -1), desc=("{:30}".format("Cleaning up..."))
+    ):
         for x in range(len(pixels[0]) - 1, 1, -1):
             if (
                 edge_pixels[y][x] == black_pixel
@@ -581,7 +583,7 @@ def shuffled_axis(pixels: Any, args: Any) -> List:
     height = input_img.size[1]  # type: int
     shuffle = np.array(input_img)  # type: Any
 
-    for _ in ProgressBars(int(height), "Shuffling image..."):
+    for _ in ProgressBars(height, "Shuffling image..."):
         np.random.shuffle(shuffle)
     shuffled_out = Image.fromarray(shuffle, "RGB")  # type: Any
     shuffled_out.save("shuffled.png")
@@ -814,6 +816,12 @@ def main():
         site_msg = f"Internet not connected, saving locally as {output_image_path}"
     clear()
 
+    int_func_choices = "Randomness, Angle, " + (
+        "Upper threshold, Char. length"
+        if int_func_input in ["random", "waves"]
+        else "Lower threshold"
+    )
+
     # args
     if not preset_true:
         needs_help = input("Do you need help with args? (y/n)\n")
@@ -821,26 +829,28 @@ def main():
         if needs_help in ["y", "yes", "1"]:
             print(
                 f"{image_msg}\n{resolution_msg}\n{int_msg}\n{sort_msg}\n{site_msg}\n"
-                + "\nWhat args will you be adding?\n"
-                + f'{("{:21}".format("Parameter"))}{("{:>6}".format("| Flag |"))}{("{:>12}".format("Description"))}\n'
-                + f'{("{:21}".format("---------------------"))}{("{:>6}".format("|------|"))}{("{:>12}".format("------------"))}\n'
-                + f'{("{:21}".format("Randomness"))}{("{:>6}".format("| -r   |"))}What percentage of intervals not to sort. 0 by default.\n'
-                + f'{("{:21}".format("Char. length"))}{("{:>6}".format("| -c   |"))}Characteristic length for the random width generator.\n{29 * " "}Used in mode random.\n'
-                + f'{("{:21}".format("Angle"))}{("{:>6}".format("| -a   |"))}Angle at which you\'re pixel sorting in degrees. 0 (horizontal) by default.\n'
-                + f'{("{:21}".format("Threshold (lower)"))}{("{:>6}".format("| -t   |"))}How dark must a pixel be to be considered as a \'border\' for sorting?\n{29 * " "}Takes values from 0-1. 0.25 by default. Used in edges and threshold modes.\n'
-                + f'{("{:21}".format("Threshold (upper)"))}{("{:>6}".format("| -u   |"))}How bright must a pixel be to be considered as a \'border\' for sorting?\n{29 * " "}Takes values from 0-1. 0.8 by default. Used in threshold mode.\n'
+                f"\nWhat args will you be adding?\n"
+                f'{("{:21}".format("Parameter"))}{("{:>6}".format("| Flag |"))}{("{:>12}".format("Description"))}\n'
+                f'{("{:21}".format("---------------------"))}{("{:>6}".format("|------|"))}{("{:>12}".format("------------"))}\n'
+                f'{("{:21}".format("Randomness"))}{("{:>6}".format("| -r   |"))}What percentage of intervals not to sort. 0 by default.\n'
+                f'{("{:21}".format("Char. length"))}{("{:>6}".format("| -c   |"))}Characteristic length for the random width generator.\n{29 * " "}Used in mode random.\n'
+                f'{("{:21}".format("Angle"))}{("{:>6}".format("| -a   |"))}Angle at which you\'re pixel sorting in degrees. 0 (horizontal) by default.\n'
+                f'{("{:21}".format("Threshold (lower)"))}{("{:>6}".format("| -t   |"))}How dark must a pixel be to be considered as a \'border\' for sorting?\n{29 * " "}Takes values from 0-1. 0.25 by default. Used in edges and threshold modes.\n'
+                f'{("{:21}".format("Threshold (upper)"))}{("{:>6}".format("| -u   |"))}How bright must a pixel be to be considered as a \'border\' for sorting?\n{29 * " "}Takes values from 0-1. 0.8 by default. Used in threshold mode.\n'
+                f"Arguments for {int_func_input}: {int_func_choices}\n"
             )
         else:
             print(
                 f"{image_msg}\n{resolution_msg}\n{int_msg}\n{sort_msg}\n{site_msg}\n"
-                + "\nWhat args will you be adding?\n"
-                + f'{("{:21}".format("Parameter"))}{("{:>6}".format("| Flag |"))}\n'
-                + f'{("{:21}".format("---------------------"))}{("{:>6}".format("|------|"))}\n'
-                + f'{("{:21}".format("Randomness"))}{("{:>6}".format("| -r   |"))}\n'
-                + f'{("{:21}".format("Char. length"))}{("{:>6}".format("| -c   |"))}\n'
-                + f'{("{:21}".format("Angle"))}{("{:>6}".format("| -a   |"))}\n'
-                + f'{("{:21}".format("Threshold (lower)"))}{("{:>6}".format("| -t   |"))}\n'
-                + f'{("{:21}".format("Threshold (upper)"))}{("{:>6}".format("| -u   |"))}\n'
+                f"\nWhat args will you be adding?\n"
+                f'{("{:21}".format("Parameter"))}{("{:>6}".format("| Flag |"))}\n'
+                f'{("{:21}".format("---------------------"))}{("{:>6}".format("|------|"))}\n'
+                f'{("{:21}".format("Randomness"))}{("{:>6}".format("| -r   |"))}\n'
+                f'{("{:21}".format("Char. length"))}{("{:>6}".format("| -c   |"))}\n'
+                f'{("{:21}".format("Angle"))}{("{:>6}".format("| -a   |"))}\n'
+                f'{("{:21}".format("Threshold (lower)"))}{("{:>6}".format("| -t   |"))}\n'
+                f'{("{:21}".format("Threshold (upper)"))}{("{:>6}".format("| -u   |"))}\n'
+                f"Arguments for {int_func_input}: {int_func_choices}\n"
             )
         arg_parse_input = input("\nArgs: ")
         clear()
