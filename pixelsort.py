@@ -135,8 +135,11 @@ def read_image_input(url_input: str, internet: bool) -> Tuple[str, bool, bool, A
     """
     try:
         if internet:
-            ImgOpen(url_input, internet)
-            return url_input, True, False, None
+            if url_input in ["", " ", "0", "1", "2", "3", "4", "5", "6"]:
+                raise IOError
+            else:
+                ImgOpen(url_input, internet)
+                return url_input, True, False, None
         else:
             if url_input in ["", " "]:
                 url = "images/default.jpg"
@@ -529,19 +532,19 @@ def snap_sort(pixels: Any, args: Any) -> List:
     print(f'Number of those worthy of the sacrifice: {("{:,}".format(rounded))}')
 
     pixels_snap.setflags(write=1)
-    for i in ProgressBars(rounded, "Snapping..."):
-        pixels[numbers_that_dont_feel_so_good[i][0]][
+    for i in ProgressBars(len(numbers_that_dont_feel_so_good), "Snapping..."):
+        pixels_snap[numbers_that_dont_feel_so_good[i][0]][
             numbers_that_dont_feel_so_good[i][1]
         ] = [0, 0, 0, 0]
 
     print("Sorted perfectly in half.")
-    feel_better = Image.fromarray(pixels, "RGBA")  # type: Any
+    feel_better = Image.fromarray(pixels_snap, "RGBA")  # type: Any
     feel_better.save("snapped_pixels.png")
 
     snapped_img = ImgOpen("snapped_pixels.png", False)
-    data = input_img.load()  # type: Any
+    data = snapped_img.load()  # type: Any
     size0, size1 = snapped_img.size
-    pixels = PixelAppend(size1, size0, data, "Returning saved...")
+    pixels_return = PixelAppend(size1, size0, data, "Returning saved...")
 
     os.remove("snapped_pixels.png")
     os.remove("thanos_img.png")
@@ -549,7 +552,7 @@ def snap_sort(pixels: Any, args: Any) -> List:
         f"{('///' * 15)}\nPerfectly balanced, as all things should be.\n{('///' * 15)}"
     )
 
-    return pixels
+    return pixels_return
 
 
 def shuffle_total(pixels: Any, args: Any) -> List:
@@ -922,7 +925,11 @@ def main():
         default=15,
     )
     parse.add_argument(
-        "-y", "--internet", type=bool, help="Is internet connected or not", default=True
+        "-y",
+        "--internet",
+        type=bool,
+        help="Is internet connected or not? Boolean.",
+        default=True,
     )
 
     # add a space to start of arg_parse_in, used for splitting
@@ -993,7 +1000,7 @@ def main():
             )
             thanos_img = Image.new("RGBA", input_img.size)
             size0, size1 = thanos_img.size
-            for y in ProgressBars(size1, "Finding the infinity stones..."):
+            for y in ProgressBars(size1, "The end is inevitable..."):
                 for x in range(size0):
                     ImgPixels(thanos_img, x, y, sorted_pixels)
             thanos_img.save("thanos_img.png")
