@@ -17,7 +17,7 @@ from tqdm import tqdm
 import numpy as np
 
 
-##### MISC FUNCTIONS
+# MISC FUNCTIONS #
 def clear():  # clear screen
     return os.system("cls" if os.name == "nt" else "clear")
 
@@ -86,7 +86,7 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
 black_pixel = (0, 0, 0, 255)  # type: Tuple[int, int, int, int]
 white_pixel = (255, 255, 255, 255)  # type: Tuple[int, int, int, int]
 
-##### LAMBDA FUNCTIONS
+# LAMBDA FUNCTIONS #
 ImgOpen = lambda u, i: (Image.open((get(u, stream=True).raw) if i else u)).convert(
     "RGBA"
 )  # type: Callable[[str, bool], Any]
@@ -112,7 +112,7 @@ AppendBW = (
 )  # type: Callable[[List, int, int, Any, float], List]
 
 
-##### SORTING PIXELS
+# SORTING PIXELS #
 lightness = (
     lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0
 )  # type: Callable[[Any], float]
@@ -124,7 +124,7 @@ saturation = (
 minimum = lambda p: min(p[0], p[1], p[2])  # type: Callable[[Any], float]
 
 
-###### READING FUNCTIONS
+# READING FUNCTIONS #
 def read_image_input(url_input: str, internet: bool) -> Tuple[str, bool, bool, Any]:
     """
     Reading the image input.
@@ -295,7 +295,7 @@ def read_preset(
         return "", "", "", False, False, False, False, False
 
 
-##### SORTER
+# SORTER #
 def sort_image(
     pixels: List, intervals: List, args: Any, sorting_function: Callable[[Any], float]
 ) -> List:
@@ -310,7 +310,7 @@ def sort_image(
     """
     sorted_pixels = []  # type: List
     sort_interval = (
-        lambda l, func: [] if l == [] else sorted(l, key=func)
+        lambda lst, func: [] if lst == [] else sorted(lst, key=func)
     )  # type: Callable[[List[Any], Callable[[Any], float]], List[Any]]
     for y in ProgressBars(len(pixels), "Sorting..."):
         row = []  # type: List
@@ -329,7 +329,7 @@ def sort_image(
     return sorted_pixels
 
 
-##### UTIL
+# UTIL #
 id_generator = lambda n: "".join(
     rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(n)
 )  # type: Callable[[int], str]
@@ -356,7 +356,7 @@ def crop_to(image_to_crop: Any, args: Any) -> Any:
     return image_to_crop.crop(box=(int(left), int(upper), int(right), int(lower)))
 
 
-##### INTERVALS
+# INTERVALS #
 def edge(pixels: Any, args: Any) -> List:
     edge_data = (
         ImgOpen(args.url, args.internet)
@@ -602,7 +602,7 @@ def none(pixels: Any, args: Any) -> List:
     return intervals
 
 
-##### MAIN
+# MAIN #
 def main():
     """
     Pixelsorting an image.
@@ -641,7 +641,7 @@ def main():
     input_img = ImgOpen(url, internet)
 
     width, height = input_img.size
-    resolution_msg = f"Resolution: {str(width)}x{str(height)}"
+    resolution_msg = f"Resolution: {width}x{height}"
     image_msg = (
         (
             f"[WARNING] No image url given, using {('random' if url_random else 'chosen')} default image {(random_url if url_random else str(url_input))}"
@@ -653,7 +653,7 @@ def main():
 
     # preset input
     print(f"{image_msg}\n{resolution_msg}")
-    preset_q = input("\nDo you wish to apply a preset? (y/n)\n")
+    preset_q = input("\nDo you wish to apply a preset? (y/n)\n").lower()
     clear()
     if preset_q in ["y", "yes", "1"]:
         print(
@@ -707,18 +707,6 @@ def main():
             "none",
         ]
         if int_func_input in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]:
-            """int_func_input = {
-                "1": "random",
-                "2": "threshold",
-                "3": "edges",
-                "4": "waves",
-                "5": "snap",
-                "6": "shuffle-total",
-                "7": "shuffle-axis",
-                "8": "file",
-                "9": "file-edges",
-                "10": "none",
-            }[int_func_input]"""
             int_func_input = int_func_options[int(int_func_input) - 1]
             int_rand = False
         elif int_func_input in ["11", "random select"]:
@@ -1048,9 +1036,10 @@ def main():
         with open("output.txt", "a") as f:
             f.write(
                 f"\nStarting image url: {url}\n{resolution_msg}\n"
-                + f'{("Int func: " if not int_rand else "Int func (randomly chosen): ")}{int_func_input}\n'
-                + f'{("Sort func: " if not sort_rand else "Sort func (randomly chosen): ")}{sort_func_input}\n'
-                + f'Args: {(arg_parse_input if arg_parse_input is not None else "No args")}\nSorted on: {date_time}\n\nSorted image: {link}\n{(35 * "-")}'
+                f'{("Int func: " if not int_rand else "Int func (randomly chosen): ")}{int_func_input}\n'
+                f'{("Sort func: " if not sort_rand else "Sort func (randomly chosen): ")}{sort_func_input}\n'
+                f'Args: {(arg_parse_input if arg_parse_input is not None else "No args")}\n'
+                f'Sorted on: {date_time}\n\nSorted image: {link}\n{(35 * "-")}'
             )
 
         print("Done!")
