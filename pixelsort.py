@@ -29,7 +29,14 @@ def has_internet(host: str, port: int, timeout: int) -> bool:
     :param host: 8.8.8.8 (google-public-dns-a.google.com)
     :param port: 53
     :param timeout: 3
+
     Service: domain (DNS/TCP)
+
+    Examples
+    ------
+    >>> internet = has_internet("8.8.8.8", 53, 3)
+    >>> print(internet)
+    True
     """
     try:
         socket.setdefaulttimeout(timeout)
@@ -74,6 +81,10 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
     :param data: PixelAccess object from img.load()
     :param msg: Message for the progress bar
     :returns: 3D array of pixel values.
+
+    Example
+    -----
+    >>> pixels = PixelAppend(size1, size0, data, "Appending")
     """
     pixels = []  # type: List
     for y in ProgressBars(size1, msg):
@@ -189,6 +200,12 @@ def read_interval_function(int_func_input: str) -> Any:
     :param int_func_input: A (lowercase) string.
     :returns: Interval function.
     :raises KeyError: String not in selection.
+
+    Example
+    -----
+    >>> interval = read_interval_function("random")
+    >>> print(interval)
+    function<random>
     """
     try:
         return {
@@ -214,6 +231,12 @@ def read_sorting_function(sort_func_input: str) -> Any:
     :param sort_func_input: A (lowercase) string.
     :returns: Sorting function.
     :raises KeyError: String not in selection.
+
+    Example
+    -----
+    >>> sortFunc = read_sorting_function("hue")
+    >>> print(sortFunc)
+    lambda<hue>
     """
     try:
         return {
