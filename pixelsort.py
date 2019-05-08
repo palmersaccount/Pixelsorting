@@ -94,17 +94,18 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
     return pixels
 
 
-def elementary_ca() -> Tuple[Any,str]:
+def elementary_ca(pixels: Any) -> Any:
     """
     Generate images of elementary cellular automata.
     ------
+    :param pixels: 2D list of RGB values.
     :returns: PIL Image object.
     """
     width = rand.randrange(300, 500, 5)  # type: int
     height = rand.randrange(300, 500, 5)  # type: int
-    rulenumber = rand.randrange(10, 30)  # type: int
+    rules = [22, 26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15]  # type: List
+    rulenumber = rules[rand.randrange(0, len(rules))]  # type: int
     scalefactor = rand.randrange(1, 5)  # type: int
-    msg = f'Width: {width}||Height: {height}||Rule #: {rulenumber}||Scale: {scalefactor}'
 
     # Define colors of the output image
     true_pixel = (255, 255, 255)  # type: Tuple[int, int, int]
@@ -146,7 +147,7 @@ def elementary_ca() -> Tuple[Any,str]:
 
     newImg = Image.new("RGB", [width, height])
 
-    print("Creating file image...")
+    print(f"Creating file image..\nRule: {rulenumber}")
     for y in ProgressBars(height, "Placing pixels..."):
         for x in range(width):
             newImg.putpixel(
@@ -157,8 +158,8 @@ def elementary_ca() -> Tuple[Any,str]:
             )
 
     print("File image created!")
-    newImg.save("elementary_ca.png")
-    return newImg, msg
+    newImg.save("eca.png")
+    return newImg
 
 
 black_pixel = (0, 0, 0, 255)  # type: Tuple[int, int, int, int]
@@ -328,7 +329,7 @@ def read_preset(
     :raises KeyError: String not in selection.
     """
     try:
-        # order-- arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped
+        # order-- arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped, file_sorted
         int_func_input = {
             "1": "random",
             "2": "threshold",
@@ -357,12 +358,12 @@ def read_preset(
                 False,
             ),
             "main file": (
-                ("-r 50 -t .65"),
-                "file",
-                sort_func_input[str(rand.randint(1, 5))],
+                ("-r 25 -t .65"),
+                "file-edges",
+                "minimum",
                 True,
                 False,
-                True,
+                False,
                 False,
                 False,
                 True,
@@ -557,7 +558,7 @@ def waves(pixels: Any, args: Any) -> List:
 
 
 def file_mask(pixels: Any, args: Any) -> List:
-    img = elementary_ca()[0].resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
+    img = elementary_ca(pixels).resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
     data = img.load()  # type: Any
 
     file_pixels = PixelAppend(img.size[1], img.size[0], data, "Defining edges...")
@@ -585,7 +586,7 @@ def file_mask(pixels: Any, args: Any) -> List:
 
 def file_edges(pixels: Any, args: Any) -> List:
     edge_data = (
-        elementary_ca()[0]
+        elementary_ca(pixels)
         .rotate(args.angle, expand=True)
         .resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
         .filter(ImageFilter.FIND_EDGES)
@@ -721,7 +722,7 @@ def main():
     removeOld("thanos_img.png")
     removeOld("shuffled.png")
     removeOld("snapped_pixels.png")
-    removeOld("elementary_ca.png")
+    removeOld("eca.png")
 
     print(
         "Pixel sorting based on web hosted images.\nMost of the backend is sourced from https://github.com/satyarth/pixelsort"
@@ -1143,24 +1144,24 @@ def main():
         if file_sorted:
             r = post(
                 "https://api.put.re/upload",
-                files={"file": ("elementary_ca.png", open("elementary_ca.png", "rb"))},
+                files={"file": ("eca.png", open("eca.png", "rb"))},
             )
             output = json.loads(r.text)
             file_link = output["data"]["link"]
             print("File image uploaded!")
-            os.remove("elementary_ca.png")
 
         # delete old file, seeing as its uploaded
         print("Removing local file...")
         removeOld(output_image_path)
+        removeOld("eca.png")
 
         # output to 'output.txt'
         print("Saving config to 'output.txt'...")
         with open("output.txt", "a") as f:
             f.write(
                 f"\nStarting image url: {url}\n{resolution_msg}\n"
-                f'{("File image: ") if file_sorted else None}{(file_link if file_sorted else None)}{(elementary_ca()[1] if file_sorted else None)}\n'
                 f'{("Int func: " if not int_rand else "Int func (randomly chosen): ")}{int_func_input}\n'
+                f'{(("File link: ")+file_link) if file_sorted else ""}\n'
                 f'{("Sort func: " if not sort_rand else "Sort func (randomly chosen): ")}{sort_func_input}\n'
                 f'Args: {(arg_parse_input if arg_parse_input is not None else "No args")}\n'
                 f'Sorted on: {date_time}\n\nSorted image: {link}\n{(35 * "-")}'

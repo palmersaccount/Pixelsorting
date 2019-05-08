@@ -626,3 +626,225 @@ Sorted on: 05/08/2019 12:24
 
 Sorted image: https://s.put.re/4aJwAzpK.png
 -----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+File image: https://s.put.re/ux1TCiup.png
+Width: 325||Height: 365||Rule #: 12||Scale: 4
+
+Int func: file
+Sort func (randomly chosen): intensity
+Args:  -t .65
+Sorted on: 05/08/2019 13:06
+
+Sorted image: https://s.put.re/b6hmXRFQ.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+File image: https://s.put.re/eYvTgtrY.pngWidth: 360||Height: 435||Rule #: 29||Scale: 4
+Int func: file
+Sort func (randomly chosen): saturation
+Args:  -r 50 -t .65
+Sorted on: 05/08/2019 13:14
+
+Sorted image: https://s.put.re/1eFtcqvi.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+File image: https://s.put.re/9QbJhGTx.pngWidth: 490||Height: 390||Rule #: 14||Scale: 4
+Int func: file-edges
+Sort func (randomly chosen): lightness
+Args:  -r 50 -t .65
+Sorted on: 05/08/2019 13:18
+
+Sorted image: https://s.put.re/WgbhEpEF.png
+-----------------------------------
+Starting image url: https://s.put.re/TKnTHivM.jpg
+Resolution: 640x960
+File image: https://s.put.re/mpPNpkoA.png
+Width: 340||Height: 420||Rule #: 23||Scale: 1
+Int func: file-edges
+Sort func (randomly chosen): minimum
+Args:  -r 50 -t .65
+Sorted on: 05/08/2019 13:24
+
+Sorted image: https://s.put.re/vzbofGxw.png
+-----------------------------------
+Starting image url: https://s.put.re/QsUQbC1R.jpg
+Resolution: 2048x1364
+File image: https://s.put.re/gsFVLN18.png
+Width: 475||Height: 325||Rule #: 22||Scale: 3
+Int func: file-edges
+Sort func (randomly chosen): intensity
+Args:  -r 50 -t .65
+Sorted on: 05/08/2019 13:27
+
+Sorted image: https://s.put.re/UWNok5yY.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+Sort func (randomly chosen): saturation
+Args:  -r 50 -t .65
+Sorted on: 05/08/2019 13:36
+
+Sorted image: https://s.put.re/MifvSnHy.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+Sort func (randomly chosen): hue
+Args:  -r 50 -t .65
+Sorted on: 05/08/2019 13:56
+
+Sorted image: https://s.put.re/tpGKzZyB.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/ivyfJNys.png
+Sort func (randomly chosen): hue
+Args:  -r 50 -t .65
+Sorted on: 05/08/2019 13:58
+
+Sorted image: https://s.put.re/uPmRDmaa.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/Qwu8R3em.png
+Sort func (randomly chosen): intensity
+Args:  -r 25 -t .65
+Sorted on: 05/08/2019 14:00
+
+Sorted image: https://s.put.re/b9cWsN5d.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/4NCNbCX9.png
+Sort func (randomly chosen): intensity
+Args:  -r 25 -t .65
+Sorted on: 05/08/2019 14:02
+
+Sorted image: https://s.put.re/XDRr558u.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/ZZnTnTf5.png
+Sort func (randomly chosen): lightness
+Args:  -r 25 -t .65
+Sorted on: 05/08/2019 14:03
+
+Sorted image: https://s.put.re/TfZKqXE1.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/6t5zA7Pe.png
+Sort func (randomly chosen): hue
+Args:  -r 25 -t .65
+Sorted on: 05/08/2019 14:07
+
+Sorted image: https://s.put.re/RFBpCetp.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/6nDA4n5o.png
+Sort func (randomly chosen): minimum
+Args:  -r 25 -t .65
+Sorted on: 05/08/2019 14:07
+
+Sorted image: https://s.put.re/tZNYnNr4.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file
+File link: https://s.put.re/qS18dRZB.png
+Sort func: lightness
+Args: 
+Sorted on: 05/08/2019 14:13
+
+Sorted image: https://s.put.re/TKcvxnrE.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/DQidZpLG.png
+Sort func (randomly chosen): minimum
+Args:  -r 25 -t .65
+Sorted on: 05/08/2019 14:15
+
+Sorted image: https://s.put.re/LTDQg3YD.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file
+File link: https://s.put.re/e4zeFC2f.png
+Sort func: intensity
+Args: 
+Sorted on: 05/08/2019 14:16
+
+Sorted image: https://s.put.re/3aE67VtD.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/kCJhZe9o.png
+Sort func (randomly chosen): intensity
+Args:  -r 25 -t .65
+Sorted on: 05/08/2019 14:17
+
+Sorted image: https://s.put.re/KbMnNMXS.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/UkouFhm1.png
+Sort func (randomly chosen): lightness
+Args:  -r 25 -t .65
+Sorted on: 05/08/2019 14:19
+
+Sorted image: https://s.put.re/zSVZgZAC.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/Q893Qs2t.png
+Sort func (randomly chosen): minimum
+Args:  -r 25 -t .65
+Sorted on: 05/08/2019 14:30
+
+Sorted image: https://s.put.re/F66sSuzg.png
+-----------------------------------
+Starting image url: https://s.put.re/567w8wpK.jpg
+Resolution: 2560x1600
+Int func: file-edges
+File link: https://s.put.re/L8ukRg2C.png
+Sort func: minimum
+Args:  -r 25 -t .65
+Sorted on: 05/08/2019 14:32
+
+Sorted image: https://s.put.re/7FPbKH7c.png
+-----------------------------------
+Starting image url: https://s.put.re/567w8wpK.jpg
+Resolution: 2560x1600
+Int func: file
+File link: https://s.put.re/9z9mLcEy.png
+Sort func: minimum
+Args: 
+Sorted on: 05/08/2019 14:33
+
+Sorted image: https://s.put.re/K8sqj3yA.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/mTq5TFty.png
+Sort func: minimum
+Args:  -r 25 -t .65
+Sorted on: 05/08/2019 14:34
+
+Sorted image: https://s.put.re/6nCmWKKf.png
+-----------------------------------
