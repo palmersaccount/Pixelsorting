@@ -63,7 +63,7 @@ def parse_args_full(
     :param internet: true/false for having internet.
     :returns: List of args.
     """
-    full_args = []
+    full_args = []  # type: List
     full_args.append("-l " + url)
     full_args.append("-i " + int_func_input)
     full_args.append("-s " + sort_func_input)
@@ -92,6 +92,71 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
         for x in range(size0):
             AppendDataPIL(pixels, x, y, data)
     return pixels
+
+
+def elementary_ca() -> Any:
+    """
+    Generate images of elementary cellular automata.
+    ------
+    :returns: PIL Image object.
+    """
+    width = rand.randrange(300, 500, 5)  # type: int
+    height = rand.randrange(300, 500, 5)  # type: int
+    rulenumber = rand.randrange(10, 30)  # type: int
+    scalefactor = rand.randrange(1, 5)  # type: int
+
+    # Define colors of the output image
+    true_pixel = (255, 255, 255)  # type: Tuple[int, int, int]
+    false_pixel = (0, 0, 0)  # type: Tuple[int, int, int]
+
+    # Generates a dictionary that tells you what your state should be based on the rule number
+    # and the states of the adjacent cells in the previous generation
+    def generate_rule(rulenumber: int) -> dict:
+        rule = {}  # type: dict
+        for left in [False, True]:
+            for middle in [False, True]:
+                for right in [False, True]:
+                    rule[(left, middle, right)] = rulenumber % 2 == 1
+                    rulenumber //= 2
+        return rule
+
+    # Generates a 2d representation of the state of the automaton at each generation
+    def generate_ca(rule: dict) -> List:
+        ca = []  # type: List
+        # Initialize the first row of ca randomly
+        Append(ca, [])
+        for x in range(width):
+            AppendPartial(ca, 0, bool(rand.getrandbits(1)))
+
+        # Generate the succeeding generation
+        # Cells at the eges are initialized randomly
+        for y in range(1, height):
+            Append(ca, [])
+            AppendPartial(ca, y, bool(rand.getrandbits(1)))
+            for x in range(1, width - 1):
+                AppendPartial(
+                    ca, y, (rule[(ca[y - 1][x - 1], ca[y - 1][x], ca[y - 1][x + 1])])
+                )
+            AppendPartial(ca, y, bool(rand.getrandbits(1)))
+        return ca
+
+    rule = generate_rule(rulenumber)
+    ca = generate_ca(rule)
+
+    newImg = Image.new("RGB", [width, height])
+
+    for y in ProgressBars(height, "Placing pixels..."):
+        for x in range(width):
+            newImg.putpixel(
+                (x, y),
+                true_pixel
+                if ca[int(y / scalefactor)][int(x / scalefactor)]
+                else false_pixel,
+            )
+
+    print("File image created!")
+    newImg.save("elementary_ca.png")
+    return newImg
 
 
 black_pixel = (0, 0, 0, 255)  # type: Tuple[int, int, int, int]
@@ -252,7 +317,7 @@ def read_sorting_function(sort_func_input: str) -> Any:
 
 def read_preset(
     preset_input: str
-) -> Tuple[str, str, str, bool, bool, bool, bool, bool]:
+) -> Tuple[str, str, str, bool, bool, bool, bool, bool, bool]:
     """
     Returning values for 'presets'.
     -----
@@ -280,6 +345,7 @@ def read_preset(
                 False,
                 False,
                 False,
+                False,
             ),
             "full random": (
                 (
@@ -301,6 +367,7 @@ def read_preset(
                 True,
                 False,
                 False,
+                False,
             ),
             "snap-sort": (
                 ("-r 50 -c 250 -a 45"),
@@ -311,11 +378,12 @@ def read_preset(
                 False,
                 False,
                 True,
+                False,
             ),
         }[preset_input]
     except KeyError:
         print("[WARNING] Invalid preset name, no preset will be applied")
-        return "", "", "", False, False, False, False, False
+        return "", "", "", False, False, False, False, False, False
 
 
 # SORTER #
@@ -469,18 +537,15 @@ def waves(pixels: Any, args: Any) -> List:
 
 
 def file_mask(pixels: Any, args: Any) -> List:
-    int_file = input(
-        "Please enter the URL of an int file:\n"
-        if args.internet
-        else "Please input the local int file:\n"
-    )
-    img = ImgOpen(int_file, args.internet).rotate(args.angle, expand=True)
+    img = elementary_ca().resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
     data = img.load()  # type: Any
 
-    file_pixels = PixelAppend(len(pixels), len(pixels[0]), data, "Defining edges...")
+    file_pixels = PixelAppend(img.size[1], img.size[0], data, "Defining edges...")
     intervals = []  # type: List
 
-    for y in ProgressBars((len(pixels) - 1, 1, -1), "Cleaning up edges..."):
+    for y in tqdm(
+        range(len(pixels) - 1, 1, -1), desc=("{:30}".format("Cleaning up edges..."))
+    ):
         for x in range(len(pixels[0]) - 1, 1, -1):
             if (
                 file_pixels[y][x] == black_pixel
@@ -499,13 +564,8 @@ def file_mask(pixels: Any, args: Any) -> List:
 
 
 def file_edges(pixels: Any, args: Any) -> List:
-    int_file = input(
-        "Please enter the URL of an int file:\n"
-        if args.internet
-        else "Please enter the local int file:\n"
-    )
     edge_data = (
-        ImgOpen(int_file, args.internet)
+        elementary_ca()
         .rotate(args.angle, expand=True)
         .resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
         .filter(ImageFilter.FIND_EDGES)
@@ -524,7 +584,9 @@ def file_edges(pixels: Any, args: Any) -> List:
         for x in range(len(pixels[0])):
             AppendBW(edge_pixels, x, y, filter_pixels, args.bottom_threshold)
 
-    for y in ProgressBars((len(pixels) - 1, 1, -1), "Cleaning up edges..."):
+    for y in tqdm(
+        range(len(pixels) - 1, 1, -1), desc=("{:30}".format("Cleaning up edges..."))
+    ):
         for x in range(len(pixels[0]) - 1, 1, -1):
             if (
                 edge_pixels[y][x] == black_pixel
@@ -639,6 +701,7 @@ def main():
     removeOld("thanos_img.png")
     removeOld("shuffled.png")
     removeOld("snapped_pixels.png")
+    removeOld("elementary_ca.png")
 
     print(
         "Pixel sorting based on web hosted images.\nMost of the backend is sourced from https://github.com/satyarth/pixelsort"
@@ -693,7 +756,7 @@ def main():
                 preset_input
             ]
         # if presets are applied, they take over args
-        arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped = read_preset(
+        arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped, file_sorted = read_preset(
             preset_input
         )
     else:
@@ -741,6 +804,7 @@ def main():
             True if int_func_input in ["shuffle-total", "shuffle-axis"] else False
         )
         snapped = True if int_func_input in ["snap"] else False
+        file_sorted = True if int_func_input in ["file", "file-edges"] else False
 
         int_msg = (
             (
@@ -839,12 +903,6 @@ def main():
         site_msg = f"Internet not connected, saving locally as {output_image_path}"
     clear()
 
-    int_func_choices = "Randomness, Angle, " + (
-        "Upper threshold, Char. length"
-        if int_func_input in ["random", "waves"]
-        else "Lower threshold"
-    )
-
     # args
     if not preset_true:
         needs_help = input("Do you need help with args? (y/n)\n")
@@ -860,7 +918,6 @@ def main():
                 f'{("{:21}".format("Angle"))}{("{:>6}".format("| -a   |"))}Angle at which you\'re pixel sorting in degrees. 0 (horizontal) by default.\n'
                 f'{("{:21}".format("Threshold (lower)"))}{("{:>6}".format("| -t   |"))}How dark must a pixel be to be considered as a \'border\' for sorting?\n{29 * " "}Takes values from 0-1. 0.25 by default. Used in edges and threshold modes.\n'
                 f'{("{:21}".format("Threshold (upper)"))}{("{:>6}".format("| -u   |"))}How bright must a pixel be to be considered as a \'border\' for sorting?\n{29 * " "}Takes values from 0-1. 0.8 by default. Used in threshold mode.\n'
-                f"Arguments for {int_func_input}: {int_func_choices}\n"
             )
         else:
             print(
@@ -873,7 +930,6 @@ def main():
                 f'{("{:21}".format("Angle"))}{("{:>6}".format("| -a   |"))}\n'
                 f'{("{:21}".format("Threshold (lower)"))}{("{:>6}".format("| -t   |"))}\n'
                 f'{("{:21}".format("Threshold (upper)"))}{("{:>6}".format("| -u   |"))}\n'
-                f"Arguments for {int_func_input}: {int_func_choices}\n"
             )
         arg_parse_input = input("\nArgs: ")
         clear()
@@ -1060,15 +1116,26 @@ def main():
         link = output["data"]["link"]
         print("Image uploaded!")
 
+        if file_sorted:
+            r = post(
+                "https://api.put.re/upload",
+                files={"file": ("elementary_ca.png", open("elementary_ca.png", "rb"))},
+            )
+            output = json.loads(r.text)
+            file_link = output["data"]["link"]
+            print("File image uploaded!")
+            removeOld("elementary_ca.png")
+
         # delete old file, seeing as its uploaded
         print("Removing local file...")
-        os.remove(output_image_path)
+        removeOld(output_image_path)
 
         # output to 'output.txt'
         print("Saving config to 'output.txt'...")
         with open("output.txt", "a") as f:
             f.write(
                 f"\nStarting image url: {url}\n{resolution_msg}\n"
+                f'{("File image: ") if file_sorted else None}{(file_link if file_sorted else None)}\n'
                 f'{("Int func: " if not int_rand else "Int func (randomly chosen): ")}{int_func_input}\n'
                 f'{("Sort func: " if not sort_rand else "Sort func (randomly chosen): ")}{sort_func_input}\n'
                 f'Args: {(arg_parse_input if arg_parse_input is not None else "No args")}\n'
