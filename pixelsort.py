@@ -94,7 +94,7 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
     return pixels
 
 
-def elementary_ca() -> Any:
+def elementary_ca() -> Tuple[Any,str]:
     """
     Generate images of elementary cellular automata.
     ------
@@ -104,6 +104,7 @@ def elementary_ca() -> Any:
     height = rand.randrange(300, 500, 5)  # type: int
     rulenumber = rand.randrange(10, 30)  # type: int
     scalefactor = rand.randrange(1, 5)  # type: int
+    msg = f'Width: {width}||Height: {height}||Rule #: {rulenumber}||Scale: {scalefactor}'
 
     # Define colors of the output image
     true_pixel = (255, 255, 255)  # type: Tuple[int, int, int]
@@ -145,6 +146,7 @@ def elementary_ca() -> Any:
 
     newImg = Image.new("RGB", [width, height])
 
+    print("Creating file image...")
     for y in ProgressBars(height, "Placing pixels..."):
         for x in range(width):
             newImg.putpixel(
@@ -156,7 +158,7 @@ def elementary_ca() -> Any:
 
     print("File image created!")
     newImg.save("elementary_ca.png")
-    return newImg
+    return newImg, msg
 
 
 black_pixel = (0, 0, 0, 255)  # type: Tuple[int, int, int, int]
@@ -226,7 +228,7 @@ def read_image_input(url_input: str, internet: bool) -> Tuple[str, bool, bool, A
         random_url = str(rand.randint(0, 5))
         url_options = {
             "0": "https://s.put.re/TKnTHivM.jpg",
-            "1": "https://s.put.re/5hp4t1tR.jpg",
+            "1": "https://s.put.re/Ds9KV8jX.jpg",
             "2": "https://s.put.re/QsUQbC1R.jpg",
             "3": "https://s.put.re/5zgcV3TT.jpg",
             "4": "https://s.put.re/567w8wpK.jpg",
@@ -322,12 +324,19 @@ def read_preset(
     Returning values for 'presets'.
     -----
     :param preset_input: A (lowercase) string.
-    :returns: (in order) arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped
+    :returns: (in order) arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped, file_sorted
     :raises KeyError: String not in selection.
     """
     try:
         # order-- arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped
-        int_func_input = {"1": "random", "2": "threshold", "3": "edges", "4": "waves"}
+        int_func_input = {
+            "1": "random",
+            "2": "threshold",
+            "3": "edges",
+            "4": "waves",
+            "5": "file",
+            "6": "file-edges",
+        }
         sort_func_input = {
             "1": "lightness",
             "2": "hue",
@@ -347,6 +356,17 @@ def read_preset(
                 False,
                 False,
             ),
+            "main file": (
+                ("-r 50 -t .65"),
+                "file",
+                sort_func_input[str(rand.randint(1, 5))],
+                True,
+                False,
+                True,
+                False,
+                False,
+                True,
+            ),
             "full random": (
                 (
                     "-a "
@@ -360,7 +380,7 @@ def read_preset(
                     + " -r "
                     + str(rand.randrange(5, 100, 5))
                 ),
-                int_func_input[str(rand.randint(1, 4))],
+                int_func_input[str(rand.randint(1, 6))],
                 sort_func_input[str(rand.randint(1, 5))],
                 True,
                 True,
@@ -537,7 +557,7 @@ def waves(pixels: Any, args: Any) -> List:
 
 
 def file_mask(pixels: Any, args: Any) -> List:
-    img = elementary_ca().resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
+    img = elementary_ca()[0].resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
     data = img.load()  # type: Any
 
     file_pixels = PixelAppend(img.size[1], img.size[0], data, "Defining edges...")
@@ -565,7 +585,7 @@ def file_mask(pixels: Any, args: Any) -> List:
 
 def file_edges(pixels: Any, args: Any) -> List:
     edge_data = (
-        elementary_ca()
+        elementary_ca()[0]
         .rotate(args.angle, expand=True)
         .resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
         .filter(ImageFilter.FIND_EDGES)
@@ -747,14 +767,18 @@ def main():
         print(
             "Preset options:\n"
             "-1|main -- Main args (r 50, c 250, a 45, random, intensity)\n"
-            "-2|full random -- Randomness in every arg!\n"
-            "-3|snap-sort -- Run from it, dread it, destiny still arrives."
+            "-2|main file -- Main args, but only for file and file edges\n"
+            "-3|full random -- Randomness in every arg!\n"
+            "-4|snap-sort -- Run from it, dread it, destiny still arrives."
         )
         preset_input = input("\nChoice: ").lower()
-        if preset_input in ["1", "2", "3"]:
-            preset_input = {"1": "main", "2": "full random", "3": "snap-sort"}[
-                preset_input
-            ]
+        if preset_input in ["1", "2", "3", "4"]:
+            preset_input = {
+                "1": "main",
+                "2": "main file",
+                "3": "full random",
+                "4": "snap-sort",
+            }[preset_input]
         # if presets are applied, they take over args
         arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped, file_sorted = read_preset(
             preset_input
@@ -1124,7 +1148,7 @@ def main():
             output = json.loads(r.text)
             file_link = output["data"]["link"]
             print("File image uploaded!")
-            removeOld("elementary_ca.png")
+            os.remove("elementary_ca.png")
 
         # delete old file, seeing as its uploaded
         print("Removing local file...")
@@ -1135,7 +1159,7 @@ def main():
         with open("output.txt", "a") as f:
             f.write(
                 f"\nStarting image url: {url}\n{resolution_msg}\n"
-                f'{("File image: ") if file_sorted else None}{(file_link if file_sorted else None)}\n'
+                f'{("File image: ") if file_sorted else None}{(file_link if file_sorted else None)}{(elementary_ca()[1] if file_sorted else None)}\n'
                 f'{("Int func: " if not int_rand else "Int func (randomly chosen): ")}{int_func_input}\n'
                 f'{("Sort func: " if not sort_rand else "Sort func (randomly chosen): ")}{sort_func_input}\n'
                 f'Args: {(arg_parse_input if arg_parse_input is not None else "No args")}\n'
