@@ -958,3 +958,43 @@ Sorted on: 05/09/2019 07:29
 
 Sorted image: https://s.put.re/GbCTg9wq.png
 -----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/7nrXA7gH.png
+Sort func: minimum
+Args: -r 23 -t 0.89
+Sorted on: 05/09/2019 08:45
+
+Sorted image: https://s.put.re/bVfpV78V.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/SucAFwAr.png
+Sort func: minimum
+Args: -r 24 -t 0.8
+Sorted on: 05/09/2019 08:47
+
+Sorted image: https://s.put.re/6zcUPnf4.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/hqfKNuMj.png
+Sort func: minimum
+Args: -r 45 -t 0.87
+Sorted on: 05/09/2019 08:59
+
+Sorted image: https://s.put.re/p734Qjzy.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/gbQ9p3AT.png
+Sort func: minimum
+Args: -r 44 -t 0.84
+Sorted on: 05/09/2019 09:25
+
+Sorted image: https://s.put.re/SVFbB77q.png
+-----------------------------------

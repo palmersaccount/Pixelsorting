@@ -65,7 +65,7 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
     for y in ProgressBars(size1, msg):
         Append(pixels, [])
         for x in range(size0):
-            AppendDataPIL(pixels, x, y, data)
+            AppendPIL(pixels, x, y, data)
     return pixels
 
 
@@ -77,10 +77,19 @@ def ElementaryCA(pixels: Any) -> Any:
     :param pixels: 2D list of RGB values.
     :returns: PIL Image object.
     """
-    width: int = rand.randrange(250, 350, 5)
-    height: int = rand.randrange(250, 350, 5)
-    rules: List = [22, 26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15]
-    rulenumber: int = rules[rand.randrange(0, len(rules))]
+    width: int = rand.randrange(100, 150)
+    height: int = rand.randrange(100, 150)
+    ruleprompt: Any = input(
+        f"Rule selection (max of 255)(leave blank for random)\n"
+        f"(Recommended to leave blank, most of the rules aren't good): "
+    )
+    try:
+        if int(ruleprompt) in range(255):
+            rulenumber: int = int(ruleprompt)
+    except ValueError:
+        rules: List = [26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15, 9, 154]
+        rulenumber = rules[rand.randrange(0, len(rules))]
+
     scalefactor: int = rand.randrange(1, 5)
 
     # Define colors of the output image
@@ -166,15 +175,11 @@ ImgOpen: Callable[[str, bool], Any] = lambda u, i: (
     Image.open((get(u, stream=True).raw) if i else u)
 ).convert("RGBA")
 Append: Callable[[Any, Any], Any] = lambda l, obj: l.append(obj)
-AppendDataPIL: Callable[[List, int, int, Any], List] = lambda l, x, y, d: l[y].append(
-    d[x, y]
-)
-AppendDataList: Callable[[List, int, int, Any], Any] = lambda l, x, y, d: l.append(
-    d[y][x]
-)
+AppendPIL: Callable[[Any, int, int, Any], Any] = lambda l, x, y, d: l[y].append(d[x, y])
+AppendList: Callable[[List, int, int, Any], Any] = lambda l, x, y, d: l.append(d[y][x])
 AppendPartial: Callable[[List, int, Any], List] = lambda l, y, x: l[y].append(x)
-ImgPixels: Callable[[Any, int, int, Any], Any] = lambda img, x, y, data: img.putpixel(
-    (x, y), data[y][x]
+ImgPixels: Callable[[Any, int, int, Any], Any] = lambda i, x, y, d: i.putpixel(
+    (x, y), d[y][x]
 )
 RandomWidth: Callable[[int], int] = lambda c: int(c * (1 - rand.random()))
 ProgressBars: Callable[[Any, str], Any] = lambda r, d: tqdm(
@@ -254,7 +259,7 @@ def ReadImageInput(url_input: str, internet: bool) -> Tuple[str, bool, bool, Any
             return url_options[random_url], False, True, random_url
 
 
-def ReadIntervalFunction(int_func_input: str) -> Any:
+def ReadIntervalFunction(int_func_input: str) -> Callable[[Any, Any], List]:
     """
     Reading the interval function.
     -----
@@ -285,7 +290,7 @@ def ReadIntervalFunction(int_func_input: str) -> Any:
         return random
 
 
-def ReadSortingFunction(sort_func_input: str) -> Any:
+def ReadSortingFunction(sort_func_input: str) -> Callable[[Any], float]:
     """
     Reading the sorting function.
     -----
@@ -367,11 +372,11 @@ def ReadPreset(
             ),
             "full random": (
                 (
-                    f'-a {rand.randrange(0, 360)}'
-                    f'-c {rand.randrange(50, 500, 15)}'
-                    f'-u {(rand.randrange(50, 100, 5) / 100)}'
-                    f'-t {(rand.randrange(5, 50, 5) / 100)}'
-                    f'-r {rand.randrange(5, 100, 5)}'
+                    f"-a {rand.randrange(0, 360)}"
+                    f"-c {rand.randrange(50, 500, 15)}"
+                    f"-u {(rand.randrange(50, 100, 5) / 100)}"
+                    f"-t {(rand.randrange(5, 50, 5) / 100)}"
+                    f"-r {rand.randrange(5, 100, 5)}"
                 ),
                 int_func_input[str(rand.randint(1, 6))],
                 sort_func_input[str(rand.randint(1, 5))],
@@ -428,13 +433,13 @@ def SortImage(
         for x_max in intervals[y]:
             interval: List = []
             for x in range(x_min, x_max):
-                AppendDataList(interval, x, y, pixels)
+                AppendList(interval, x, y, pixels)
             if rand.randint(0, 100) >= args.randomness:
                 row += sort_interval(interval, sorting_function)
             else:
                 row += interval
             x_min = x_max
-        AppendDataList(row, 0, y, pixels)
+        AppendList(row, 0, y, pixels)
         Append(sorted_pixels, row)
     return sorted_pixels
 
