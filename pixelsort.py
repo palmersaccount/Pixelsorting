@@ -69,7 +69,7 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
     return pixels
 
 
-def ElementaryCA(pixels: Any) -> Any:
+def ElementaryCA(pixels: Any, args: Any) -> Any:
     """
     Generate images of elementary cellular automata.
     Selected rules from https://en.wikipedia.org/wiki/Elementary_cellular_automaton
@@ -77,17 +77,24 @@ def ElementaryCA(pixels: Any) -> Any:
     :param pixels: 2D list of RGB values.
     :returns: PIL Image object.
     """
+    rules: List = [26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15, 9, 154]
+
     width: int = rand.randrange(100, 150)
     height: int = rand.randrange(100, 150)
-    ruleprompt: Any = input(
-        f"Rule selection (max of 255)(leave blank for random)\n"
-        f"(Recommended to leave blank, most of the rules aren't good): "
-    )
-    try:
-        if int(ruleprompt) in range(255):
-            rulenumber: int = int(ruleprompt)
-    except ValueError:
-        rules: List = [26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15, 9, 154]
+    if not args.internet:
+        ruleprompt = input(
+            f"Rule selection (max of 255)(leave blank for random)\n"
+            f"(Recommended to leave blank, most of the rules aren't good): "
+        )
+        try:
+            if int(ruleprompt) in range(255):
+                rulenumber: int = int(ruleprompt)
+            else:
+                print("Number not in range, using random rule.")
+                raise ValueError
+        except ValueError:
+            rulenumber = rules[rand.randrange(0, len(rules))]
+    else:
         rulenumber = rules[rand.randrange(0, len(rules))]
 
     scalefactor: int = rand.randrange(1, 5)
@@ -391,7 +398,9 @@ def ReadPreset(
             ),
             "snap-sort": (
                 (
-                    f"-r {rand.randrange(15,50,5)} -c {rand.randrange(50, 250, 10)} -a {rand.randrange(0,180)}"
+                    f"-r {rand.randrange(15,50,5)}"
+                    f"-c {rand.randrange(50, 250, 10)}"
+                    f"-a {rand.randrange(0,180)}"
                 ),
                 "snap",
                 "minimum",
@@ -561,7 +570,9 @@ def waves(pixels: Any, args: Any) -> List:
 
 
 def file_mask(pixels: Any, args: Any) -> List:
-    img = ElementaryCA(pixels).resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
+    img = ElementaryCA(pixels, args).resize(
+        (len(pixels[0]), len(pixels)), Image.ANTIALIAS
+    )
     data: Any = img.load()
 
     file_pixels = PixelAppend(img.size[1], img.size[0], data, "Defining edges...")
@@ -589,7 +600,7 @@ def file_mask(pixels: Any, args: Any) -> List:
 
 def file_edges(pixels: Any, args: Any) -> List:
     edge_data: Any = (
-        ElementaryCA(pixels)
+        ElementaryCA(pixels, args)
         .rotate(args.angle, expand=True)
         .resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
         .filter(ImageFilter.FIND_EDGES)
@@ -835,7 +846,8 @@ def main():
     resolution_msg = f"Resolution: {width}x{height}"
     image_msg = (
         (
-            f"[WARNING] No image url given, using {('random' if url_random else 'chosen')} default image {(random_url if url_random else str(url_input))}"
+            f"[WARNING] No image url given, using {('random' if url_random else 'chosen')}"
+            f" default image {(random_url if url_random else str(url_input))}"
         )
         if not url_given
         else "Using given image "
@@ -1106,7 +1118,9 @@ def main():
             intervals = file_edges(pixels, __args)
             sorted_pixels = SortImage(pixels, intervals, __args, sorting_function)
             print(
-                f"{('/' * 45)}\nDread it. Run from it. Destiny still arrives.\n{('/' * 45)}"
+                f"{('/' * 45)}\n"
+                f"Dread it. Run from it. Destiny still arrives."
+                f"\n{('/' * 45)}"
             )
             thanos_img = Image.new("RGBA", input_img.size)
             size0, size1 = thanos_img.size
@@ -1137,6 +1151,7 @@ def main():
 
     print("Saving image...")
     output_img.save(output_image_path)
+    output_img.show()
 
     if internet:
         date_time = datetime.now().strftime("%m/%d/%Y %H:%M")
@@ -1145,7 +1160,7 @@ def main():
         link = UploadImg("images/image.png")
         print("Image uploaded!")
 
-        if file_sorted:
+        if file_sorted or snapped:
             file_link = UploadImg("images/ElementaryCA.png")
             print("File image uploaded!")
 
@@ -1160,7 +1175,7 @@ def main():
             f.write(
                 f"\nStarting image url: {url}\n{resolution_msg}\n"
                 f'{("Int func: " if not int_rand else "Int func (randomly chosen): ")}{int_func_input}\n'
-                f'{(("File link: ")+file_link) if file_sorted else ""}\n'
+                f'{(("File link: ")+file_link) if file_sorted or snapped else ""}\n'
                 f'{("Sort func: " if not sort_rand else "Sort func (randomly chosen): ")}{sort_func_input}\n'
                 f'Args: {(arg_parse_input if arg_parse_input is not None else "No args")}\n'
                 f'Sorted on: {date_time}\n\nSorted image: {link}\n{(35 * "-")}'
@@ -1170,7 +1185,6 @@ def main():
         print(f"Link to image: {link}")
     else:
         print("Not saving config to 'output.txt', as there is no internet.\nDone!")
-    output_img.show()
 
 
 if __name__ == "__main__":
