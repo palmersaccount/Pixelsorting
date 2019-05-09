@@ -1038,3 +1038,13 @@ Sorted on: 05/09/2019 12:25
 
 Sorted image: https://s.put.re/Pc7rzF2s.png
 -----------------------------------
+Starting image url: https://s.put.re/njcspidN.jpg
+Resolution: 5120x2880
+Int func: snap
+File link: https://s.put.re/biq39ZKA.png
+Sort func: minimum
+Args: -r 35 -c 180 -a 162 
+Sorted on: 05/09/2019 15:47
+
+Sorted image: https://s.put.re/cwmkmKFi.png
+-----------------------------------

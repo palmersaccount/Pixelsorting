@@ -398,9 +398,9 @@ def ReadPreset(
             ),
             "snap-sort": (
                 (
-                    f"-r {rand.randrange(15,50,5)}"
-                    f"-c {rand.randrange(50, 250, 10)}"
-                    f"-a {rand.randrange(0,180)}"
+                    f"-r {rand.randrange(15,50,5)} "
+                    f"-c {rand.randrange(50, 250, 10)} "
+                    f"-a {rand.randrange(0,180)} "
                 ),
                 "snap",
                 "minimum",
@@ -1089,6 +1089,7 @@ def main():
         "threshold",
         "edges",
         "file-edges",
+        "snap",
     ] else None
     print(f"Upper threshold: {__args.upper_threshold}") if int_func_input in [
         "random",
