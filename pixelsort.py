@@ -17,41 +17,34 @@ from PIL import Image, ImageFilter
 from requests import get, post
 from tqdm import tqdm
 
-from MiscFuncs import HasInternet, PixelAppend, ElementaryCA, UploadImg, CropTo
-from MiscLambdas import (
-    black_pixel,
-    white_pixel,
-    ImgOpen,
-    Append,
-    AppendPIL,
-    AppendList,
-    AppendPartial,
-    ImgPixels,
-    RandomWidth,
-    ProgressBars,
-    AppendBW,
-    IDGen,
-)
 from intervals import (
-    random,
-    threshold,
     edge,
-    waves,
-    snap_sort,
-    file_mask,
     file_edges,
+    file_mask,
+    none,
+    random,
     shuffle_total,
     shuffled_axis,
-    none,
+    snap_sort,
+    threshold,
+    waves,
 )
-from Sorting import (
-    lightness,
-    intensity,
-    hue,
-    saturation,
-    minimum,
-    SortImage
+from MiscFuncs import CropTo, ElementaryCA, HasInternet, PixelAppend, UploadImg
+from MiscLambdas import (
+    Append,
+    AppendBW,
+    AppendList,
+    AppendPartial,
+    AppendPIL,
+    IDGen,
+    ImgOpen,
+    ImgPixels,
+    ProgressBars,
+    RandomWidth,
+    black_pixel,
+    white_pixel,
 )
+from Sorting import SortImage, hue, intensity, lightness, minimum, saturation
 
 
 # MISC FUNCTIONS #
@@ -442,6 +435,7 @@ def ReadPreset(
     except KeyError:
         print("[WARNING] Invalid preset name, no preset will be applied")
         return "", "", "", False, False, False, False, False, False, False, False
+
 
 '''
 # SORTER #

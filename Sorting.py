@@ -17,7 +17,6 @@ from PIL import Image, ImageFilter
 from requests import get, post
 from tqdm import tqdm
 
-from MiscFuncs import HasInternet, PixelAppend, ElementaryCA, UploadImg, CropTo
 from MiscLambdas import (
     black_pixel,
     white_pixel,
