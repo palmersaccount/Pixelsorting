@@ -17,12 +17,49 @@ from PIL import Image, ImageFilter
 from requests import get, post
 from tqdm import tqdm
 
+from MiscFuncs import HasInternet, PixelAppend, ElementaryCA, UploadImg, CropTo
+from MiscLambdas import (
+    black_pixel,
+    white_pixel,
+    ImgOpen,
+    Append,
+    AppendPIL,
+    AppendList,
+    AppendPartial,
+    ImgPixels,
+    RandomWidth,
+    ProgressBars,
+    AppendBW,
+    IDGen,
+)
+from intervals import (
+    random,
+    threshold,
+    edge,
+    waves,
+    snap_sort,
+    file_mask,
+    file_edges,
+    shuffle_total,
+    shuffled_axis,
+    none,
+)
+from Sorting import (
+    lightness,
+    intensity,
+    hue,
+    saturation,
+    minimum,
+    SortImage
+)
+
 
 # MISC FUNCTIONS #
 def clear():  # clear screen
     return os.system("cls" if os.name == "nt" else "clear")
 
 
+'''
 def HasInternet(host: str, port: int, timeout: int) -> bool:
     """
     Checks for internet.
@@ -167,9 +204,6 @@ def UploadImg(img: str) -> str:
     return link
 
 
-black_pixel: Tuple[int, int, int, int] = (0, 0, 0, 255)
-white_pixel: Tuple[int, int, int, int] = (255, 255, 255, 255)
-
 # LAMBDA FUNCTIONS #
 ImgOpen: Callable[[str, bool], Any] = lambda u, i: (
     Image.open((get(u, stream=True).raw) if i else u)
@@ -198,7 +232,7 @@ intensity: Callable[[Any], float] = lambda p: p[0] + p[1] + p[2]
 hue: Callable[[Any], float] = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0
 saturation: Callable[[Any], float] = (lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0)
 minimum: Callable[[Any], float] = lambda p: min(p[0], p[1], p[2])
-
+'''
 
 # READING FUNCTIONS #
 def ReadImageInput(url_input: str, internet: bool) -> Tuple[str, bool, bool, Any]:
@@ -409,7 +443,7 @@ def ReadPreset(
         print("[WARNING] Invalid preset name, no preset will be applied")
         return "", "", "", False, False, False, False, False, False, False, False
 
-
+'''
 # SORTER #
 def SortImage(
     pixels: List, intervals: List, args: Any, sorting_function: Callable[[Any], float]
@@ -442,12 +476,14 @@ def SortImage(
         AppendList(row, 0, y, pixels)
         Append(sorted_pixels, row)
     return sorted_pixels
+'''
 
-
+'''
 # UTIL #
 IDGen: Callable[[int], str] = lambda n: "".join(
     rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(n)
 )
+
 
 
 def CropTo(image_to_crop: Any, args: Any) -> Any:
@@ -470,7 +506,9 @@ def CropTo(image_to_crop: Any, args: Any) -> Any:
     lower = dy / 2 + reference_size[1]
     return image_to_crop.crop(box=(int(left), int(upper), int(right), int(lower)))
 
+'''
 
+"""
 # INTERVALS #
 def edge(pixels: Any, args: Any) -> List:
     edge_data: Any = (
@@ -708,6 +746,7 @@ def none(pixels: Any, args: Any) -> List:
     for y in ProgressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [len(pixels[y])])
     return intervals
+"""
 
 
 # MAIN #
