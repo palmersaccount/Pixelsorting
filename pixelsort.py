@@ -23,7 +23,7 @@ def clear():  # clear screen
     return os.system("cls" if os.name == "nt" else "clear")
 
 
-def has_internet(host: str, port: int, timeout: int) -> bool:
+def HasInternet(host: str, port: int, timeout: int) -> bool:
     """
     Checks for internet.
     ------
@@ -35,7 +35,7 @@ def has_internet(host: str, port: int, timeout: int) -> bool:
 
     Examples
     ------
-    >>> internet = has_internet("8.8.8.8", 53, 3)
+    >>> internet = HasInternet("8.8.8.8", 53, 3)
     >>> print(internet)
     True
     """
@@ -69,15 +69,15 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
     return pixels
 
 
-def elementary_ca(pixels: Any) -> Any:
+def ElementaryCA(pixels: Any) -> Any:
     """
     Generate images of elementary cellular automata.
     ------
     :param pixels: 2D list of RGB values.
     :returns: PIL Image object.
     """
-    width: int = rand.randrange(300, 500, 5)
-    height: int = rand.randrange(300, 500, 5)
+    width: int = rand.randrange(250, 350, 5)
+    height: int = rand.randrange(250, 350, 5)
     rules: List = [22, 26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15]
     rulenumber: int = rules[rand.randrange(0, len(rules))]
     scalefactor: int = rand.randrange(1, 5)
@@ -133,8 +133,28 @@ def elementary_ca(pixels: Any) -> Any:
             )
 
     print("File image created!")
-    newImg.save("eca.png")
+    newImg.save("images/ElementaryCA.png")
     return newImg
+
+
+def UploadImg(img: str) -> str:
+    """
+    Upload an image to put.re
+    -----
+    :param img: A string of a local file.
+    :returns: String of link of the uploaded file.
+    
+    Example
+    -----
+    >>> link = UploadImg("https://i.redd.it/ufj4p5zwf9v21.jpg")
+    >>> print(link)
+    >>> "https://s.put.re/Uc2A2Z7t.jpg"
+    (those links are actually correct.)
+    """
+    r = post("https://api.put.re/upload", files={"file": (img, open(img, "rb"))})
+    output = json.loads(r.text)
+    link: str = output["data"]["link"]
+    return link
 
 
 black_pixel: Tuple[int, int, int, int] = (0, 0, 0, 255)
@@ -175,7 +195,7 @@ minimum: Callable[[Any], float] = lambda p: min(p[0], p[1], p[2])
 
 
 # READING FUNCTIONS #
-def read_image_input(url_input: str, internet: bool) -> Tuple[str, bool, bool, Any]:
+def ReadImageInput(url_input: str, internet: bool) -> Tuple[str, bool, bool, Any]:
     """
     Reading the image input.
     -----
@@ -183,6 +203,7 @@ def read_image_input(url_input: str, internet: bool) -> Tuple[str, bool, bool, A
     :param internet: true/false for having internet.
     :returns: (in order) url[str], url_given[bool], url_random[bool], random_url[str]
     """
+    print("Opening image...")
     try:
         if internet:
             if url_input in ["", " ", "0", "1", "2", "3", "4", "5", "6"]:
@@ -205,7 +226,7 @@ def read_image_input(url_input: str, internet: bool) -> Tuple[str, bool, bool, A
             "3": "https://s.put.re/5zgcV3TT.jpg",
             "4": "https://s.put.re/567w8wpK.jpg",
             "5": "https://s.put.re/gcYkpmbd.jpg",
-            "6": "https://s.put.re/AXipZo53.jpg",
+            "6": "https://s.put.re/K49iqXVJ.png",
         }
         try:
             return (
@@ -232,7 +253,7 @@ def read_image_input(url_input: str, internet: bool) -> Tuple[str, bool, bool, A
             return url_options[random_url], False, True, random_url
 
 
-def read_interval_function(int_func_input: str) -> Any:
+def ReadIntervalFunction(int_func_input: str) -> Any:
     """
     Reading the interval function.
     -----
@@ -242,7 +263,7 @@ def read_interval_function(int_func_input: str) -> Any:
 
     Example
     -----
-    >>> interval = read_interval_function("random")
+    >>> interval = ReadIntervalFunction("random")
     >>> print(interval)
     function<random>
     """
@@ -263,7 +284,7 @@ def read_interval_function(int_func_input: str) -> Any:
         return random
 
 
-def read_sorting_function(sort_func_input: str) -> Any:
+def ReadSortingFunction(sort_func_input: str) -> Any:
     """
     Reading the sorting function.
     -----
@@ -273,7 +294,7 @@ def read_sorting_function(sort_func_input: str) -> Any:
 
     Example
     -----
-    >>> sortFunc = read_sorting_function("hue")
+    >>> sortFunc = ReadSortingFunction("hue")
     >>> print(sortFunc)
     lambda<hue>
     """
@@ -289,7 +310,7 @@ def read_sorting_function(sort_func_input: str) -> Any:
         return lightness
 
 
-def read_preset(
+def ReadPreset(
     preset_input: str
 ) -> Tuple[str, str, str, bool, bool, bool, bool, bool, bool, bool, bool]:
     """
@@ -331,7 +352,7 @@ def read_preset(
                 False,
             ),
             "main file": (
-                ("-r 25 -t .65"),
+                (f"-r {rand.randrange(15, 65)} -t {float(rand.randrange(65, 90)/100)}"),
                 "file-edges",
                 "minimum",
                 True,
@@ -368,9 +389,11 @@ def read_preset(
                 False,
             ),
             "snap-sort": (
-                ("-r 50 -c 250 -a 45"),
+                (
+                    f"-r {rand.randrange(15,50,5)} -c {rand.randrange(50, 250, 10)} -a {rand.randrange(0,180)}"
+                ),
                 "snap",
-                "intensity",
+                "minimum",
                 True,
                 False,
                 False,
@@ -387,7 +410,7 @@ def read_preset(
 
 
 # SORTER #
-def sort_image(
+def SortImage(
     pixels: List, intervals: List, args: Any, sorting_function: Callable[[Any], float]
 ) -> List:
     """
@@ -421,12 +444,12 @@ def sort_image(
 
 
 # UTIL #
-id_generator: Callable[[int], str] = lambda n: "".join(
+IDGen: Callable[[int], str] = lambda n: "".join(
     rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(n)
 )
 
 
-def crop_to(image_to_crop: Any, args: Any) -> Any:
+def CropTo(image_to_crop: Any, args: Any) -> Any:
     """
     Crops image to the size of a reference image. This function assumes
     that the relevant image is located in the center and you want to crop away
@@ -537,7 +560,7 @@ def waves(pixels: Any, args: Any) -> List:
 
 
 def file_mask(pixels: Any, args: Any) -> List:
-    img = elementary_ca(pixels).resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
+    img = ElementaryCA(pixels).resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
     data: Any = img.load()
 
     file_pixels = PixelAppend(img.size[1], img.size[0], data, "Defining edges...")
@@ -565,7 +588,7 @@ def file_mask(pixels: Any, args: Any) -> List:
 
 def file_edges(pixels: Any, args: Any) -> List:
     edge_data: Any = (
-        elementary_ca(pixels)
+        ElementaryCA(pixels)
         .rotate(args.angle, expand=True)
         .resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
         .filter(ImageFilter.FIND_EDGES)
@@ -604,11 +627,10 @@ def file_edges(pixels: Any, args: Any) -> List:
 
 
 def snap_sort(pixels: Any, args: Any) -> List:
-    input_img = ImgOpen("thanos_img.png", False)
-    print("Opening the soul stone...")
+    input_img = ImgOpen("images/thanos_img.png", False)
     pixels_snap: Any = np.asarray(input_img)
 
-    print("Preparing for balance...")
+    print("The hardest choices require the strongest wills...")
     nx, ny = input_img.size
     xy: Any = np.mgrid[:nx, :ny].reshape(2, -1).T
     rounded: int = int(round(int(xy.shape[0] / 2), 0))
@@ -620,24 +642,22 @@ def snap_sort(pixels: Any, args: Any) -> List:
 
     pixels_snap.setflags(write=1)
     for i in ProgressBars(len(numbers_that_dont_feel_so_good), "Snapping..."):
-        pixels_snap[numbers_that_dont_feel_so_good[i][0]][
-            numbers_that_dont_feel_so_good[i][1]
+        pixels_snap[numbers_that_dont_feel_so_good[i][1]][
+            numbers_that_dont_feel_so_good[i][0]
         ] = [0, 0, 0, 0]
 
     print("Sorted perfectly in half.")
     feel_better: Any = Image.fromarray(pixels_snap, "RGBA")
-    feel_better.save("snapped_pixels.png")
+    feel_better.save("images/snapped_pixels.png")
 
-    snapped_img = ImgOpen("snapped_pixels.png", False)
+    snapped_img = ImgOpen("images/snapped_pixels.png", False)
     data: Any = snapped_img.load()
     size0, size1 = snapped_img.size
-    pixels_return = PixelAppend(size1, size0, data, "Returning saved...")
+    pixels_return = PixelAppend(size1, size0, data, "I hope they remember you...")
 
-    os.remove("snapped_pixels.png")
-    os.remove("thanos_img.png")
-    print(
-        f"{('///' * 15)}\nPerfectly balanced, as all things should be.\n{('///' * 15)}"
-    )
+    os.remove("images/snapped_pixels.png")
+    os.remove("images/thanos_img.png")
+    print(f"{('/' * 45)}\nPerfectly balanced, as all things should be.\n{('/' * 45)}")
 
     return pixels_return
 
@@ -651,14 +671,14 @@ def shuffle_total(pixels: Any, args: Any) -> List:
     for i in ProgressBars(int(height), "Shuffling image..."):
         np.random.shuffle(shuffle[i])
     shuffled_out: Any = Image.fromarray(shuffle, "RGB")
-    shuffled_out.save("shuffled.png")
-    shuffled_img = ImgOpen("shuffled.png", False)
+    shuffled_out.save("images/shuffled.png")
+    shuffled_img = ImgOpen("images/shuffled.png", False)
     data: Any = shuffled_img.load()
 
     size0, size1 = input_img.size
     pixels = PixelAppend(size1, size0, data, "Recreating image...")
 
-    os.remove("shuffled.png")
+    os.remove("images/shuffled.png")
     return pixels
 
 
@@ -671,14 +691,14 @@ def shuffled_axis(pixels: Any, args: Any) -> List:
     for _ in ProgressBars(height, "Shuffling image..."):
         np.random.shuffle(shuffle)
     shuffled_out: Any = Image.fromarray(shuffle, "RGB")
-    shuffled_out.save("shuffled.png")
-    shuffled_img = ImgOpen("shuffled.png", False)
+    shuffled_out.save("images/shuffled.png")
+    shuffled_img = ImgOpen("images/shuffled.png", False)
     data: Any = shuffled_img.load()
 
     size0, size1 = input_img.size
     pixels = PixelAppend(size1, size0, data, "Recreating image...")
 
-    os.remove("shuffled.png")
+    os.remove("images/shuffled.png")
     return pixels
 
 
@@ -773,11 +793,11 @@ def main():
     clear()
     # remove old image files that didn't get deleted before
     removeOld = lambda f: os.remove(f) if os.path.isfile(f) else None
-    removeOld("image.png")
-    removeOld("thanos_img.png")
-    removeOld("shuffled.png")
-    removeOld("snapped_pixels.png")
-    removeOld("eca.png")
+    removeOld("images/image.png")
+    removeOld("images/thanos_img.png")
+    removeOld("images/shuffled.png")
+    removeOld("images/snapped_pixels.png")
+    removeOld("images/ElementaryCA.png")
 
     print(
         "Pixel sorting based on web hosted images.\nMost of the backend is sourced from https://github.com/satyarth/pixelsort"
@@ -789,19 +809,25 @@ def main():
     input()
     clear()
 
-    internet = has_internet("8.8.8.8", 53, 3)
+    internet = HasInternet("8.8.8.8", 53, 3)
 
     if internet:
         url_input = input(
             "Please input the URL of the image or the default image #:\n(this might take a while depending the image resolution)\n"
         )
-        url, url_given, url_random, random_url = read_image_input(url_input, internet)
+        if len(url_input) > 50:
+            print("Image URL too long, uploading to put.re for a shorter URL...")
+            img = ImgOpen(url_input, internet)
+            img.save("image.png")
+            url_input = UploadImg("image.png")
+            removeOld("image.png")
+        url, url_given, url_random, random_url = ReadImageInput(url_input, internet)
     else:
         print("Internet not connected! Local image must be used.")
         url_input = input(
             "Please input the location of the local file (default image in images folder):\n"
         )
-        url, url_given, url_random, random_url = read_image_input(url_input, internet)
+        url, url_given, url_random, random_url = ReadImageInput(url_input, internet)
     input_img = ImgOpen(url, internet)
 
     width, height = input_img.size
@@ -825,7 +851,7 @@ def main():
             "-1|main -- Main args (r 50, c 250, a 45, random, intensity)\n"
             "-2|main file -- Main args, but only for file and file edges\n"
             "-3|full random -- Randomness in every arg!\n"
-            "-4|snap-sort -- Run from it, dread it, destiny still arrives."
+            "-4|snap-sort -- You could not live with your own failure. And where did that bring you? Back to me."
         )
         preset_input = input("\nChoice: ").lower()
         if preset_input in ["1", "2", "3", "4"]:
@@ -836,7 +862,7 @@ def main():
                 "4": "snap-sort",
             }[preset_input]
         # if presets are applied, they take over args
-        arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted = read_preset(
+        arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted = ReadPreset(
             preset_input
         )
     else:
@@ -987,16 +1013,14 @@ def main():
 
     # hosting site
     if internet:
-        output_image_path = "image.png"
+        output_image_path = "images/image.png"
         site_msg = "Uploading sorted image to put.re"
     else:
         print("Internet not connected! Image will be saved locally.\n")
         file_name = input(
             "Name of output file (leave empty for randomized name):\n(do not include the file extension, .png will always be used.)\n"
         )
-        output_image_path = (
-            (id_generator(5) + ".png") if file_name in ["", " "] else file_name
-        )
+        output_image_path = (IDGen(5) + ".png") if file_name in ["", " "] else file_name
         site_msg = f"Internet not connected, saving locally as {output_image_path}"
     clear()
 
@@ -1039,8 +1063,8 @@ def main():
 
     __args = parse.parse_args(args_full.split())
 
-    interval_function = read_interval_function(int_func_input)
-    sorting_function = read_sorting_function(sort_func_input)
+    interval_function = ReadIntervalFunction(int_func_input)
+    sorting_function = ReadSortingFunction(sort_func_input)
 
     print(
         f"{image_msg}\n{resolution_msg}\n"
@@ -1078,23 +1102,24 @@ def main():
 
     if shuffled or snapped:
         if snapped:
-            intervals = random(pixels, __args)
-            sorted_pixels = sort_image(pixels, intervals, __args, sorting_function)
+            intervals = file_edges(pixels, __args)
+            sorted_pixels = SortImage(pixels, intervals, __args, sorting_function)
             print(
-                f"{('///' * 15)}\nRun from it. Dread it. Destiny still arrives.\n{('///' * 15)}"
+                f"{('/' * 45)}\nDread it. Run from it. Destiny still arrives.\n{('/' * 45)}"
             )
             thanos_img = Image.new("RGBA", input_img.size)
             size0, size1 = thanos_img.size
-            for y in ProgressBars(size1, "The end is inevitable..."):
+            for y in ProgressBars(size1, "The end is near..."):
                 for x in range(size0):
                     ImgPixels(thanos_img, x, y, sorted_pixels)
-            thanos_img.save("thanos_img.png")
+            thanos_img.save("images/thanos_img.png")
+            print("I am... inevitable...")
             sorted_pixels = interval_function(intervals, __args)
         else:
             sorted_pixels = interval_function(pixels, __args)
     else:
         intervals = interval_function(pixels, __args)
-        sorted_pixels = sort_image(pixels, intervals, __args, sorting_function)
+        sorted_pixels = SortImage(pixels, intervals, __args, sorting_function)
 
     output_img = Image.new("RGBA", input_img.size)
     size0, size1 = output_img.size
@@ -1107,7 +1132,7 @@ def main():
         output_img = output_img.rotate(360 - __args.angle, expand=True)
 
         print("Crop image to apropriate size...")
-        output_img = crop_to(output_img, __args)
+        output_img = CropTo(output_img, __args)
 
     print("Saving image...")
     output_img.save(output_image_path)
@@ -1116,27 +1141,17 @@ def main():
         date_time = datetime.now().strftime("%m/%d/%Y %H:%M")
 
         print("Uploading...")
-        r = post(
-            "https://api.put.re/upload",
-            files={"file": ("image.png", open("image.png", "rb"))},
-        )
-        output = json.loads(r.text)
-        link = output["data"]["link"]
+        link = UploadImg("images/image.png")
         print("Image uploaded!")
 
         if file_sorted:
-            r = post(
-                "https://api.put.re/upload",
-                files={"file": ("eca.png", open("eca.png", "rb"))},
-            )
-            output = json.loads(r.text)
-            file_link = output["data"]["link"]
+            file_link = UploadImg("images/ElementaryCA.png")
             print("File image uploaded!")
 
         # delete old file, seeing as its uploaded
         print("Removing local file...")
         removeOld(output_image_path)
-        removeOld("eca.png")
+        removeOld("images/ElementaryCA.png")
 
         # output to 'output.txt'
         print("Saving config to 'output.txt'...")

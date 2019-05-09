@@ -848,3 +848,93 @@ Sorted on: 05/08/2019 14:34
 
 Sorted image: https://s.put.re/6nCmWKKf.png
 -----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: snap
+
+Sort func: intensity
+Args: -r 50 -c 250 -a 140
+Sorted on: 05/08/2019 21:01
+
+Sorted image: https://s.put.re/SwT6NYZN.png
+-----------------------------------
+Starting image url: https://s.put.re/5zgcV3TT.jpg
+Resolution: 1804x1200
+Int func: snap
+
+Sort func: intensity
+Args: -r 20 -c 220 -a 80
+Sorted on: 05/08/2019 21:04
+
+Sorted image: https://s.put.re/BxKjSET1.png
+-----------------------------------
+Starting image url: https://s.put.re/gcYkpmbd.jpg
+Resolution: 2656x1494
+Int func: snap
+
+Sort func: intensity
+Args: -r 35 -c 190 -a 113
+Sorted on: 05/08/2019 21:06
+
+Sorted image: https://s.put.re/fZooSp8A.png
+-----------------------------------
+Starting image url: https://s.put.re/QsUQbC1R.jpg
+Resolution: 2048x1364
+Int func: snap
+
+Sort func: minimum
+Args: -r 20 -c 70 -a 108
+Sorted on: 05/08/2019 21:08
+
+Sorted image: https://s.put.re/S8fETMYx.png
+-----------------------------------
+Starting image url: https://instagram.fbeg1-1.fna.fbcdn.net/vp/794896c1ad1c05054fb89d9ae7d742e3/5D2F45F8/t51.2885-15/e35/50234430_347525255844361_72004225175225320_n.jpg?_nc_ht=instagram.fbeg1-1.fna.fbcdn.net
+Resolution: 1080x1350
+Int func: file-edges
+File link: https://s.put.re/EZpaCZ9a.png
+Sort func: minimum
+Args: -r 25 -t .65
+Sorted on: 05/08/2019 21:33
+
+Sorted image: https://s.put.re/UVidM5Up.png
+-----------------------------------
+Starting image url: https://instagram.fbeg1-1.fna.fbcdn.net/vp/794896c1ad1c05054fb89d9ae7d742e3/5D2F45F8/t51.2885-15/e35/50234430_347525255844361_72004225175225320_n.jpg?_nc_ht=instagram.fbeg1-1.fna.fbcdn.net
+Resolution: 1080x1350
+Int func: file-edges
+File link: https://s.put.re/mQBjyp6y.png
+Sort func: minimum
+Args: -r 55 -t 0.65
+Sorted on: 05/08/2019 21:35
+
+Sorted image: https://s.put.re/3q3Bo5Gm.png
+-----------------------------------
+Starting image url: https://s.put.re/K49iqXVJ.png
+Resolution: 1080x1350
+Int func: file-edges
+File link: https://s.put.re/vvtZdHKY.png
+Sort func: minimum
+Args: -r 40 -t 0.72
+Sorted on: 05/08/2019 21:48
+
+Sorted image: https://s.put.re/DrwqVToC.png
+-----------------------------------
+Starting image url: https://s.put.re/K49iqXVJ.png
+Resolution: 1080x1350
+Int func: file-edges
+File link: https://s.put.re/KymAonMp.png
+Sort func: minimum
+Args: -r 50 -t 0.84
+Sorted on: 05/08/2019 21:53
+
+Sorted image: https://s.put.re/rMe1n8jA.png
+-----------------------------------
+Starting image url: https://s.put.re/K49iqXVJ.png
+Resolution: 1080x1350
+Int func: file-edges
+File link: https://s.put.re/kHBx6as3.png
+Sort func: minimum
+Args: -r 40 -t 0.7
+Sorted on: 05/08/2019 21:56
+
+Sorted image: https://s.put.re/LYPg1XVr.png
+-----------------------------------
