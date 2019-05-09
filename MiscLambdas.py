@@ -1,15 +1,21 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from PIL import Image
-from requests import get
-from tqdm import tqdm
-from typing import Any, Callable, List, Tuple
 import random as rand
 from colorsys import rgb_to_hsv
 from string import ascii_lowercase, ascii_uppercase, digits
-from Sorting import lightness
+from typing import Any, Callable, List, Tuple
 
+from PIL import Image
+from requests import get
+from tqdm import tqdm
+
+# SORTING PIXELS #
+lightness: Callable[[Any], float] = (lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0)
+intensity: Callable[[Any], float] = lambda p: p[0] + p[1] + p[2]
+hue: Callable[[Any], float] = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0
+saturation: Callable[[Any], float] = (lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0)
+minimum: Callable[[Any], float] = lambda p: min(p[0], p[1], p[2])
 
 black_pixel: Tuple[int, int, int, int] = (0, 0, 0, 255)
 white_pixel: Tuple[int, int, int, int] = (255, 255, 255, 255)

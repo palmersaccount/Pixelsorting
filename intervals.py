@@ -1,40 +1,25 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import argparse
-import json
 import os
 import random as rand
-import socket
-import sys
-from colorsys import rgb_to_hsv
-from datetime import datetime
-from string import ascii_lowercase, ascii_uppercase, digits
-from typing import Any, Callable, List, Tuple
+from typing import Any, List
 
 import numpy as np
 from PIL import Image, ImageFilter
-from requests import get, post
 from tqdm import tqdm
 
-from MiscFuncs import PixelAppend, ElementaryCA
+from MiscFuncs import ElementaryCA, PixelAppend
 from MiscLambdas import (
-    black_pixel,
-    white_pixel,
-    ImgOpen,
     Append,
-    AppendPIL,
-    AppendList,
-    AppendPartial,
-    ImgPixels,
-    RandomWidth,
-    ProgressBars,
     AppendBW,
+    AppendPartial,
+    ImgOpen,
+    ProgressBars,
+    RandomWidth,
+    black_pixel,
     lightness,
-    intensity,
-    hue,
-    saturation,
-    minimum,
+    white_pixel,
 )
 
 

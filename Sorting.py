@@ -1,55 +1,11 @@
 # !/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import argparse
-import json
-import os
 import random as rand
-import socket
-import sys
-from colorsys import rgb_to_hsv
-from datetime import datetime
-from string import ascii_lowercase, ascii_uppercase, digits
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable, List
 
-import numpy as np
-from PIL import Image, ImageFilter
-from requests import get, post
-from tqdm import tqdm
+from MiscLambdas import Append, AppendList, ProgressBars
 
-from MiscLambdas import (
-    black_pixel,
-    white_pixel,
-    ImgOpen,
-    Append,
-    AppendPIL,
-    AppendList,
-    AppendPartial,
-    ImgPixels,
-    RandomWidth,
-    ProgressBars,
-    AppendBW,
-    IDGen,
-)
-from intervals import (
-    random,
-    threshold,
-    edge,
-    waves,
-    snap_sort,
-    file_mask,
-    file_edges,
-    shuffle_total,
-    shuffled_axis,
-    none,
-)
-
-# SORTING PIXELS #
-lightness: Callable[[Any], float] = (lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0)
-intensity: Callable[[Any], float] = lambda p: p[0] + p[1] + p[2]
-hue: Callable[[Any], float] = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0
-saturation: Callable[[Any], float] = (lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0)
-minimum: Callable[[Any], float] = lambda p: min(p[0], p[1], p[2])
 
 # SORTER #
 def SortImage(

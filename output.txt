@@ -998,3 +998,13 @@ Sorted on: 05/09/2019 09:25
 
 Sorted image: https://s.put.re/SVFbB77q.png
 -----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/navmoFNz.png
+Sort func: minimum
+Args: -r 49 -t 0.66
+Sorted on: 05/09/2019 12:06
+
+Sorted image: https://s.put.re/8TME1k8b.png
+-----------------------------------

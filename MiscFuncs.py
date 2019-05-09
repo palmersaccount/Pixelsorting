@@ -9,7 +9,7 @@ from typing import Any, List, Tuple
 from PIL import Image
 from requests import post
 
-from MiscLambdas import ImgOpen, Append, AppendPIL, AppendPartial, ProgressBars
+from MiscLambdas import Append, AppendPartial, AppendPIL, ImgOpen, ProgressBars
 
 
 def HasInternet(host: str, port: int, timeout: int) -> bool:
