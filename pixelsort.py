@@ -72,6 +72,7 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
 def ElementaryCA(pixels: Any) -> Any:
     """
     Generate images of elementary cellular automata.
+    Selected rules from https://en.wikipedia.org/wiki/Elementary_cellular_automaton
     ------
     :param pixels: 2D list of RGB values.
     :returns: PIL Image object.
@@ -366,16 +367,11 @@ def ReadPreset(
             ),
             "full random": (
                 (
-                    "-a "
-                    + str(rand.randrange(0, 360))
-                    + " -c "
-                    + str(rand.randrange(50, 500, 15))
-                    + " -u "
-                    + str((rand.randrange(50, 100, 5) / 100))
-                    + " -t "
-                    + str((rand.randrange(5, 50, 5) / 100))
-                    + " -r "
-                    + str(rand.randrange(5, 100, 5))
+                    f'-a {rand.randrange(0, 360)}'
+                    f'-c {rand.randrange(50, 500, 15)}'
+                    f'-u {(rand.randrange(50, 100, 5) / 100)}'
+                    f'-t {(rand.randrange(5, 50, 5) / 100)}'
+                    f'-r {rand.randrange(5, 100, 5)}'
                 ),
                 int_func_input[str(rand.randint(1, 6))],
                 sort_func_input[str(rand.randint(1, 5))],
