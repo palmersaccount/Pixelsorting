@@ -1048,3 +1048,13 @@ Sorted on: 05/09/2019 15:47
 
 Sorted image: https://s.put.re/cwmkmKFi.png
 -----------------------------------
+Starting image url: https://s.put.re/QGiHaxe6.png
+Resolution: 3840x2560
+Int func: file-edges
+File link: https://s.put.re/hQBnCPNC.png
+Sort func: minimum
+Args: -r 35 -t .86
+Sorted on: 05/10/2019 11:01
+
+Sorted image: https://s.put.re/ys53HwU8.png
+-----------------------------------

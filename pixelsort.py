@@ -81,7 +81,7 @@ def ElementaryCA(pixels: Any, args: Any) -> Any:
 
     width: int = rand.randrange(100, 150)
     height: int = rand.randrange(100, 150)
-    if not args.internet:
+    if not args.int_function == "snap":
         ruleprompt = input(
             f"Rule selection (max of 255)(leave blank for random)\n"
             f"(Recommended to leave blank, most of the rules aren't good): "
