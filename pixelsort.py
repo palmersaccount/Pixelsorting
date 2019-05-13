@@ -160,7 +160,7 @@ def UploadImg(img: str) -> str:
     -----
     :param img: A string of a local file.
     :returns: String of link of the uploaded file.
-    
+
     Example
     -----
     >>> link = UploadImg("https://i.redd.it/ufj4p5zwf9v21.jpg")
