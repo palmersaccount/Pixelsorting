@@ -14,7 +14,7 @@ from typing import Any, Callable, List, Tuple
 
 import numpy as np
 from PIL import Image, ImageFilter
-from requests import get, post
+from requests import get, post, request
 from tqdm import tqdm
 
 
@@ -1181,6 +1181,27 @@ def main():
                 f'Args: {(arg_parse_input if arg_parse_input is not None else "No args")}\n'
                 f'Sorted on: {date_time}\n\nSorted image: {link}\n{(35 * "-")}'
             )
+
+        print("Uploading to DB...")
+        dbURL = "https://pixelsorting-a289.restdb.io/rest/outputs"
+        payload = json.dumps(
+            {
+                "start_link": f"{url}",
+                "resolution": f"{resolution_msg[11:]}",
+                "int_func": f"{int_func_input}",
+                "file_link": f"{file_link}",
+                "sort_func": f"{sort_func_input}",
+                "args": f"{arg_parse_input}",
+                "date": f"{date_time}",
+                "sorted_link": f"{link}",
+            }
+        )
+        headers = {
+            "content-type": "application/json",
+            "x-apikey": "acc71784a255a80c2fd25e081890a1767edaf",
+            "cache-control": "no-cache",
+        }
+        request("POST", dbURL, data=payload, headers=headers)
 
         print("Done!")
         print(f"Link to image: {link}")
