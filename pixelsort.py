@@ -379,11 +379,11 @@ def ReadPreset(
             ),
             "full random": (
                 (
-                    f"-a {rand.randrange(0, 360)}"
-                    f"-c {rand.randrange(50, 500, 15)}"
-                    f"-u {(rand.randrange(50, 100, 5) / 100)}"
-                    f"-t {(rand.randrange(5, 50, 5) / 100)}"
-                    f"-r {rand.randrange(5, 100, 5)}"
+                    f"-a {rand.randrange(0, 360)} "
+                    f"-c {rand.randrange(50, 500, 15)} "
+                    f"-u {(rand.randrange(50, 100, 5) / 100)} "
+                    f"-t {(rand.randrange(5, 50, 5) / 100)} "
+                    f"-r {rand.randrange(5, 100, 5)} "
                 ),
                 int_func_input[str(rand.randint(1, 6))],
                 sort_func_input[str(rand.randint(1, 5))],
@@ -1164,6 +1164,8 @@ def main():
         if file_sorted or snapped:
             file_link = UploadImg("images/ElementaryCA.png")
             print("File image uploaded!")
+        else:
+            file_link = ""
 
         # delete old file, seeing as its uploaded
         print("Removing local file...")
