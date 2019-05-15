@@ -1058,3 +1058,23 @@ Sorted on: 05/10/2019 11:01
 
 Sorted image: https://s.put.re/ys53HwU8.png
 -----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: shuffle-total
+
+Sort func: lightness
+Args: 
+Sorted on: 05/15/2019 08:47
+
+Sorted image: https://s.put.re/3kcHDDSe.png
+-----------------------------------
+Starting image url: https://s.put.re/567w8wpK.jpg
+Resolution: 2560x1600
+Int func: shuffle-axis
+
+Sort func: lightness
+Args: 
+Sorted on: 05/15/2019 08:49
+
+Sorted image: https://s.put.re/8uRcCEjg.png
+-----------------------------------

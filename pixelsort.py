@@ -682,7 +682,8 @@ def shuffle_total(pixels: Any, args: Any) -> List:
 
     for i in ProgressBars(int(height), "Shuffling image..."):
         np.random.shuffle(shuffle[i])
-    shuffled_out: Any = Image.fromarray(shuffle, "RGB")
+    print("Saving shuffled image...")
+    shuffled_out: Any = Image.fromarray(shuffle, "RGBA")
     shuffled_out.save("images/shuffled.png")
     shuffled_img = ImgOpen("images/shuffled.png", False)
     data: Any = shuffled_img.load()
@@ -690,7 +691,6 @@ def shuffle_total(pixels: Any, args: Any) -> List:
     size0, size1 = input_img.size
     pixels = PixelAppend(size1, size0, data, "Recreating image...")
 
-    os.remove("images/shuffled.png")
     return pixels
 
 
@@ -702,7 +702,8 @@ def shuffled_axis(pixels: Any, args: Any) -> List:
 
     for _ in ProgressBars(height, "Shuffling image..."):
         np.random.shuffle(shuffle)
-    shuffled_out: Any = Image.fromarray(shuffle, "RGB")
+    print("Saving shuffled image...")
+    shuffled_out: Any = Image.fromarray(shuffle, "RGBA")
     shuffled_out.save("images/shuffled.png")
     shuffled_img = ImgOpen("images/shuffled.png", False)
     data: Any = shuffled_img.load()
