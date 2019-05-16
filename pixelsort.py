@@ -19,7 +19,12 @@ from tqdm import tqdm
 
 
 # MISC FUNCTIONS #
-def clear():  # clear screen
+def clear():
+    """
+    Clears the screen when called.
+    
+    :return: OS system call to clear the screen based on os type.
+    """
     return os.system("cls" if os.name == "nt" else "clear")
 
 
@@ -174,8 +179,8 @@ def UploadImg(img: str) -> str:
     return link
 
 
-black_pixel: Tuple[int, int, int, int] = (0, 0, 0, 255)
-white_pixel: Tuple[int, int, int, int] = (255, 255, 255, 255)
+BlackPixel: Tuple[int, int, int, int] = (0, 0, 0, 255)
+WhitePixel: Tuple[int, int, int, int] = (255, 255, 255, 255)
 
 # LAMBDA FUNCTIONS #
 ImgOpen: Callable[[str, bool], Any] = lambda u, i: (
@@ -193,9 +198,9 @@ ProgressBars: Callable[[Any, str], Any] = lambda r, d: tqdm(
     range(r), desc=("{:30}".format(d))
 )
 AppendBW: Callable[[List, int, int, Any, float], List] = (
-    lambda l, x, y, d, t: AppendPartial(l, y, white_pixel)
+    lambda l, x, y, d, t: AppendPartial(l, y, WhitePixel)
     if (lightness(d[y][x]) < t)
-    else AppendPartial(l, y, black_pixel)
+    else AppendPartial(l, y, BlackPixel)
 )
 
 
@@ -505,16 +510,13 @@ def edge(pixels: Any, args: Any) -> List:
         range(len(pixels) - 1, 1, -1), desc=("{:30}".format("Cleaning up..."))
     ):
         for x in range(len(pixels[0]) - 1, 1, -1):
-            if (
-                edge_pixels[y][x] == black_pixel
-                and edge_pixels[y][x - 1] == black_pixel
-            ):
-                edge_pixels[y][x] = white_pixel
+            if edge_pixels[y][x] == BlackPixel and edge_pixels[y][x - 1] == BlackPixel:
+                edge_pixels[y][x] = WhitePixel
 
     for y in ProgressBars(len(pixels), "Defining intervals..."):
         Append(intervals, [])
         for x in range(len(pixels[0])):
-            if edge_pixels[y][x] == black_pixel:
+            if edge_pixels[y][x] == BlackPixel:
                 AppendPartial(intervals, y, x)
         AppendPartial(intervals, y, len(pixels[0]))
     return intervals
@@ -582,16 +584,13 @@ def file_mask(pixels: Any, args: Any) -> List:
         range(len(pixels) - 1, 1, -1), desc=("{:30}".format("Cleaning up edges..."))
     ):
         for x in range(len(pixels[0]) - 1, 1, -1):
-            if (
-                file_pixels[y][x] == black_pixel
-                and file_pixels[y][x - 1] == black_pixel
-            ):
-                file_pixels[y][x] = white_pixel
+            if file_pixels[y][x] == BlackPixel and file_pixels[y][x - 1] == BlackPixel:
+                file_pixels[y][x] = WhitePixel
 
     for y in ProgressBars(len(pixels), "Defining intervals..."):
         Append(intervals, [])
         for x in range(len(pixels[0])):
-            if file_pixels[y][x] == black_pixel:
+            if file_pixels[y][x] == BlackPixel:
                 AppendPartial(intervals, y, x)
         AppendPartial(intervals, y, len(pixels[0]))
 
@@ -623,16 +622,13 @@ def file_edges(pixels: Any, args: Any) -> List:
         range(len(pixels) - 1, 1, -1), desc=("{:30}".format("Cleaning up edges..."))
     ):
         for x in range(len(pixels[0]) - 1, 1, -1):
-            if (
-                edge_pixels[y][x] == black_pixel
-                and edge_pixels[y][x - 1] == black_pixel
-            ):
-                edge_pixels[y][x] = white_pixel
+            if edge_pixels[y][x] == BlackPixel and edge_pixels[y][x - 1] == BlackPixel:
+                edge_pixels[y][x] = WhitePixel
 
     for y in ProgressBars(len(pixels), "Defining intervals..."):
         Append(intervals, [])
         for x in range(len(pixels[0])):
-            if edge_pixels[y][x] == black_pixel:
+            if edge_pixels[y][x] == BlackPixel:
                 AppendPartial(intervals, y, x)
         AppendPartial(intervals, y, len(pixels[0]))
     return intervals
@@ -640,27 +636,30 @@ def file_edges(pixels: Any, args: Any) -> List:
 
 def snap_sort(pixels: Any, args: Any) -> List:
     input_img = ImgOpen("images/thanos_img.png", False)
-    pixels_snap: Any = np.asarray(input_img)
+    PixelsSnap: Any = np.asarray(input_img)
 
     print("The hardest choices require the strongest wills...")
     nx, ny = input_img.size
     xy: Any = np.mgrid[:nx, :ny].reshape(2, -1).T
     rounded: int = int(round(int(xy.shape[0] / 2), 0))
 
-    numbers_that_dont_feel_so_good: Any = xy.take(
+    NumbersThatDontFeelSoGood: Any = xy.take(
         np.random.choice(xy.shape[0], rounded, replace=False), axis=0
     )
     print(f'Number of those worthy of the sacrifice: {("{:,}".format(rounded))}')
 
-    pixels_snap.setflags(write=1)
-    for i in ProgressBars(len(numbers_that_dont_feel_so_good), "Snapping..."):
-        pixels_snap[numbers_that_dont_feel_so_good[i][1]][
-            numbers_that_dont_feel_so_good[i][0]
-        ] = [0, 0, 0, 0]
+    PixelsSnap.setflags(write=1)
+    for i in ProgressBars(len(NumbersThatDontFeelSoGood), "Snapping..."):
+        PixelsSnap[NumbersThatDontFeelSoGood[i][1]][NumbersThatDontFeelSoGood[i][0]] = [
+            0,
+            0,
+            0,
+            0,
+        ]
 
     print("Sorted perfectly in half.")
-    feel_better: Any = Image.fromarray(pixels_snap, "RGBA")
-    feel_better.save("images/snapped_pixels.png")
+    FeelBetter: Any = Image.fromarray(PixelsSnap, "RGBA")
+    FeelBetter.save("images/snapped_pixels.png")
 
     snapped_img = ImgOpen("images/snapped_pixels.png", False)
     data: Any = snapped_img.load()
@@ -741,6 +740,7 @@ def main():
     :-a,--angle -> angle for rotation
     :-r,--randomness -> randomness
     :-y,--internet -> is internet connected
+    :-p --preset -> is preset used
     """
     parse.add_argument(
         "-l",
@@ -801,6 +801,13 @@ def main():
         type=bool,
         help="Is internet connected or not? Boolean.",
         default=True,
+    )
+    parse.add_argument(
+        "-p",
+        "--preset",
+        type=bool,
+        help="Is a preset used or not? Boolean.",
+        default=False,
     )
 
     clear()
@@ -1073,7 +1080,7 @@ def main():
         print("No args given!")
         arg_parse_input = ""
 
-    args_full = f"{arg_parse_input} -l {url} -i {int_func_input} -s {sort_func_input} -y {str(internet)}"
+    args_full = f"{arg_parse_input} -l {url} -i {int_func_input} -s {sort_func_input} -y {str(internet)} -p {str(preset_true)}"
 
     __args = parse.parse_args(args_full.split())
 
