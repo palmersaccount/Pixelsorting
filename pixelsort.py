@@ -20,16 +20,15 @@ from tqdm import tqdm
 
 # MISC FUNCTIONS #
 def clear():
-    """
+    r"""
     Clears the screen when called.
     
     :return: OS system call to clear the screen based on os type.
     """
     return os.system("cls" if os.name == "nt" else "clear")
 
-
 def HasInternet(host: str, port: int, timeout: int) -> bool:
-    """
+    r"""
     Checks for internet.
     ------
     :param host: 8.8.8.8 (google-public-dns-a.google.com)
@@ -53,7 +52,7 @@ def HasInternet(host: str, port: int, timeout: int) -> bool:
 
 
 def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
-    """
+    r"""
     Making a 3D array of pixel values from a PIL image.
     -----
     :param size1: img.size[1]/height
@@ -75,7 +74,7 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
 
 
 def ElementaryCA(pixels: Any, args: Any) -> Any:
-    """
+    r"""
     Generate images of elementary cellular automata.
     Selected rules from https://en.wikipedia.org/wiki/Elementary_cellular_automaton
     ------
@@ -160,7 +159,7 @@ def ElementaryCA(pixels: Any, args: Any) -> Any:
 
 
 def UploadImg(img: str) -> str:
-    """
+    r"""
     Upload an image to put.re
     -----
     :param img: A string of a local file.
@@ -214,7 +213,7 @@ minimum: Callable[[Any], float] = lambda p: min(p[0], p[1], p[2])
 
 # READING FUNCTIONS #
 def ReadImageInput(url_input: str, internet: bool) -> Tuple[str, bool, bool, Any]:
-    """
+    r"""
     Reading the image input.
     -----
     :param url_input: The inputted URL, number of default image, or local file path.
@@ -272,7 +271,7 @@ def ReadImageInput(url_input: str, internet: bool) -> Tuple[str, bool, bool, Any
 
 
 def ReadIntervalFunction(int_func_input: str) -> Callable[[Any, Any], List]:
-    """
+    r"""
     Reading the interval function.
     -----
     :param int_func_input: A (lowercase) string.
@@ -303,7 +302,7 @@ def ReadIntervalFunction(int_func_input: str) -> Callable[[Any, Any], List]:
 
 
 def ReadSortingFunction(sort_func_input: str) -> Callable[[Any], float]:
-    """
+    r"""
     Reading the sorting function.
     -----
     :param sort_func_input: A (lowercase) string.
@@ -331,7 +330,7 @@ def ReadSortingFunction(sort_func_input: str) -> Callable[[Any], float]:
 def ReadPreset(
     preset_input: str, width: int
 ) -> Tuple[str, str, str, bool, bool, bool, bool, bool, bool, bool, bool]:
-    """
+    r"""
     Returning values for 'presets'.
     -----
     :param preset_input: A (lowercase) string.
@@ -423,7 +422,7 @@ def ReadPreset(
 def SortImage(
     pixels: List, intervals: List, args: Any, sorting_function: Callable[[Any], float]
 ) -> List:
-    """
+    r"""
     Sorts the image.
     -----
     :param pixels: List of pixel values.
@@ -460,7 +459,7 @@ IDGen: Callable[[int], str] = lambda n: "".join(
 
 
 def CropTo(image_to_crop: Any, args: Any) -> Any:
-    """
+    r"""
     Crops image to the size of a reference image. This function assumes
     that the relevant image is located in the center and you want to crop away
     equal sizes on both the left and right as well on both the top and bottom.
