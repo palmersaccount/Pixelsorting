@@ -27,6 +27,7 @@ def clear():
     """
     return os.system("cls" if os.name == "nt" else "clear")
 
+
 def HasInternet(host: str, port: int, timeout: int) -> bool:
     r"""
     Checks for internet.
@@ -340,8 +341,21 @@ def ReadPreset(
     """
     try:
         # order-- arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped, file_sorted
-        int_func_input: List = ["random", "threshold", "edges", "waves", "file", "file-edges"]
-        sort_func_input: List = ["lightness", "hue", "intensity", "minimum", "saturation"]
+        int_func_input: List = [
+            "random",
+            "threshold",
+            "edges",
+            "waves",
+            "file",
+            "file-edges",
+        ]
+        sort_func_input: List = [
+            "lightness",
+            "hue",
+            "intensity",
+            "minimum",
+            "saturation",
+        ]
         return {
             "main": (
                 (
