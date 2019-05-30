@@ -84,8 +84,8 @@ def ElementaryCA(pixels: Any, args: Any) -> Any:
     """
     rules: List = [26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15, 9, 154]
 
-    width: int = rand.randrange(100, 150)
-    height: int = rand.randrange(100, 150)
+    width: int = rand.randrange(100, 350)
+    height: int = rand.randrange(100, 350)
     if not args.int_function == "snap":
         ruleprompt = input(
             f"Rule selection (max of 255)(leave blank for random)\n"
