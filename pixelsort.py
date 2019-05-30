@@ -329,35 +329,27 @@ def ReadSortingFunction(sort_func_input: str) -> Callable[[Any], float]:
 
 
 def ReadPreset(
-    preset_input: str
+    preset_input: str, width: int
 ) -> Tuple[str, str, str, bool, bool, bool, bool, bool, bool, bool, bool]:
     """
     Returning values for 'presets'.
     -----
     :param preset_input: A (lowercase) string.
+    :param width: the input img width, used for size reference
     :returns: (in order) arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted
     :raises KeyError: String not in selection.
     """
     try:
         # order-- arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped, file_sorted
-        int_func_input = {
-            "1": "random",
-            "2": "threshold",
-            "3": "edges",
-            "4": "waves",
-            "5": "file",
-            "6": "file-edges",
-        }
-        sort_func_input = {
-            "1": "lightness",
-            "2": "hue",
-            "3": "intensity",
-            "4": "minimum",
-            "5": "saturation",
-        }
+        int_func_input: List = ["random", "threshold", "edges", "waves", "file", "file-edges"]
+        sort_func_input: List = ["lightness", "hue", "intensity", "minimum", "saturation"]
         return {
             "main": (
-                ("-r 50 -c 250 -a 45"),
+                (
+                    f"-r {rand.randrange(35, 65, 5)} "
+                    f"-c {(rand.randrange(150, 350, 25)) if (width <= 2500) else rand.randrange(500, 750, 25)} "
+                    f"-a {rand.randrange(0, 360, 15)} "
+                ),
                 "random",
                 "intensity",
                 True,
@@ -370,7 +362,10 @@ def ReadPreset(
                 False,
             ),
             "main file": (
-                (f"-r {rand.randrange(15, 65)} -t {float(rand.randrange(65, 90)/100)}"),
+                (
+                    f"-r {rand.randrange(15, 65, 5)} "
+                    f"-t {float(rand.randrange(65, 90)/100)}"
+                ),
                 "file-edges",
                 "minimum",
                 True,
@@ -384,14 +379,14 @@ def ReadPreset(
             ),
             "full random": (
                 (
-                    f"-a {rand.randrange(0, 360)} "
-                    f"-c {rand.randrange(50, 500, 15)} "
-                    f"-u {(rand.randrange(50, 100, 5) / 100)} "
-                    f"-t {(rand.randrange(5, 50, 5) / 100)} "
+                    f"-a {rand.randrange(0, 360, 15)} "
+                    f"-c {(rand.randrange(50, 500, 25)) if (width <= 2500) else rand.randrange(500, 1250, 25)} "
+                    f"-u {float(rand.randrange(50, 100, 5) / 100)} "
+                    f"-t {float(rand.randrange(5, 50, 5) / 100)} "
                     f"-r {rand.randrange(5, 100, 5)} "
                 ),
-                int_func_input[str(rand.randint(1, 6))],
-                sort_func_input[str(rand.randint(1, 5))],
+                int_func_input[rand.randrange(0, len(int_func_input))],
+                sort_func_input[rand.randrange(0, len(sort_func_input))],
                 True,
                 True,
                 True,
@@ -404,7 +399,7 @@ def ReadPreset(
             "snap-sort": (
                 (
                     f"-r {rand.randrange(15,50,5)} "
-                    f"-c {rand.randrange(50, 250, 10)} "
+                    f"-c {(rand.randrange(50, 250, 25)) if (width <= 2500) else rand.randrange(350, 650, 25)} "
                     f"-a {rand.randrange(0,180)} "
                 ),
                 "snap",
@@ -819,17 +814,18 @@ def main():
     removeOld("images/snapped_pixels.png")
     removeOld("images/ElementaryCA.png")
 
+    internet = HasInternet("8.8.8.8", 53, 3)
+
     print(
-        "Pixel sorting based on web hosted images.\nMost of the backend is sourced from https://github.com/satyarth/pixelsort"
-        + "\nThe output image is uploaded to put.re after being sorted.\n"
-        + "\nTo see any past runs, args used, and the result image, open 'output.txt'\n"
-        + (35 * "--")
-        + "\nThanks for using this program!\nPress any key to continue..."
+        f"Pixel sorting based on {'web hosted images.' if internet else 'local images'}\n"
+        f"Most of the backend is sourced from https://github.com/satyarth/pixelsort"
+        f"\nThe output image is {'uploaded to put.re after being sorted.' if internet else 'saved locally.'}\n"
+        f"\nTo see any past runs, args used, and the result image, open 'output.txt'\n"
+        f"{(35 * '--')}"
+        f"\nThanks for using this program!\nPress any key to continue..."
     )
     input()
     clear()
-
-    internet = HasInternet("8.8.8.8", 53, 3)
 
     if internet:
         url_input = input(
@@ -869,7 +865,7 @@ def main():
     if preset_q in ["y", "yes", "1"]:
         print(
             "Preset options:\n"
-            "-1|main -- Main args (r 50, c 250, a 45, random, intensity)\n"
+            "-1|main -- Main args (r: 35-65, c: random gen, a: 0-360, random, intensity)\n"
             "-2|main file -- Main args, but only for file and file edges\n"
             "-3|full random -- Randomness in every arg!\n"
             "-4|snap-sort -- You could not live with your own failure. And where did that bring you? Back to me."
@@ -884,7 +880,7 @@ def main():
             }[preset_input]
         # if presets are applied, they take over args
         arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted = ReadPreset(
-            preset_input
+            preset_input, width
         )
     else:
         preset_true = False
@@ -1076,6 +1072,7 @@ def main():
         arg_parse_input = input("\nArgs: ")
         clear()
 
+    # arg parsing
     if arg_parse_input in ["", " ", None]:
         print("No args given!")
         arg_parse_input = ""
@@ -1084,8 +1081,8 @@ def main():
 
     __args = parse.parse_args(args_full.split())
 
-    interval_function = ReadIntervalFunction(int_func_input)
-    sorting_function = ReadSortingFunction(sort_func_input)
+    interval_function: Callable[[Any, Any], Any] = ReadIntervalFunction(int_func_input)
+    sorting_function: Callable[[Any, Any], Any] = ReadSortingFunction(sort_func_input)
 
     print(
         f"{image_msg}\n{resolution_msg}\n"
@@ -1114,7 +1111,7 @@ def main():
     print("Opening image...")
 
     print("Rotating image...")
-    input_img = input_img.rotate(__args.angle, expand=True)
+    input_img: Any = input_img.rotate(__args.angle, expand=True)
 
     print("Getting data...")
     data: Any = input_img.load()
