@@ -473,7 +473,7 @@ IDGen: Callable[[int], str] = lambda n: "".join(
 )
 
 
-def CropTo(image_to_crop: Any, args: Any) -> Any:
+def CropTo(image_to_crop: Any, args: Any, internet: bool) -> Any:
     r"""
     Crops image to the size of a reference image. This function assumes
     that the relevant image is located in the center and you want to crop away
@@ -482,7 +482,7 @@ def CropTo(image_to_crop: Any, args: Any) -> Any:
     :param reference_image
     :return: image cropped to the size of the reference image
     """
-    reference_image = ImgOpen(args.url, args.internet)
+    reference_image = ImgOpen(args.url, internet)
     reference_size: Tuple[int, int] = reference_image.size
     current_size: Tuple[int, int] = image_to_crop.size
     dx = current_size[0] - reference_size[0]
@@ -645,30 +645,27 @@ def file_edges(pixels: Any, args: Any, internet: bool) -> List:
 
 def snap_sort(pixels: Any, args: Any, internet: bool) -> List:
     input_img = ImgOpen("images/thanos_img.png", False)
-    PixelsSnap: Any = np.asarray(input_img)
+    pixels_snap: Any = np.asarray(input_img)
 
     print("The hardest choices require the strongest wills...")
     nx, ny = input_img.size
     xy: Any = np.mgrid[:nx, :ny].reshape(2, -1).T
     rounded: int = int(round(int(xy.shape[0] / 2), 0))
 
-    NumbersThatDontFeelSoGood: Any = xy.take(
+    numbers_that_dont_feel_so_good: Any = xy.take(
         np.random.choice(xy.shape[0], rounded, replace=False), axis=0
     )
     print(f'Number of those worthy of the sacrifice: {("{:,}".format(rounded))}')
 
-    PixelsSnap.setflags(write=1)
-    for i in ProgressBars(len(NumbersThatDontFeelSoGood), "Snapping..."):
-        PixelsSnap[NumbersThatDontFeelSoGood[i][1]][NumbersThatDontFeelSoGood[i][0]] = [
-            0,
-            0,
-            0,
-            0,
-        ]
+    pixels_snap.setflags(write=1)
+    for i in ProgressBars(len(numbers_that_dont_feel_so_good), "Snapping..."):
+        pixels_snap[numbers_that_dont_feel_so_good[i][1]][
+            numbers_that_dont_feel_so_good[i][0]
+        ] = [0, 0, 0, 0]
 
     print("Sorted perfectly in half.")
-    FeelBetter: Any = Image.fromarray(PixelsSnap, "RGBA")
-    FeelBetter.save("images/snapped_pixels.png")
+    returned_souls: Any = Image.fromarray(pixels_snap, "RGBA")
+    returned_souls.save("images/snapped_pixels.png")
 
     snapped_img = ImgOpen("images/snapped_pixels.png", False)
     data: Any = snapped_img.load()
@@ -691,9 +688,7 @@ def shuffle_total(pixels: Any, args: Any, internet: bool) -> List:
     for i in ProgressBars(int(height), "Shuffling image..."):
         np.random.shuffle(shuffle[i])
     print("Saving shuffled image...")
-    shuffled_out: Any = Image.fromarray(shuffle, "RGBA")
-    shuffled_out.save("images/shuffled.png")
-    shuffled_img = ImgOpen("images/shuffled.png", False)
+    shuffled_img: Any = Image.fromarray(shuffle, "RGBA")
     data: Any = shuffled_img.load()
 
     size0, size1 = input_img.size
@@ -711,9 +706,7 @@ def shuffled_axis(pixels: Any, args: Any, internet: bool) -> List:
     for _ in ProgressBars(height, "Shuffling image..."):
         np.random.shuffle(shuffle)
     print("Saving shuffled image...")
-    shuffled_out: Any = Image.fromarray(shuffle, "RGBA")
-    shuffled_out.save("images/shuffled.png")
-    shuffled_img = ImgOpen("images/shuffled.png", False)
+    shuffled_img: Any = Image.fromarray(shuffle, "RGBA")
     data: Any = shuffled_img.load()
 
     size0, size1 = input_img.size
@@ -816,7 +809,6 @@ def main():
     removeOld = lambda f: os.remove(f) if os.path.isfile(f) else None
     removeOld("images/image.png")
     removeOld("images/thanos_img.png")
-    removeOld("images/shuffled.png")
     removeOld("images/snapped_pixels.png")
     removeOld("images/ElementaryCA.png")
 
@@ -837,7 +829,7 @@ def main():
         url_input = input(
             "Please input the URL of the image, the default image #, or the image path:\n(this might take a while depending the image resolution)\n"
         )
-        if url_input not in ["0", "1", "2", "3", "4", "5", "6","", " "]:
+        if url_input not in ["0", "1", "2", "3", "4", "5", "6", "", " "]:
             img_parse: Any = urlparse(url_input)
             if img_parse.scheme not in ["http", "https"]:
                 print("Local image detected! Uploading to put.re...")
@@ -1119,8 +1111,6 @@ def main():
     print(f"Angle: {__args.angle} °")
     print("------------------------------")
 
-    print("Opening image...")
-
     print("Rotating image...")
     input_img: Any = input_img.rotate(__args.angle, expand=True)
 
@@ -1164,7 +1154,7 @@ def main():
         output_img = output_img.rotate(360 - __args.angle, expand=True)
 
         print("Crop image to apropriate size...")
-        output_img = CropTo(output_img, __args)
+        output_img = CropTo(output_img, __args, internet)
 
     print("Saving image...")
     output_img.save(output_image_path)
