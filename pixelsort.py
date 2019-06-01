@@ -845,7 +845,7 @@ def main():
         url_input = input(
             "Please input the URL of the image, the default image #, or the image path:\n(this might take a while depending the image resolution)\n"
         )
-        if url_input not in ["0", "1", "2", "3", "4", "5", "6"]:
+        if url_input not in ["0", "1", "2", "3", "4", "5", "6","", " "]:
             img_parse: Any = urlparse(url_input)
             if img_parse.scheme not in ["http", "https"]:
                 print("Local image detected! Uploading to put.re...")
