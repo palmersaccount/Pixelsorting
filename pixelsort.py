@@ -49,7 +49,7 @@ def HasInternet(host: str, port: int, timeout: int) -> bool:
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
         return True
-    except Exception:
+    except:
         return False
 
 
@@ -272,7 +272,7 @@ def ReadImageInput(url_input: str, internet: bool) -> Tuple[str, bool, bool, Any
             return url_options[random_url], False, True, random_url
 
 
-def ReadIntervalFunction(int_func_input: str) -> Callable[[Any, Any], List]:
+def ReadIntervalFunction(int_func_input: str) -> Callable[[Any, Any, bool], List[Any]]:
     r"""
     Reading the interval function.
     -----
@@ -393,7 +393,7 @@ def ReadPreset(
             ),
             "full random": (
                 (
-                    f"-a {rand.randrange(0, 360, 15)} "
+                    f"-a {rand.randrange(0, 360)} "
                     f"-c {(rand.randrange(50, 500, 25)) if (width <= 2500) else rand.randrange(500, 1250, 25)} "
                     f"-u {float(rand.randrange(50, 100, 5) / 100)} "
                     f"-t {float(rand.randrange(5, 50, 5) / 100)} "
@@ -495,9 +495,9 @@ def CropTo(image_to_crop: Any, args: Any) -> Any:
 
 
 # INTERVALS #
-def edge(pixels: Any, args: Any) -> List:
+def edge(pixels: Any, args: Any, internet: bool) -> List:
     edge_data: Any = (
-        ImgOpen(args.url, args.internet)
+        ImgOpen(args.url, internet)
         .rotate(args.angle, expand=True)
         .filter(ImageFilter.FIND_EDGES)
         .convert("RGBA")
@@ -531,7 +531,7 @@ def edge(pixels: Any, args: Any) -> List:
     return intervals
 
 
-def threshold(pixels: Any, args: Any) -> List:
+def threshold(pixels: Any, args: Any, internet: bool) -> List:
     intervals: List = []
 
     for y in ProgressBars(len(pixels), "Determining intervals..."):
@@ -546,7 +546,7 @@ def threshold(pixels: Any, args: Any) -> List:
     return intervals
 
 
-def random(pixels: Any, args: Any) -> List:
+def random(pixels: Any, args: Any, internet: bool) -> List:
     intervals: List = []
 
     for y in ProgressBars(len(pixels), "Determining intervals..."):
@@ -563,7 +563,7 @@ def random(pixels: Any, args: Any) -> List:
     return intervals
 
 
-def waves(pixels: Any, args: Any) -> List:
+def waves(pixels: Any, args: Any, internet: bool) -> List:
     intervals: List = []
 
     for y in ProgressBars(len(pixels), "Determining intervals..."):
@@ -580,7 +580,7 @@ def waves(pixels: Any, args: Any) -> List:
     return intervals
 
 
-def file_mask(pixels: Any, args: Any) -> List:
+def file_mask(pixels: Any, args: Any, internet: bool) -> List:
     img = ElementaryCA(pixels, args).resize(
         (len(pixels[0]), len(pixels)), Image.ANTIALIAS
     )
@@ -606,7 +606,7 @@ def file_mask(pixels: Any, args: Any) -> List:
     return intervals
 
 
-def file_edges(pixels: Any, args: Any) -> List:
+def file_edges(pixels: Any, args: Any, internet: bool) -> List:
     edge_data: Any = (
         ElementaryCA(pixels, args)
         .rotate(args.angle, expand=True)
@@ -643,7 +643,7 @@ def file_edges(pixels: Any, args: Any) -> List:
     return intervals
 
 
-def snap_sort(pixels: Any, args: Any) -> List:
+def snap_sort(pixels: Any, args: Any, internet: bool) -> List:
     input_img = ImgOpen("images/thanos_img.png", False)
     PixelsSnap: Any = np.asarray(input_img)
 
@@ -682,9 +682,9 @@ def snap_sort(pixels: Any, args: Any) -> List:
     return pixels_return
 
 
-def shuffle_total(pixels: Any, args: Any) -> List:
+def shuffle_total(pixels: Any, args: Any, internet: bool) -> List:
     print("Creating array from image...")
-    input_img = ImgOpen(args.url, args.internet)
+    input_img = ImgOpen(args.url, internet)
     height: int = input_img.size[1]
     shuffle: Any = np.array(input_img)
 
@@ -702,9 +702,9 @@ def shuffle_total(pixels: Any, args: Any) -> List:
     return pixels
 
 
-def shuffled_axis(pixels: Any, args: Any) -> List:
+def shuffled_axis(pixels: Any, args: Any, internet: bool) -> List:
     print("Creating array from image...")
-    input_img = ImgOpen(args.url, args.internet)
+    input_img = ImgOpen(args.url, internet)
     height: int = input_img.size[1]
     shuffle: Any = np.array(input_img)
 
@@ -723,7 +723,7 @@ def shuffled_axis(pixels: Any, args: Any) -> List:
     return pixels
 
 
-def none(pixels: Any, args: Any) -> List:
+def none(pixels: Any, args: Any, internet: bool) -> List:
     intervals: List = []
     for y in ProgressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [len(pixels[y])])
@@ -748,7 +748,6 @@ def main():
     :-c,--clength -> character length
     :-a,--angle -> angle for rotation
     :-r,--randomness -> randomness
-    :-y,--internet -> is internet connected
     :-p --preset -> is preset used
     """
     parse.add_argument(
@@ -803,13 +802,6 @@ def main():
         type=float,
         help="What percentage of intervals are NOT sorted",
         default=10,
-    )
-    parse.add_argument(
-        "-y",
-        "--internet",
-        type=bool,
-        help="Is internet connected or not? Boolean.",
-        default=True,
     )
     parse.add_argument(
         "-p",
@@ -1096,7 +1088,7 @@ def main():
         print("No args given!")
         arg_parse_input = ""
 
-    args_full = f"{arg_parse_input} -l {url} -i {int_func_input} -s {sort_func_input} -y {str(internet)} -p {str(preset_true)}"
+    args_full: str = f"{arg_parse_input} -l {url} -i {int_func_input} -s {sort_func_input} -p {str(preset_true)}"
 
     __args = parse.parse_args(args_full.split())
 
@@ -1136,11 +1128,11 @@ def main():
     data: Any = input_img.load()
 
     size0, size1 = input_img.size
-    pixels = PixelAppend(size1, size0, data, "Getting pixels...")
+    pixels: List = PixelAppend(size1, size0, data, "Getting pixels...")
 
     if shuffled or snapped:
         if snapped:
-            intervals = file_edges(pixels, __args)
+            intervals = file_edges(pixels, __args, internet)
             sorted_pixels = SortImage(pixels, intervals, __args, sorting_function)
             print(
                 f"{('/' * 45)}\n"
@@ -1154,11 +1146,11 @@ def main():
                     ImgPixels(thanos_img, x, y, sorted_pixels)
             thanos_img.save("images/thanos_img.png")
             print("I am... inevitable...")
-            sorted_pixels = interval_function(intervals, __args)
+            sorted_pixels = interval_function(intervals, __args, internet)
         else:
-            sorted_pixels = interval_function(pixels, __args)
+            sorted_pixels = interval_function(pixels, __args, internet)
     else:
-        intervals = interval_function(pixels, __args)
+        intervals = interval_function(pixels, __args, internet)
         sorted_pixels = SortImage(pixels, intervals, __args, sorting_function)
 
     output_img = Image.new("RGBA", input_img.size)

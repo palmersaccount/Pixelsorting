@@ -1088,3 +1088,13 @@ Sorted on: 05/31/2019 23:05
 
 Sorted image: https://s.put.re/uzmaDGoU.png
 -----------------------------------
+Starting image url: https://s.put.re/d1cDtXr6.jpg
+Resolution: 4577x3051
+Int func (randomly chosen): file-edges
+
+Sort func (randomly chosen): hue
+Args: -a 75 -c 1200 -u 0.5 -t 0.15 -r 5 
+Sorted on: 06/01/2019 08:49
+
+Sorted image: https://s.put.re/FwrsowrX.png
+-----------------------------------
