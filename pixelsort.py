@@ -9,6 +9,7 @@ import socket
 import sys
 from colorsys import rgb_to_hsv
 from datetime import datetime
+from urllib.parse import urlparse
 from string import ascii_lowercase, ascii_uppercase, digits
 from typing import Any, Callable, List, Tuple
 
@@ -842,8 +843,12 @@ def main():
 
     if internet:
         url_input = input(
-            "Please input the URL of the image or the default image #:\n(this might take a while depending the image resolution)\n"
+            "Please input the URL of the image, the default image #, or the image path:\n(this might take a while depending the image resolution)\n"
         )
+        img_parse: Any = urlparse(url_input)
+        if img_parse.scheme not in ['http', 'https']:
+            print("Local image detected! Uploading to put.re...")
+            url_input = UploadImg(url_input)
         if len(url_input) > 50:
             print("Image URL too long, uploading to put.re for a shorter URL...")
             img = ImgOpen(url_input, internet)
