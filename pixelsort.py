@@ -16,7 +16,7 @@ from typing import Any, Callable, List, Tuple
 import numpy as np
 from PIL import Image, ImageFilter
 from requests import get, post, request
-from tqdm import tqdm
+from tqdm import tqdm, trange
 
 
 # MISC FUNCTIONS #
@@ -195,8 +195,8 @@ ImgPixels: Callable[[Any, int, int, Any], Any] = lambda i, x, y, d: i.putpixel(
     (x, y), d[y][x]
 )
 RandomWidth: Callable[[int], int] = lambda c: int(c * (1 - rand.random()))
-ProgressBars: Callable[[Any, str], Any] = lambda r, d: tqdm(
-    range(r), desc=("{:30}".format(d))
+ProgressBars: Callable[[Any, str], Any] = lambda r, d: trange(
+    r, desc=("{:30}".format(d))
 )
 AppendBW: Callable[[List, int, int, Any, float], List] = (
     lambda l, x, y, d, t: AppendPartial(l, y, WhitePixel)
