@@ -12,7 +12,7 @@ from string import ascii_lowercase, ascii_uppercase, digits
 from typing import Any, Callable, List, Tuple
 from urllib.parse import urlparse
 
-from numpy import array, asarray, mgrid
+from numpy import array, mgrid
 from numpy.random import choice, shuffle
 from PIL import Image, ImageFilter
 from requests import get, post, request
@@ -23,7 +23,6 @@ from tqdm import tqdm, trange
 def clear():
     r"""
     Clears the screen when called.
-    
     :return: OS system call to clear the screen based on os type.
     """
     return system("cls" if name == "nt" else "clear")
@@ -700,12 +699,12 @@ def shuffled_axis(pixels: Any, args: Any, internet: bool) -> List:
     print("Creating array from image...")
     input_img = ImgOpen(args.url, internet)
     height: int = input_img.size[1]
-    shuffle: Any = array(input_img)
+    shuffled: Any = array(input_img)
 
     for _ in ProgressBars(height, "Shuffling image..."):
-        shuffle(shuffle)
+        shuffle(shuffled)
     print("Saving shuffled image...")
-    shuffled_img: Any = Image.fromarray(shuffle, "RGBA")
+    shuffled_img: Any = Image.fromarray(shuffled, "RGBA")
     data: Any = shuffled_img.load()
 
     size0, size1 = input_img.size
