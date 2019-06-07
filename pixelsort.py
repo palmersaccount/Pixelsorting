@@ -4,6 +4,7 @@
 import argparse
 import random as rand
 import socket
+from sys import exit
 from colorsys import rgb_to_hsv
 from datetime import datetime
 from json import dumps, loads
@@ -179,13 +180,26 @@ def UploadImg(img: str) -> str:
     return link
 
 
+def ImgOpen(url: str, internet: bool) -> Any:
+    r"""
+    Opens the image from a direct url if the internet is connected.
+    ------
+    :param url: The URL of a direct image.
+    :param internet: a bool if the internet is connected.
+    :returns: Callable 'Image' object from Pillow.
+    """
+    try:
+        img = Image.open((get(url, stream=True).raw) if internet else url)
+        return img
+    except OSError:
+        print(f"{'///'*15}\nURL '{url}' not usable!\nPlease find the direct image url to use this script!\n{'///'*15}")
+        exit()
+
+
 BlackPixel: Tuple[int, int, int, int] = (0, 0, 0, 255)
 WhitePixel: Tuple[int, int, int, int] = (255, 255, 255, 255)
 
 # LAMBDA FUNCTIONS #
-ImgOpen: Callable[[str, bool], Any] = lambda u, i: (
-    Image.open((get(u, stream=True).raw) if i else u)
-).convert("RGBA")
 Append: Callable[[Any, Any], Any] = lambda l, obj: l.append(obj)
 AppendPIL: Callable[[Any, int, int, Any], Any] = lambda l, x, y, d: l[y].append(d[x, y])
 AppendList: Callable[[List, int, int, Any], Any] = lambda l, x, y, d: l.append(d[y][x])
@@ -269,7 +283,6 @@ def ReadImageInput(url_input: str, internet: bool) -> Tuple[str, bool, bool, Any
             )
         except KeyError:
             return url_options[random_url], False, True, random_url
-
 
 def ReadIntervalFunction(int_func_input: str) -> Callable[[Any, Any, bool], List[Any]]:
     r"""
