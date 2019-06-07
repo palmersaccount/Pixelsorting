@@ -13,7 +13,10 @@ from urllib.parse import urlparse
 from string import ascii_lowercase, ascii_uppercase, digits
 from typing import Any, Callable, List, Tuple
 
-import numpy as np
+#import numpy as np
+from numpy import asarray, mgrid, array
+from numpy.random import choice, shuffle
+
 from PIL import Image, ImageFilter
 from requests import get, post, request
 from tqdm import tqdm, trange
@@ -645,19 +648,18 @@ def file_edges(pixels: Any, args: Any, internet: bool) -> List:
 
 def snap_sort(pixels: Any, args: Any, internet: bool) -> List:
     input_img = ImgOpen("images/thanos_img.png", False)
-    pixels_snap: Any = np.asarray(input_img)
+    pixels_snap: Any = array(input_img)
 
     print("The hardest choices require the strongest wills...")
     nx, ny = input_img.size
-    xy: Any = np.mgrid[:nx, :ny].reshape(2, -1).T
+    xy: Any = mgrid[:nx, :ny].reshape(2, -1).T
     rounded: int = int(round(int(xy.shape[0] / 2), 0))
 
     numbers_that_dont_feel_so_good: Any = xy.take(
-        np.random.choice(xy.shape[0], rounded, replace=False), axis=0
+        choice(xy.shape[0], rounded, replace=False), axis=0
     )
     print(f'Number of those worthy of the sacrifice: {("{:,}".format(rounded))}')
 
-    pixels_snap.setflags(write=1)
     for i in ProgressBars(len(numbers_that_dont_feel_so_good), "Snapping..."):
         pixels_snap[numbers_that_dont_feel_so_good[i][1]][
             numbers_that_dont_feel_so_good[i][0]
@@ -683,12 +685,12 @@ def shuffle_total(pixels: Any, args: Any, internet: bool) -> List:
     print("Creating array from image...")
     input_img = ImgOpen(args.url, internet)
     height: int = input_img.size[1]
-    shuffle: Any = np.array(input_img)
+    shuffled: Any = array(input_img)
 
     for i in ProgressBars(int(height), "Shuffling image..."):
-        np.random.shuffle(shuffle[i])
+        shuffled(shuffled[i])
     print("Saving shuffled image...")
-    shuffled_img: Any = Image.fromarray(shuffle, "RGBA")
+    shuffled_img: Any = Image.fromarray(shuffled, "RGBA")
     data: Any = shuffled_img.load()
 
     size0, size1 = input_img.size
@@ -701,10 +703,10 @@ def shuffled_axis(pixels: Any, args: Any, internet: bool) -> List:
     print("Creating array from image...")
     input_img = ImgOpen(args.url, internet)
     height: int = input_img.size[1]
-    shuffle: Any = np.array(input_img)
+    shuffle: Any = array(input_img)
 
     for _ in ProgressBars(height, "Shuffling image..."):
-        np.random.shuffle(shuffle)
+        shuffle(shuffle)
     print("Saving shuffled image...")
     shuffled_img: Any = Image.fromarray(shuffle, "RGBA")
     data: Any = shuffled_img.load()
