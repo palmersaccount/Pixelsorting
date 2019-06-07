@@ -174,10 +174,14 @@ def UploadImg(img: str) -> str:
     >>> "https://s.put.re/Uc2A2Z7t.jpg"
     (those links are actually correct.)
     """
-    r = post("https://api.put.re/upload", files={"file": (img, open(img, "rb"))})
-    output = loads(r.text)
-    link: str = output["data"]["link"]
-    return link
+    try:
+        r = post("https://api.put.re/upload", files={"file": (img, open(img, "rb"))})
+        output = loads(r.text)
+        link: str = output["data"]["link"]
+        return link
+    except FileNotFoundError:
+        print(f"{'---'*15}\n'{img}' not usable!\nPlease find a proper image to use this script!\n{'---'*15}")
+        exit()
 
 
 def ImgOpen(url: str, internet: bool) -> Any:
@@ -192,7 +196,7 @@ def ImgOpen(url: str, internet: bool) -> Any:
         img = Image.open((get(url, stream=True).raw) if internet else url)
         return img
     except OSError:
-        print(f"{'///'*15}\nURL '{url}' not usable!\nPlease find the direct image url to use this script!\n{'///'*15}")
+        print(f"{'---'*15}\nURL '{url}' not usable!\nPlease find the direct image url to use this script!\n{'---'*15}")
         exit()
 
 
@@ -283,6 +287,7 @@ def ReadImageInput(url_input: str, internet: bool) -> Tuple[str, bool, bool, Any
             )
         except KeyError:
             return url_options[random_url], False, True, random_url
+
 
 def ReadIntervalFunction(int_func_input: str) -> Callable[[Any, Any, bool], List[Any]]:
     r"""

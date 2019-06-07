@@ -1218,3 +1218,23 @@ Sorted on: 06/07/2019 13:32
 
 Sorted image: https://s.put.re/3jFgg1rh.png
 -----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: random
+
+Sort func: lightness
+Args: 
+Sorted on: 06/07/2019 14:04
+
+Sorted image: https://s.put.re/6NrwHjHr.png
+-----------------------------------
+Starting image url: http://images.swoop-arctic.com/1200x720x50/Shu_3_shu_all_Northernlights4.jpg
+Resolution: 1200x720
+Int func: random
+
+Sort func: lightness
+Args: -r 45 -c 450 -a 34 -t .1 -u .5
+Sorted on: 06/07/2019 14:08
+
+Sorted image: https://s.put.re/81QfB8bW.png
+-----------------------------------
