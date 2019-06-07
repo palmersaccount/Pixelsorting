@@ -2,21 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import json
-import os
 import random as rand
 import socket
-import sys
 from colorsys import rgb_to_hsv
 from datetime import datetime
-from urllib.parse import urlparse
+from json import dumps, loads
+from os import name, path, remove, system
 from string import ascii_lowercase, ascii_uppercase, digits
 from typing import Any, Callable, List, Tuple
+from urllib.parse import urlparse
 
-#import numpy as np
-from numpy import asarray, mgrid, array
+from numpy import array, asarray, mgrid
 from numpy.random import choice, shuffle
-
 from PIL import Image, ImageFilter
 from requests import get, post, request
 from tqdm import tqdm, trange
@@ -29,7 +26,7 @@ def clear():
     
     :return: OS system call to clear the screen based on os type.
     """
-    return os.system("cls" if os.name == "nt" else "clear")
+    return system("cls" if name == "nt" else "clear")
 
 
 def HasInternet(host: str, port: int, timeout: int) -> bool:
@@ -178,7 +175,7 @@ def UploadImg(img: str) -> str:
     (those links are actually correct.)
     """
     r = post("https://api.put.re/upload", files={"file": (img, open(img, "rb"))})
-    output = json.loads(r.text)
+    output = loads(r.text)
     link: str = output["data"]["link"]
     return link
 
@@ -674,8 +671,8 @@ def snap_sort(pixels: Any, args: Any, internet: bool) -> List:
     size0, size1 = snapped_img.size
     pixels_return = PixelAppend(size1, size0, data, "I hope they remember you...")
 
-    os.remove("images/snapped_pixels.png")
-    os.remove("images/thanos_img.png")
+    remove("images/snapped_pixels.png")
+    remove("images/thanos_img.png")
     print(f"{('/' * 45)}\nPerfectly balanced, as all things should be.\n{('/' * 45)}")
 
     return pixels_return
@@ -714,7 +711,7 @@ def shuffled_axis(pixels: Any, args: Any, internet: bool) -> List:
     size0, size1 = input_img.size
     pixels = PixelAppend(size1, size0, data, "Recreating image...")
 
-    os.remove("images/shuffled.png")
+    remove("images/shuffled.png")
     return pixels
 
 
@@ -808,7 +805,7 @@ def main():
 
     clear()
     # remove old image files that didn't get deleted before
-    removeOld = lambda f: os.remove(f) if os.path.isfile(f) else None
+    removeOld = lambda f: remove(f) if path.isfile(f) else None
     removeOld("images/image.png")
     removeOld("images/thanos_img.png")
     removeOld("images/snapped_pixels.png")
@@ -1194,7 +1191,7 @@ def main():
 
         print("Uploading to DB...")
         dbURL = "https://pixelsorting-a289.restdb.io/rest/outputs"
-        payload = json.dumps(
+        payload = dumps(
             {
                 "start_link": f"{url}",
                 "resolution": f"{resolution_msg[11:]}",
