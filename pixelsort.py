@@ -833,7 +833,7 @@ def main():
             if img_parse.scheme not in ["http", "https"]:
                 print("Local image detected! Uploading to put.re...")
                 url_input = UploadImg(url_input)
-        if len(url_input) > 50:
+        if len(url_input) > 79:
             print("Image URL too long, uploading to put.re for a shorter URL...")
             img = ImgOpen(url_input, internet)
             img.save("image.png")

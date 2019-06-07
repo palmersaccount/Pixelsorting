@@ -1108,3 +1108,113 @@ Sorted on: 06/01/2019 20:39
 
 Sorted image: https://s.put.re/oVZPND2N.png
 -----------------------------------
+Starting image url: https://s.put.re/dQ2wS13v.png
+Resolution: 2048x1367
+Int func: file-edges
+File link: https://s.put.re/tKupmC4g.png
+Sort func: minimum
+Args: -r 55 -t 0.84
+Sorted on: 06/07/2019 13:13
+
+Sorted image: https://s.put.re/aN2QqRs9.png
+-----------------------------------
+Starting image url: https://s.put.re/98EJgqVm.png
+Resolution: 2048x1367
+Int func: random
+
+Sort func: intensity
+Args: -r 50 -c 250 -a 165 
+Sorted on: 06/07/2019 13:13
+
+Sorted image: https://s.put.re/JRQVAch7.png
+-----------------------------------
+Starting image url: https://s.put.re/BbGEcjKE.png
+Resolution: 2048x1367
+Int func: random
+
+Sort func: intensity
+Args: -r 35 -c 175 -a 180 
+Sorted on: 06/07/2019 13:14
+
+Sorted image: https://s.put.re/mvkeVhVS.png
+-----------------------------------
+Starting image url: https://s.put.re/5LyVHcRE.png
+Resolution: 2048x1367
+Int func: random
+
+Sort func: intensity
+Args: -r 46 -a 215 -c 500
+Sorted on: 06/07/2019 13:16
+
+Sorted image: https://s.put.re/Ua7Pe8c3.png
+-----------------------------------
+Starting image url: https://s.put.re/HST5vn9t.png
+Resolution: 2048x1367
+Int func: random
+
+Sort func: intensity
+Args: -r 50 -a 47 -c 450
+Sorted on: 06/07/2019 13:17
+
+Sorted image: https://s.put.re/9nx8qYwh.png
+-----------------------------------
+Starting image url: https://s.put.re/MarSFuzo.png
+Resolution: 2048x1367
+Int func: waves
+
+Sort func: minimum
+Args: -r 35 -a 37 -t .75
+Sorted on: 06/07/2019 13:19
+
+Sorted image: https://s.put.re/UHCVhZyt.png
+-----------------------------------
+Starting image url: https://i.redd.it/3ywt465zpv231.jpg
+Resolution: 640x960
+Int func (randomly chosen): threshold
+
+Sort func (randomly chosen): lightness
+Args: -a 221 -c 75 -u 0.75 -t 0.45 -r 40 
+Sorted on: 06/07/2019 13:29
+
+Sorted image: https://s.put.re/L8ic1iRs.png
+-----------------------------------
+Starting image url: https://s.put.re/C2gb61oy.png
+Resolution: 801x1200
+Int func (randomly chosen): random
+
+Sort func (randomly chosen): hue
+Args: -a 212 -c 450 -u 0.7 -t 0.45 -r 70 
+Sorted on: 06/07/2019 13:30
+
+Sorted image: https://s.put.re/NbjpdqW9.png
+-----------------------------------
+Starting image url: https://s.put.re/ivzi6KeR.png
+Resolution: 801x1200
+Int func (randomly chosen): waves
+
+Sort func (randomly chosen): minimum
+Args: -a 86 -c 425 -u 0.75 -t 0.1 -r 35 
+Sorted on: 06/07/2019 13:31
+
+Sorted image: https://s.put.re/6yDq5U2z.png
+-----------------------------------
+Starting image url: https://data.whicdn.com/images/302075116/original.jpg
+Resolution: 801x1200
+Int func (randomly chosen): edges
+
+Sort func (randomly chosen): intensity
+Args: -a 267 -c 325 -u 0.75 -t 0.25 -r 45 
+Sorted on: 06/07/2019 13:31
+
+Sorted image: https://s.put.re/Tjd6Dh6A.png
+-----------------------------------
+Starting image url: https://data.whicdn.com/images/302075116/original.jpg
+Resolution: 801x1200
+Int func: file-edges
+File link: https://s.put.re/6pUtB97H.png
+Sort func: minimum
+Args: -r 45 -c 450 -a 45
+Sorted on: 06/07/2019 13:32
+
+Sorted image: https://s.put.re/3jFgg1rh.png
+-----------------------------------
