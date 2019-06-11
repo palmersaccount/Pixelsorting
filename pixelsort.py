@@ -256,7 +256,7 @@ def ReadImageInput(url_input: str, internet: bool) -> Tuple[str, bool, bool, Any
     except IOError:
         random_url = str(rand.randint(0, 5))
         url_options = {
-            "0": "https://s.put.re/TKnTHivM.jpg",
+            "0": "https://s.put.re/SRcqAfhP.jpg",
             "1": "https://s.put.re/Ds9KV8jX.jpg",
             "2": "https://s.put.re/QsUQbC1R.jpg",
             "3": "https://s.put.re/5zgcV3TT.jpg",
