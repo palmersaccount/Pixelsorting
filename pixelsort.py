@@ -85,8 +85,8 @@ def ElementaryCA(pixels: Any, args: Any) -> Any:
     """
     rules: List = [26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15, 9, 154]
 
-    width: int = rand.randrange(100, 350)
-    height: int = rand.randrange(100, 350)
+    width: int = rand.randrange(350, 500)
+    height: int = rand.randrange(350, 500)
     if not args.int_function == "snap":
         ruleprompt = input(
             f"Rule selection (max of 255)(leave blank for random)\n"
@@ -377,9 +377,9 @@ def ReadPreset(
         return {
             "main": (
                 (
-                    f"-r {rand.randrange(35, 65, 5)} "
+                    f"-r {rand.randrange(35, 65)} "
                     f"-c {(rand.randrange(150, 350, 25)) if (width <= 2500) else rand.randrange(500, 750, 25)} "
-                    f"-a {rand.randrange(0, 360, 15)} "
+                    f"-a {rand.randrange(0, 360)} "
                 ),
                 "random",
                 "intensity",
@@ -394,7 +394,7 @@ def ReadPreset(
             ),
             "main file": (
                 (
-                    f"-r {rand.randrange(15, 65, 5)} "
+                    f"-r {rand.randrange(15, 65)} "
                     f"-t {float(rand.randrange(65, 90)/100)}"
                 ),
                 "file-edges",
@@ -414,7 +414,7 @@ def ReadPreset(
                     f"-c {(rand.randrange(50, 500, 25)) if (width <= 2500) else rand.randrange(500, 1250, 25)} "
                     f"-u {float(rand.randrange(50, 100, 5) / 100)} "
                     f"-t {float(rand.randrange(5, 50, 5) / 100)} "
-                    f"-r {rand.randrange(5, 100, 5)} "
+                    f"-r {rand.randrange(5, 100)} "
                 ),
                 int_func_input[rand.randrange(0, len(int_func_input))],
                 sort_func_input[rand.randrange(0, len(sort_func_input))],
