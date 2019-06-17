@@ -83,81 +83,87 @@ def ElementaryCA(pixels: Any, args: Any) -> Any:
     :param pixels: 2D list of RGB values.
     :returns: PIL Image object.
     """
-    rules: List = [26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15, 9, 154]
+    if args.filelink in ["False", ""]:
+        rules: List = [26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15, 9, 154]
 
-    width: int = rand.randrange(350, 500)
-    height: int = rand.randrange(350, 500)
-    if not args.int_function == "snap":
-        ruleprompt = input(
-            f"Rule selection (max of 255)(leave blank for random)\n"
-            f"(Recommended to leave blank, most of the rules aren't good): "
-        )
-        try:
-            if int(ruleprompt) in range(255):
-                rulenumber: int = int(ruleprompt)
-            else:
-                print("Number not in range, using random rule.")
-                raise ValueError
-        except ValueError:
-            rulenumber = rules[rand.randrange(0, len(rules))]
-    else:
-        rulenumber = rules[rand.randrange(0, len(rules))]
-
-    scalefactor: int = rand.randrange(1, 5)
-
-    # Define colors of the output image
-    true_pixel: Tuple[int, int, int] = (255, 255, 255)
-    false_pixel: Tuple[int, int, int] = (0, 0, 0)
-
-    # Generates a dictionary that tells you what your state should be based on the rule number
-    # and the states of the adjacent cells in the previous generation
-    def generate_rule(rulenumber: int) -> dict:
-        rule: dict = {}
-        for left in [False, True]:
-            for middle in [False, True]:
-                for right in [False, True]:
-                    rule[(left, middle, right)] = rulenumber % 2 == 1
-                    rulenumber //= 2
-        return rule
-
-    # Generates a 2d representation of the state of the automaton at each generation
-    def generate_ca(rule: dict) -> List:
-        ca: List = []
-        # Initialize the first row of ca randomly
-        Append(ca, [])
-        for x in range(width):
-            AppendPartial(ca, 0, bool(rand.getrandbits(1)))
-
-        # Generate the succeeding generation
-        # Cells at the eges are initialized randomly
-        for y in range(1, height):
-            Append(ca, [])
-            AppendPartial(ca, y, bool(rand.getrandbits(1)))
-            for x in range(1, width - 1):
-                AppendPartial(
-                    ca, y, (rule[(ca[y - 1][x - 1], ca[y - 1][x], ca[y - 1][x + 1])])
-                )
-            AppendPartial(ca, y, bool(rand.getrandbits(1)))
-        return ca
-
-    rule = generate_rule(rulenumber)
-    ca = generate_ca(rule)
-
-    newImg = Image.new("RGB", [width, height])
-
-    print(f"Creating file image..\nRule: {rulenumber}")
-    for y in ProgressBars(height, "Placing pixels..."):
-        for x in range(width):
-            newImg.putpixel(
-                (x, y),
-                true_pixel
-                if ca[int(y / scalefactor)][int(x / scalefactor)]
-                else false_pixel,
+        width: int = rand.randrange(350, 500)
+        height: int = rand.randrange(350, 500)
+        if not args.int_function == "snap":
+            ruleprompt = input(
+                f"Rule selection (max of 255)(leave blank for random)\n"
+                f"(Recommended to leave blank, most of the rules aren't good): "
             )
+            try:
+                if int(ruleprompt) in range(255):
+                    rulenumber: int = int(ruleprompt)
+                else:
+                    print("Number not in range, using random rule.")
+                    raise ValueError
+            except ValueError:
+                rulenumber = rules[rand.randrange(0, len(rules))]
+        else:
+            rulenumber = rules[rand.randrange(0, len(rules))]
 
-    print("File image created!")
-    newImg.save("images/ElementaryCA.png")
-    return newImg
+        scalefactor: int = rand.randrange(1, 5)
+
+        # Define colors of the output image
+        true_pixel: Tuple[int, int, int] = (255, 255, 255)
+        false_pixel: Tuple[int, int, int] = (0, 0, 0)
+
+        # Generates a dictionary that tells you what your state should be based on the rule number
+        # and the states of the adjacent cells in the previous generation
+        def generate_rule(rulenumber: int) -> dict:
+            rule: dict = {}
+            for left in [False, True]:
+                for middle in [False, True]:
+                    for right in [False, True]:
+                        rule[(left, middle, right)] = rulenumber % 2 == 1
+                        rulenumber //= 2
+            return rule
+
+        # Generates a 2d representation of the state of the automaton at each generation
+        def generate_ca(rule: dict) -> List:
+            ca: List = []
+            # Initialize the first row of ca randomly
+            Append(ca, [])
+            for x in range(width):
+                AppendPartial(ca, 0, bool(rand.getrandbits(1)))
+
+            # Generate the succeeding generation
+            # Cells at the eges are initialized randomly
+            for y in range(1, height):
+                Append(ca, [])
+                AppendPartial(ca, y, bool(rand.getrandbits(1)))
+                for x in range(1, width - 1):
+                    AppendPartial(
+                        ca, y, (rule[(ca[y - 1][x - 1], ca[y - 1][x], ca[y - 1][x + 1])])
+                    )
+                AppendPartial(ca, y, bool(rand.getrandbits(1)))
+            return ca
+
+        rule = generate_rule(rulenumber)
+        ca = generate_ca(rule)
+
+        newImg = Image.new("RGB", [width, height])
+
+        print(f"Creating file image..\nRule: {rulenumber}")
+        for y in ProgressBars(height, "Placing pixels..."):
+            for x in range(width):
+                newImg.putpixel(
+                    (x, y),
+                    true_pixel
+                    if ca[int(y / scalefactor)][int(x / scalefactor)]
+                    else false_pixel,
+                )
+
+        print("File image created!")
+        newImg.save("images/ElementaryCA.png")
+        return newImg
+    else:
+        print("Using file image from DB...")
+        img = ImgOpen(args.filelink, True)
+        img.save("images/ElementaryCA.png")
+        return img
 
 
 def UploadImg(img: str) -> str:
@@ -180,7 +186,9 @@ def UploadImg(img: str) -> str:
         link: str = output["data"]["link"]
         return link
     except FileNotFoundError:
-        print(f"{'---'*15}\n'{img}' not usable!\nPlease find a proper image to use this script!\n{'---'*15}")
+        print(
+            f"{'---'*15}\n'{img}' not usable!\nPlease find a proper image to use this script!\n{'---'*15}"
+        )
         exit()
 
 
@@ -196,7 +204,9 @@ def ImgOpen(url: str, internet: bool) -> Any:
         img = Image.open((get(url, stream=True).raw) if internet else url)
         return img
     except OSError:
-        print(f"{'---'*15}\nURL '{url}' not usable!\nPlease find the direct image url to use this script!\n{'---'*15}")
+        print(
+            f"{'---'*15}\nURL '{url}' not usable!\nPlease find the direct image url to use this script!\n{'---'*15}"
+        )
         exit()
 
 
@@ -348,17 +358,17 @@ def ReadSortingFunction(sort_func_input: str) -> Callable[[Any], float]:
 
 def ReadPreset(
     preset_input: str, width: int
-) -> Tuple[str, str, str, bool, bool, bool, bool, bool, bool, bool, bool]:
+) -> Tuple[str, str, str, bool, bool, bool, bool, bool, bool, bool, bool, bool, str]:
     r"""
     Returning values for 'presets'.
     -----
     :param preset_input: A (lowercase) string.
     :param width: the input img width, used for size reference
-    :returns: (in order) arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted
+    :returns: (in order) arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted, db_preset, db_file_img
     :raises KeyError: String not in selection.
     """
     try:
-        # order-- arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, shuffled, snapped, file_sorted
+        # order-- arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted, db_preset, db_file_img
         int_func_input: List = [
             "random",
             "threshold",
@@ -374,7 +384,43 @@ def ReadPreset(
             "minimum",
             "saturation",
         ]
-        return {
+        if HasInternet("8.8.8.8", 53, 3):
+            r = get(
+                "https://pixelsorting-a289.restdb.io/rest/outputs",
+                headers={
+                    "Content-Type": "application/json",
+                    "x-apikey": "acc71784a255a80c2fd25e081890a1767edaf",
+                },
+            )
+            for data in r.json():
+                try:
+                    if preset_input in data["preset_id"]:
+                        return (
+                            data["args"],
+                            data["int_func"],
+                            data["sort_func"],
+                            True,
+                            False,
+                            False,
+                            True,
+                            True,
+                            (
+                                True
+                                if data["int_func"] in ["shuffle-total", "shuffle-axis"]
+                                else False
+                            ),
+                            (True if data["int_func"] in ["snap"] else False),
+                            (
+                                True
+                                if data["int_func"] in ["file", "file-edges"]
+                                else False
+                            ),
+                            True,
+                            data["file_link"],
+                        )
+                except KeyError:
+                    continue
+        presets = {
             "main": (
                 (
                     f"-r {rand.randrange(35, 65)} "
@@ -391,6 +437,8 @@ def ReadPreset(
                 False,
                 False,
                 False,
+                False,
+                "",
             ),
             "main file": (
                 (
@@ -407,6 +455,8 @@ def ReadPreset(
                 False,
                 False,
                 True,
+                False,
+                "",
             ),
             "full random": (
                 (
@@ -426,6 +476,8 @@ def ReadPreset(
                 False,
                 False,
                 False,
+                False,
+                "",
             ),
             "snap-sort": (
                 (
@@ -443,11 +495,14 @@ def ReadPreset(
                 False,
                 True,
                 False,
+                False,
+                "",
             ),
-        }[preset_input]
+        }
+        return presets[preset_input]
     except KeyError:
         print("[WARNING] Invalid preset name, no preset will be applied")
-        return "", "", "", False, False, False, False, False, False, False, False
+        return "", "", "", False, False, False, False, False, False, False, False, False, ""
 
 
 # SORTER #
@@ -697,12 +752,12 @@ def snap_sort(pixels: Any, args: Any, internet: bool) -> List:
 
 def shuffle_total(pixels: Any, args: Any, internet: bool) -> List:
     print("Creating array from image...")
-    input_img = ImgOpen(args.url, internet)
+    input_img = ImgOpen(args.url, internet).convert("RGBA")
     height: int = input_img.size[1]
     shuffled: Any = array(input_img)
 
     for i in ProgressBars(int(height), "Shuffling image..."):
-        shuffled(shuffled[i])
+        shuffle(shuffled[i])
     print("Saving shuffled image...")
     shuffled_img: Any = Image.fromarray(shuffled, "RGBA")
     data: Any = shuffled_img.load()
@@ -715,7 +770,7 @@ def shuffle_total(pixels: Any, args: Any, internet: bool) -> List:
 
 def shuffled_axis(pixels: Any, args: Any, internet: bool) -> List:
     print("Creating array from image...")
-    input_img = ImgOpen(args.url, internet)
+    input_img = ImgOpen(args.url, internet).convert("RGBA")
     height: int = input_img.size[1]
     shuffled: Any = array(input_img)
 
@@ -758,6 +813,8 @@ def main():
     :-a,--angle -> angle for rotation
     :-r,--randomness -> randomness
     :-p --preset -> is preset used
+    :-k --filelink -> for DBpreset
+    :-d --dbpreset -> is dbpreset used
     """
     parse.add_argument(
         "-l",
@@ -817,6 +874,19 @@ def main():
         "--preset",
         type=bool,
         help="Is a preset used or not? Boolean.",
+        default=False,
+    )
+    parse.add_argument(
+        "-k",
+        "--filelink",
+        help="File image used, only in DB preset mode.",
+        default="",
+    )
+    parse.add_argument(
+        "-d",
+        "--dbpreset",
+        help="Boolean for if preset is used or not.",
+        type=bool,
         default=False,
     )
 
@@ -885,9 +955,10 @@ def main():
         print(
             "Preset options:\n"
             "-1|main -- Main args (r: 35-65, c: random gen, a: 0-360, random, intensity)\n"
-            "-2|main file -- Main args, but only for file and file edges\n"
+            "-2|main file -- Main args, but only for file edges\n"
             "-3|full random -- Randomness in every arg!\n"
-            "-4|snap-sort -- You could not live with your own failure. And where did that bring you? Back to me."
+            "-4|snap-sort -- You could not live with your own failure. And where did that bring you? Back to me.\n"
+            "-Any preset ID from the database can be used."
         )
         preset_input = input("\nChoice: ").lower()
         if preset_input in ["1", "2", "3", "4"]:
@@ -898,11 +969,13 @@ def main():
                 "4": "snap-sort",
             }[preset_input]
         # if presets are applied, they take over args
-        arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted = ReadPreset(
+        arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted, db_preset, file_link = ReadPreset(
             preset_input, width
         )
     else:
         preset_true = False
+        db_preset = False
+        file_link = "False"
     clear()
 
     # int func, sort func & int msg, sort msg
@@ -1096,7 +1169,7 @@ def main():
         print("No args given!")
         arg_parse_input = ""
 
-    args_full: str = f"{arg_parse_input} -l {url} -i {int_func_input} -s {sort_func_input} -p {str(preset_true)}"
+    args_full: str = f"{arg_parse_input} -l {url} -i {int_func_input} -s {sort_func_input} -p {str(preset_true)} {f'-k {file_link}' if db_preset else ''} -d {str(db_preset)}"
 
     __args = parse.parse_args(args_full.split())
 
@@ -1178,6 +1251,7 @@ def main():
 
     if internet:
         date_time = datetime.now().strftime("%m/%d/%Y %H:%M")
+        preset_id = datetime.now().strftime("%m%d%Y%H%M")
 
         print("Uploading...")
         link = UploadImg("images/image.png")
@@ -1218,6 +1292,7 @@ def main():
                 "args": f"{arg_parse_input}",
                 "date": f"{date_time}",
                 "sorted_link": f"{link}",
+                "preset_id": f"{preset_id}",
             }
         )
         headers = {
