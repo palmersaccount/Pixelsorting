@@ -1508,3 +1508,73 @@ Sorted on: 06/17/2019 13:51
 
 Sorted image: https://s.put.re/Uuh6dRgD.png
 -----------------------------------
+Starting image url: https://s.put.re/567w8wpK.jpg
+Resolution: 2560x1600
+Int func (randomly chosen): random
+
+Sort func (randomly chosen): lightness
+Args: -a 71 -c 650 -u 0.6 -t 0.05 -r 34 
+Sorted on: 06/18/2019 11:20
+
+Sorted image: https://s.put.re/F3xg5kNx.png
+-----------------------------------
+Starting image url: https://s.put.re/SRcqAfhP.jpg
+Resolution: 4368x2893
+Int func (randomly chosen): file-edges
+
+Sort func (randomly chosen): hue
+Args: -a 94 -c 1000 -u 0.9 -t 0.25 -r 98 
+Sorted on: 06/18/2019 11:34
+
+Sorted image: https://s.put.re/B27utbWx.png
+-----------------------------------
+Starting image url: https://s.put.re/SRcqAfhP.jpg
+Resolution: 4368x2893
+Int func: random
+
+Sort func: intensity
+Args: -r 35 -c 675 -a 0 
+Sorted on: 06/18/2019 11:35
+
+Sorted image: https://s.put.re/y154h9ag.png
+-----------------------------------
+Starting image url: https://s.put.re/5zgcV3TT.jpg
+Resolution: 1804x1200
+Int func: waves
+
+Sort func: intensity
+Args: -r 50 -c 450 -a 15
+Sorted on: 06/18/2019 11:36
+
+Sorted image: https://s.put.re/Z23UsYdm.png
+-----------------------------------
+Starting image url: https://s.put.re/gcYkpmbd.jpg
+Resolution: 2656x1494
+Int func (randomly chosen): file
+
+Sort func (randomly chosen): saturation
+Args: -a 187 -c 925 -u 0.75 -t 0.35 -r 19 
+Sorted on: 06/18/2019 11:37
+
+Sorted image: https://s.put.re/8mebiziJ.png
+-----------------------------------
+Starting image url: https://s.put.re/567w8wpK.jpg
+Resolution: 2560x1600
+Int func: random
+
+Sort func: intensity
+Args: -r 37 -c 500 -a 260 
+Sorted on: 06/18/2019 11:38
+
+Sorted image: https://s.put.re/eLMyeekm.png
+-----------------------------------
+Starting image url: https://s.put.re/QsUQbC1R.jpg
+Resolution: 2048x1364
+Int func (randomly chosen): threshold
+
+Sort func (randomly chosen): minimum
+Args: -a 227 -c 50 -u 0.55 -t 0.25 -r 28 
+Sorted on: 06/18/2019 11:45
+
+Sorted image: https://s.put.re/hGEk5tQH.png
+-----------------------------------
