@@ -14,10 +14,6 @@ All credit goes to [this repo](https://github.com/satyarth/pixelsort) for all th
 
 ---
 
-## [Examples](https://github.com/wolfembers/Pixelsorting/blob/master/outputs.md)
-
----
-
 ## Dependencies
 
 Requires Pillow. `pip install Pillow` should work. If not, see [here](https://pillow.readthedocs.org/en/3.0.0/installation.html#linux-installation) for details.
@@ -29,6 +25,8 @@ Requires tqdm. `pip install tqdm`
 Requires numpy. `pip install numpy`
 
 There is also a requirements file which pretty much does the same via `pip install -r requirements.txt`.
+
+To instal all at once, run `pip install pillow requests tqdm numpy`
 
 ---
 
@@ -101,6 +99,33 @@ Sorting function        | Description
 `saturation`            | Sort by the saturation of a pixel according to a HSV representation.
 `intensity`             | Sort by the intensity of a pixel, i.e. the sum of all the RGB values.
 `minimum`               | Sort on the minimum RGB value of a pixel (either the R, G or B).
+
+---
+
+### Examples (Hover for preset ID)
+
+![alt text](examples/image1.png "Preset ID: 061820191120")
+*[Starting image](https://s.put.re/SRcqAfhP.jpg)*
+
+---
+
+![alt text](examples/image2.png "Preset ID: 061820191145")
+*[Starting image](https://s.put.re/QsUQbC1R.jpg)*
+
+---
+
+![alt text](examples/image3.png "Preset ID: 061820191138")
+*[Starting image](https://s.put.re/567w8wpK.jpg)*
+
+---
+
+![alt text](examples/image4.png "Preset ID: 061820191120")
+*[Starting image](https://s.put.re/567w8wpK.jpg)*
+
+---
+
+![alt text](examples/image5.png "Preset ID: 061720191343")
+*[Staring image](https://s.put.re/Ds9KV8jX.jpg)*
 
 ---
 
