@@ -49,7 +49,7 @@ def HasInternet(host: str, port: int, timeout: int) -> bool:
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
         return True
-    except:
+    except OSError:
         return False
 
 
