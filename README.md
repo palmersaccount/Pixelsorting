@@ -16,6 +16,10 @@ All credit goes to [this repo](https://github.com/satyarth/pixelsort) for all th
 
 ## Dependencies
 
+---
+
+***The program will install these for you. All you need is python 3.7+ and it will work. However, you can install these manually if you desire.***
+
 Requires Pillow. `pip install Pillow` should work. If not, see [here](https://pillow.readthedocs.org/en/3.0.0/installation.html#linux-installation) for details.
 
 Requires requests. `pip install requests`
@@ -26,11 +30,13 @@ Requires numpy. `pip install numpy`
 
 There is also a requirements file which pretty much does the same via `pip install -r requirements.txt`.
 
-To instal all at once, run `pip install pillow requests tqdm numpy`
+To install all at once, run `pip install pillow requests tqdm numpy` or let the program install them for you.
 
 ---
 
 ## Usage
+
+---
 
 From the command line:
 
@@ -47,18 +53,13 @@ Most of the images created before 06/10/2019 do NOT have preset ID's.
 
 ---
 
-### Starting image MUST be provided in a direct URL. Interval functions, sorting functions, and arguments are parsed after the program runs. No arguments are parsed when the script is called from the command line.
+*Starting image MUST be provided in a direct URL. Interval functions, sorting functions, and arguments are parsed after the program runs. No arguments are parsed when the script is called from the command line.*
 
-### The output image is provided as a direct image link hosted on put.re or saved locally if the user does not have internet.
+*The output image is provided as a direct image link hosted on put.re or saved locally if the user does not have internet.*
 
 ---
 
-Tip: To replicate Kim Asendorf's original [processing script](https://github.com/kimasendorf/ASDFPixelSort), first sort vertically and then horizontally in `threshold` (default) mode:
-
-```
-python3 pixelsort.py %PathToImage% -a 90
-python3 pixelsort.py %PathToSortedImage%
-```
+Tip: To replicate Kim Asendorf's original [processing script](https://github.com/kimasendorf/ASDFPixelSort), first sort vertically and then horizontally in `threshold` (default) mode
 
 ---
 
