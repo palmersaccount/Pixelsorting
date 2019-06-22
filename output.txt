@@ -1578,3 +1578,13 @@ Sorted on: 06/18/2019 11:45
 
 Sorted image: https://s.put.re/hGEk5tQH.png
 -----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: threshold
+
+Sort func: saturation
+Args: -a 90 -u 0.18
+Sorted on: 06/22/2019 07:46
+
+Sorted image: https://s.put.re/rjVNekbi.png
+-----------------------------------

@@ -550,8 +550,7 @@ def ReadPreset(
                 False,
                 False,
                 "",
-            ),
-        }
+            ),}
         return presets[preset_input]
     except KeyError:
         print("[WARNING] Invalid preset name, no preset will be applied")
@@ -1010,7 +1009,7 @@ def main():
                 "2": "main file",
                 "3": "full random",
                 "4": "snap-sort",
-                "5": "Kims script",
+                "5": "Kims Script",
             }[preset_input]
         # if presets are applied, they take over args
         arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted, db_preset, file_link = ReadPreset(
