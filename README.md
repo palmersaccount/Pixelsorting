@@ -18,7 +18,7 @@ All credit goes to [this repo](https://github.com/satyarth/pixelsort) for all th
 
 ---
 
-***The program will install these for you. All you need is python 3.7+ and it will work. However, you can install these manually if you desire.***
+***The program will install these for you. All you need is python 3.7+ and Git and the script will work. However, you can install these manually if you desire.***
 
 Requires Pillow. `pip install Pillow` should work. If not, see [here](https://pillow.readthedocs.org/en/3.0.0/installation.html#linux-installation) for details.
 
@@ -40,7 +40,7 @@ To install all at once, run `pip install pillow requests tqdm numpy` or let the 
 
 From the command line:
 
-```
+```bash
 git clone https://github.com/wolfembers/Pixelsorting.git
 cd Pixelsorting
 python3 pixelsort.py

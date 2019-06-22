@@ -529,6 +529,21 @@ def ReadPreset(
                 False,
                 "",
             ),
+            "Kims Script": (
+                f"-a 90 -u {float(rand.randrange(15, 85)/100)}",
+                "threshold",
+                sort_func_input[rand.randrange(0, len(sort_func_input))],
+                True,
+                False,
+                False,
+                True,
+                True,
+                False,
+                False,
+                False,
+                False,
+                "",
+            )
         }
         return presets[preset_input]
     except KeyError:
@@ -977,15 +992,17 @@ def main():
             "-2|main file -- Main args, but only for file edges\n"
             "-3|full random -- Randomness in every arg!\n"
             "-4|snap-sort -- You could not live with your own failure. And where did that bring you? Back to me.\n"
+            "-5|Kims script -- Used by Kim Asendorf's original processing script\n"
             "-Any preset ID from the database can be used."
         )
         preset_input = input("\nChoice: ").lower()
-        if preset_input in ["1", "2", "3", "4"]:
+        if preset_input in ["1", "2", "3", "4", "5"]:
             preset_input = {
                 "1": "main",
                 "2": "main file",
                 "3": "full random",
                 "4": "snap-sort",
+                "5": "Kims script"
             }[preset_input]
         # if presets are applied, they take over args
         arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted, db_preset, file_link = ReadPreset(
