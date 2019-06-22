@@ -14,27 +14,8 @@ from typing import Any, Callable, List, Tuple
 from urllib.parse import urlparse
 from subprocess import run
 
-try:
-    from numpy import array, mgrid
-    from numpy.random import choice, shuffle
-    from PIL import Image, ImageFilter
-    from requests import get, post, request
-    from tqdm import tqdm, trange
-except ImportError:
-    # Upgrade/Install all packages
-    run(["pip", "install", "pillow", "numpy", "tqdm", "requests", "--upgrade"])
 
-
-# MISC FUNCTIONS #
-def clear():
-    r"""
-    Clears the screen when called.
-    :return: OS system call to clear the screen based on os type.
-    """
-    return system("cls" if name == "nt" else "clear")
-
-
-def HasInternet(host: str, port: int, timeout: int) -> bool:
+def HasInternet(host: str = "8.8.8.8", port: int = 53, timeout: int = 3) -> bool:
     r"""
     Checks for internet.
     ------
@@ -56,6 +37,32 @@ def HasInternet(host: str, port: int, timeout: int) -> bool:
         return True
     except OSError:
         return False
+
+
+try:
+    from numpy import array, mgrid
+    from numpy.random import choice, shuffle
+    from PIL import Image, ImageFilter
+    from requests import get, post, request
+    from tqdm import tqdm, trange
+except ImportError:
+    if HasInternet():
+        # Upgrade/Install all packages
+        run(["pip", "install", "pillow", "numpy", "tqdm", "requests", "--upgrade"])
+    else:
+        print(
+            "Dependecies not installed! Unable to install any automatically, script is unable to function without them."
+        )
+        exit()
+
+
+# MISC FUNCTIONS #
+def clear():
+    r"""
+    Clears the screen when called.
+    :return: OS system call to clear the screen based on os type.
+    """
+    return system("cls" if name == "nt" else "clear")
 
 
 def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
@@ -415,7 +422,7 @@ def ReadPreset(
             "minimum",
             "saturation",
         ]
-        if HasInternet("8.8.8.8", 53, 3):
+        if HasInternet():
             r = get(
                 "https://pixelsorting-a289.restdb.io/rest/outputs",
                 headers={
@@ -543,7 +550,7 @@ def ReadPreset(
                 False,
                 False,
                 "",
-            )
+            ),
         }
         return presets[preset_input]
     except KeyError:
@@ -833,10 +840,6 @@ def main():
     Pixelsorting an image.
     """
 
-    # update script if possible.
-    run(["git", "pull", "https://github.com/wolfembers/Pixelsorting.git"])
-    clear()
-
     # arg parsing arguments
     parse = argparse.ArgumentParser(description="pixel mangle an image")
     """
@@ -932,7 +935,12 @@ def main():
     removeOld("images/snapped_pixels.png")
     removeOld("images/ElementaryCA.png")
 
-    internet = HasInternet("8.8.8.8", 53, 3)
+    internet = HasInternet()
+
+    if internet:
+        # update script if possible.
+        run(["git", "pull", "https://github.com/wolfembers/Pixelsorting.git"])
+        clear()
 
     print(
         f"Pixel sorting based on {'web hosted images.' if internet else 'local images'}\n"
@@ -1002,7 +1010,7 @@ def main():
                 "2": "main file",
                 "3": "full random",
                 "4": "snap-sort",
-                "5": "Kims script"
+                "5": "Kims script",
             }[preset_input]
         # if presets are applied, they take over args
         arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted, db_preset, file_link = ReadPreset(
