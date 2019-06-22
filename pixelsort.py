@@ -12,12 +12,17 @@ from os import name, path, remove, system
 from string import ascii_lowercase, ascii_uppercase, digits
 from typing import Any, Callable, List, Tuple
 from urllib.parse import urlparse
+from subprocess import run
 
-from numpy import array, mgrid
-from numpy.random import choice, shuffle
-from PIL import Image, ImageFilter
-from requests import get, post, request
-from tqdm import tqdm, trange
+try:
+    from numpy import array, mgrid
+    from numpy.random import choice, shuffle
+    from PIL import Image, ImageFilter
+    from requests import get, post, request
+    from tqdm import tqdm, trange
+except ImportError:
+    # Upgrade/Install all packages
+    run(["pip", "install", "pillow", "numpy", "tqdm", "requests", "--upgrade"])
 
 
 # MISC FUNCTIONS #
@@ -136,7 +141,9 @@ def ElementaryCA(pixels: Any, args: Any) -> Any:
                 AppendPartial(ca, y, bool(rand.getrandbits(1)))
                 for x in range(1, width - 1):
                     AppendPartial(
-                        ca, y, (rule[(ca[y - 1][x - 1], ca[y - 1][x], ca[y - 1][x + 1])])
+                        ca,
+                        y,
+                        (rule[(ca[y - 1][x - 1], ca[y - 1][x], ca[y - 1][x + 1])]),
                     )
                 AppendPartial(ca, y, bool(rand.getrandbits(1)))
             return ca
@@ -210,10 +217,34 @@ def ImgOpen(url: str, internet: bool) -> Any:
         exit()
 
 
+def CropTo(image_to_crop: Any, args: Any, internet: bool) -> Any:
+    r"""
+    Crops image to the size of a reference image. This function assumes
+    that the relevant image is located in the center and you want to crop away
+    equal sizes on both the left and right as well on both the top and bottom.
+    :param image_to_crop
+    :param reference_image
+    :return: image cropped to the size of the reference image
+    """
+    reference_image = ImgOpen(args.url, internet)
+    reference_size: Tuple[int, int] = reference_image.size
+    current_size: Tuple[int, int] = image_to_crop.size
+    dx = current_size[0] - reference_size[0]
+    dy = current_size[1] - reference_size[1]
+    left = dx / 2
+    upper = dy / 2
+    right = dx / 2 + reference_size[0]
+    lower = dy / 2 + reference_size[1]
+    return image_to_crop.crop(box=(int(left), int(upper), int(right), int(lower)))
+
+
 BlackPixel: Tuple[int, int, int, int] = (0, 0, 0, 255)
 WhitePixel: Tuple[int, int, int, int] = (255, 255, 255, 255)
 
 # LAMBDA FUNCTIONS #
+IDGen: Callable[[int], str] = lambda n: "".join(
+    rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(n)
+)
 Append: Callable[[Any, Any], Any] = lambda l, obj: l.append(obj)
 AppendPIL: Callable[[Any, int, int, Any], Any] = lambda l, x, y, d: l[y].append(d[x, y])
 AppendList: Callable[[List, int, int, Any], Any] = lambda l, x, y, d: l.append(d[y][x])
@@ -502,7 +533,21 @@ def ReadPreset(
         return presets[preset_input]
     except KeyError:
         print("[WARNING] Invalid preset name, no preset will be applied")
-        return "", "", "", False, False, False, False, False, False, False, False, False, ""
+        return (
+            "",
+            "",
+            "",
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            "",
+        )
 
 
 # SORTER #
@@ -537,33 +582,6 @@ def SortImage(
         AppendList(row, 0, y, pixels)
         Append(sorted_pixels, row)
     return sorted_pixels
-
-
-# UTIL #
-IDGen: Callable[[int], str] = lambda n: "".join(
-    rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(n)
-)
-
-
-def CropTo(image_to_crop: Any, args: Any, internet: bool) -> Any:
-    r"""
-    Crops image to the size of a reference image. This function assumes
-    that the relevant image is located in the center and you want to crop away
-    equal sizes on both the left and right as well on both the top and bottom.
-    :param image_to_crop
-    :param reference_image
-    :return: image cropped to the size of the reference image
-    """
-    reference_image = ImgOpen(args.url, internet)
-    reference_size: Tuple[int, int] = reference_image.size
-    current_size: Tuple[int, int] = image_to_crop.size
-    dx = current_size[0] - reference_size[0]
-    dy = current_size[1] - reference_size[1]
-    left = dx / 2
-    upper = dy / 2
-    right = dx / 2 + reference_size[0]
-    lower = dy / 2 + reference_size[1]
-    return image_to_crop.crop(box=(int(left), int(upper), int(right), int(lower)))
 
 
 # INTERVALS #
@@ -800,6 +818,10 @@ def main():
     Pixelsorting an image.
     """
 
+    # update script if possible.
+    run(["git", "pull", "https://github.com/wolfembers/Pixelsorting.git"])
+    clear()
+
     # arg parsing arguments
     parse = argparse.ArgumentParser(description="pixel mangle an image")
     """
@@ -877,10 +899,7 @@ def main():
         default=False,
     )
     parse.add_argument(
-        "-k",
-        "--filelink",
-        help="File image used, only in DB preset mode.",
-        default="",
+        "-k", "--filelink", help="File image used, only in DB preset mode.", default=""
     )
     parse.add_argument(
         "-d",
