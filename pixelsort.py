@@ -15,11 +15,11 @@ from urllib.parse import urlparse
 from subprocess import run
 
 
-def HasInternet(host: str = "8.8.8.8", port: int = 53, timeout: int = 3) -> bool:
+def HasInternet(host: str = "1.1.1.1", port: int = 53, timeout: int = 3) -> bool:
     r"""
     Checks for internet.
     ------
-    :param host: 8.8.8.8 (google-public-dns-a.google.com)
+    :param host: 1.1.1.1 (Cloudfare public DNS)
     :param port: 53
     :param timeout: 3
 
@@ -27,7 +27,7 @@ def HasInternet(host: str = "8.8.8.8", port: int = 53, timeout: int = 3) -> bool
 
     Examples
     ------
-    >>> internet = HasInternet("8.8.8.8", 53, 3)
+    >>> internet = HasInternet("1.1.1.1", 53, 3)
     >>> print(internet)
     True
     """
@@ -49,6 +49,11 @@ except ImportError:
     if HasInternet():
         # Upgrade/Install all packages
         run(["pip", "install", "pillow", "numpy", "tqdm", "requests", "--upgrade"])
+        from numpy import array, mgrid
+        from numpy.random import choice, shuffle
+        from PIL import Image, ImageFilter
+        from requests import get, post, request
+        from tqdm import tqdm, trange
     else:
         print(
             "Dependecies not installed! Unable to install any automatically, script is unable to function without them."
@@ -87,19 +92,22 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
     return pixels
 
 
-def ElementaryCA(pixels: Any, args: Any) -> Any:
+def ElementaryCA(pixels: Any, args: Any, width: int, height: int) -> Any:
     r"""
     Generate images of elementary cellular automata.
     Selected rules from https://en.wikipedia.org/wiki/Elementary_cellular_automaton
     ------
     :param pixels: 2D list of RGB values.
+    :param args: namespace of arguments.
+    :param width: used for image size.
+    :param height: used for image size.
     :returns: PIL Image object.
     """
+    width /= 8
+    height /= 8
     if args.filelink in ["False", ""]:
         rules: List = [26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15, 9, 154]
 
-        width: int = rand.randrange(350, 500)
-        height: int = rand.randrange(350, 500)
         if not args.int_function == "snap":
             ruleprompt = input(
                 f"Rule selection (max of 255)(leave blank for random)\n"
@@ -501,8 +509,8 @@ def ReadPreset(
                     f"-a {rand.randrange(0, 360)} "
                     f"-c {(rand.randrange(50, 500, 25)) if (width <= 2500) else rand.randrange(500, 1250, 25)} "
                     f"-u {float(rand.randrange(50, 100, 5) / 100)} "
-                    f"-t {float(rand.randrange(5, 50, 5) / 100)} "
-                    f"-r {rand.randrange(5, 100)} "
+                    f"-t {float(rand.randrange(10, 50, 5) / 100)} "
+                    f"-r {rand.randrange(5, 75)} "
                 ),
                 int_func_input[rand.randrange(0, len(int_func_input))],
                 sort_func_input[rand.randrange(0, len(sort_func_input))],
@@ -517,7 +525,7 @@ def ReadPreset(
                 False,
                 "",
             ),
-            "snap-sort": (
+            "snap sort": (
                 (
                     f"-r {rand.randrange(15,50,5)} "
                     f"-c {(rand.randrange(50, 250, 25)) if (width <= 2500) else rand.randrange(350, 650, 25)} "
@@ -550,7 +558,8 @@ def ReadPreset(
                 False,
                 False,
                 "",
-            ),}
+            ),
+        }
         return presets[preset_input]
     except KeyError:
         print("[WARNING] Invalid preset name, no preset will be applied")
@@ -692,7 +701,7 @@ def waves(pixels: Any, args: Any, internet: bool) -> List:
 
 
 def file_mask(pixels: Any, args: Any, internet: bool) -> List:
-    img = ElementaryCA(pixels, args).resize(
+    img = ElementaryCA(pixels, args, len(pixels), len(pixels[0])).resize(
         (len(pixels[0]), len(pixels)), Image.ANTIALIAS
     )
     data: Any = img.load()
@@ -719,7 +728,7 @@ def file_mask(pixels: Any, args: Any, internet: bool) -> List:
 
 def file_edges(pixels: Any, args: Any, internet: bool) -> List:
     edge_data: Any = (
-        ElementaryCA(pixels, args)
+        ElementaryCA(pixels, args, len(pixels), len(pixels[0]))
         .rotate(args.angle, expand=True)
         .resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
         .filter(ImageFilter.FIND_EDGES)
@@ -998,7 +1007,7 @@ def main():
             "-1|main -- Main args (r: 35-65, c: random gen, a: 0-360, random, intensity)\n"
             "-2|main file -- Main args, but only for file edges\n"
             "-3|full random -- Randomness in every arg!\n"
-            "-4|snap-sort -- You could not live with your own failure. And where did that bring you? Back to me.\n"
+            "-4|snap sort -- You could not live with your own failure. And where did that bring you? Back to me.\n"
             "-5|Kims script -- Used by Kim Asendorf's original processing script\n"
             "-Any preset ID from the database can be used."
         )
@@ -1008,7 +1017,7 @@ def main():
                 "1": "main",
                 "2": "main file",
                 "3": "full random",
-                "4": "snap-sort",
+                "4": "snap sort",
                 "5": "Kims Script",
             }[preset_input]
         # if presets are applied, they take over args

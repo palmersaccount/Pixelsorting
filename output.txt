@@ -1588,3 +1588,143 @@ Sorted on: 06/22/2019 07:46
 
 Sorted image: https://s.put.re/rjVNekbi.png
 -----------------------------------
+Starting image url: https://i.redd.it/w5enf72q6a631.jpg
+Resolution: 4032x3021
+Int func: file-edges
+File link: https://s.put.re/LCkZkjPa.png
+Sort func: minimum
+Args: -r 39 -t 0.77
+Sorted on: 06/24/2019 10:01
+
+Sorted image: https://s.put.re/5imE56n9.png
+-----------------------------------
+Starting image url: https://i.redd.it/w5enf72q6a631.jpg
+Resolution: 4032x3021
+Int func: random
+
+Sort func: intensity
+Args: -r 64 -c 625 -a 8 
+Sorted on: 06/24/2019 10:01
+
+Sorted image: https://s.put.re/5Ys8iWMn.png
+-----------------------------------
+Starting image url: https://i.redd.it/w5enf72q6a631.jpg
+Resolution: 4032x3021
+Int func (randomly chosen): file
+
+Sort func (randomly chosen): intensity
+Args: -a 301 -c 1225 -u 0.95 -t 0.25 -r 39 
+Sorted on: 06/24/2019 10:04
+
+Sorted image: https://s.put.re/Ak7mWeET.png
+-----------------------------------
+Starting image url: https://i.redd.it/w5enf72q6a631.jpg
+Resolution: 4032x3021
+Int func: waves
+
+Sort func: minimum
+Args: -r 25 -c 1500 -a 27 -t .4
+Sorted on: 06/24/2019 10:06
+
+Sorted image: https://s.put.re/5GNWadG3.png
+-----------------------------------
+Starting image url: https://i.redd.it/bxi82zlbst531.jpg
+Resolution: 2049x2560
+Int func: file-edges
+File link: https://s.put.re/bwfZkiTD.png
+Sort func: minimum
+Args: -r 23 -t 0.83
+Sorted on: 06/24/2019 10:06
+
+Sorted image: https://s.put.re/c9995gdG.png
+-----------------------------------
+Starting image url: https://i.redd.it/bxi82zlbst531.jpg
+Resolution: 2049x2560
+Int func (randomly chosen): edges
+
+Sort func (randomly chosen): intensity
+Args: -a 82 -c 475 -u 0.6 -t 0.1 -r 16 
+Sorted on: 06/24/2019 10:11
+
+Sorted image: https://s.put.re/ob5Qd94U.png
+-----------------------------------
+Starting image url: https://s.put.re/SRcqAfhP.jpg
+Resolution: 4368x2893
+Int func (randomly chosen): edges
+
+Sort func (randomly chosen): hue
+Args: -a 332 -c 875 -u 0.6 -t 0.05 -r 40 
+Sorted on: 06/24/2019 10:15
+
+Sorted image: https://s.put.re/Eneyo5iA.png
+-----------------------------------
+Starting image url: https://s.put.re/gcYkpmbd.jpg
+Resolution: 2656x1494
+Int func (randomly chosen): threshold
+
+Sort func (randomly chosen): intensity
+Args: -a 245 -c 1200 -u 0.85 -t 0.45 -r 51 
+Sorted on: 06/24/2019 10:19
+
+Sorted image: https://s.put.re/bvi3Shvf.png
+-----------------------------------
+Starting image url: https://s.put.re/gcYkpmbd.jpg
+Resolution: 2656x1494
+Int func (randomly chosen): random
+
+Sort func (randomly chosen): minimum
+Args: -a 275 -c 750 -u 0.95 -t 0.35 -r 63 
+Sorted on: 06/24/2019 10:19
+
+Sorted image: https://s.put.re/1gebPBD9.png
+-----------------------------------
+Starting image url: https://s.put.re/K49iqXVJ.png
+Resolution: 1080x1350
+Int func: file-edges
+File link: https://s.put.re/VrnoNQpf.png
+Sort func: minimum
+Args: -r 62 -t 0.74
+Sorted on: 06/24/2019 10:30
+
+Sorted image: https://s.put.re/ngXyQzbV.png
+-----------------------------------
+Starting image url: https://s.put.re/QsUQbC1R.jpg
+Resolution: 2048x1364
+Int func: edges
+
+Sort func: lightness
+Args: -r 15 -t 350 -a 45
+Sorted on: 06/24/2019 10:33
+
+Sorted image: https://s.put.re/v7Dxsz2j.png
+-----------------------------------
+Starting image url: https://i.redd.it/m20nwxk4pt431.jpg
+Resolution: 5723x5437
+Int func (randomly chosen): file
+
+Sort func (randomly chosen): lightness
+Args: -a 311 -c 1150 -u 0.6 -t 0.1 -r 27 
+Sorted on: 06/24/2019 10:38
+
+Sorted image: https://s.put.re/sKskCUqu.png
+-----------------------------------
+Starting image url: https://i.redd.it/m20nwxk4pt431.jpg
+Resolution: 5723x5437
+Int func (randomly chosen): file-edges
+
+Sort func (randomly chosen): intensity
+Args: -a 250 -c 850 -u 0.75 -t 0.15 -r 55 
+Sorted on: 06/24/2019 10:45
+
+Sorted image: https://s.put.re/pLjrHNWC.png
+-----------------------------------
+Starting image url: https://i.redd.it/84q3goyt6a631.jpg
+Resolution: 4000x4000
+Int func (randomly chosen): waves
+
+Sort func (randomly chosen): hue
+Args: -a 92 -c 625 -u 0.85 -t 0.25 -r 46 
+Sorted on: 06/24/2019 10:49
+
+Sorted image: https://s.put.re/dR8RUMj9.png
+-----------------------------------
