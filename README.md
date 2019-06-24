@@ -115,7 +115,7 @@ Sorting function | Description
 
 ---
 
-![alt text](examples/image2.png "Preset ID: 061820191145")
+![alt text](examples/image2.png "Preset ID: 062420191336")
 *[Starting image](https://s.put.re/QsUQbC1R.jpg)*
 
 ---

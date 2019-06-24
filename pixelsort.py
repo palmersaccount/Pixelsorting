@@ -103,10 +103,10 @@ def ElementaryCA(pixels: Any, args: Any, width: int, height: int) -> Any:
     :param height: used for image size.
     :returns: PIL Image object.
     """
-    width /= 8
-    height /= 8
+    width /= 4
+    height /= 4
     if args.filelink in ["False", ""]:
-        rules: List = [26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15, 9, 154]
+        rules: List = [26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15, 9, 154, 142]
 
         if not args.int_function == "snap":
             ruleprompt = input(
@@ -146,15 +146,15 @@ def ElementaryCA(pixels: Any, args: Any, width: int, height: int) -> Any:
             ca: List = []
             # Initialize the first row of ca randomly
             Append(ca, [])
-            for x in range(width):
+            for x in range(int(width)):
                 AppendPartial(ca, 0, bool(rand.getrandbits(1)))
 
             # Generate the succeeding generation
             # Cells at the eges are initialized randomly
-            for y in range(1, height):
+            for y in range(1, int(height)):
                 Append(ca, [])
                 AppendPartial(ca, y, bool(rand.getrandbits(1)))
-                for x in range(1, width - 1):
+                for x in range(1, int(width) - 1):
                     AppendPartial(
                         ca,
                         y,
@@ -166,11 +166,11 @@ def ElementaryCA(pixels: Any, args: Any, width: int, height: int) -> Any:
         rule = generate_rule(rulenumber)
         ca = generate_ca(rule)
 
-        newImg = Image.new("RGB", [width, height])
+        newImg = Image.new("RGB", [int(width), int(height)])
 
         print(f"Creating file image..\nRule: {rulenumber}")
-        for y in ProgressBars(height, "Placing pixels..."):
-            for x in range(width):
+        for y in ProgressBars(int(height), "Placing pixels..."):
+            for x in range(int(width)):
                 newImg.putpixel(
                     (x, y),
                     true_pixel
@@ -701,7 +701,7 @@ def waves(pixels: Any, args: Any, internet: bool) -> List:
 
 
 def file_mask(pixels: Any, args: Any, internet: bool) -> List:
-    img = ElementaryCA(pixels, args, len(pixels), len(pixels[0])).resize(
+    img = ElementaryCA(pixels, args, int(len(pixels)), int(len(pixels[0]))).resize(
         (len(pixels[0]), len(pixels)), Image.ANTIALIAS
     )
     data: Any = img.load()
@@ -728,7 +728,7 @@ def file_mask(pixels: Any, args: Any, internet: bool) -> List:
 
 def file_edges(pixels: Any, args: Any, internet: bool) -> List:
     edge_data: Any = (
-        ElementaryCA(pixels, args, len(pixels), len(pixels[0]))
+        ElementaryCA(pixels, args, int(len(pixels)), int(len(pixels[0])))
         .rotate(args.angle, expand=True)
         .resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
         .filter(ImageFilter.FIND_EDGES)
@@ -1263,8 +1263,9 @@ def main():
 
     if shuffled or snapped:
         if snapped:
-            intervals = file_edges(pixels, __args, internet)
-            sorted_pixels = SortImage(pixels, intervals, __args, sorting_function)
+            if preset_true:
+                intervals = file_edges(pixels, __args, internet)
+                sorted_pixels = SortImage(pixels, intervals, __args, sorting_function)
             print(
                 f"{('/' * 45)}\n"
                 f"Dread it. Run from it. Destiny still arrives."
@@ -1274,10 +1275,10 @@ def main():
             size0, size1 = thanos_img.size
             for y in ProgressBars(size1, "The end is near..."):
                 for x in range(size0):
-                    ImgPixels(thanos_img, x, y, sorted_pixels)
+                    ImgPixels(thanos_img, x, y, sorted_pixels if preset_true else pixels)
             thanos_img.save("images/thanos_img.png")
             print("I am... inevitable...")
-            sorted_pixels = interval_function(intervals, __args, internet)
+            sorted_pixels = interval_function(intervals if preset_true else pixels, __args, internet)
         else:
             sorted_pixels = interval_function(pixels, __args, internet)
     else:
@@ -1309,7 +1310,7 @@ def main():
         link = UploadImg("images/image.png")
         print("Image uploaded!")
 
-        if file_sorted or snapped:
+        if file_sorted or (snapped and preset_true):
             file_link = UploadImg("images/ElementaryCA.png")
             print("File image uploaded!")
         else:
@@ -1331,7 +1332,7 @@ def main():
                 f'Args: {(arg_parse_input if arg_parse_input is not None else "No args")}\n'
                 f'Sorted on: {date_time}\n\nSorted image: {link}\n{(35 * "-")}'
             )
-
+        
         print("Uploading to DB...")
         dbURL = "https://pixelsorting-a289.restdb.io/rest/outputs"
         payload = dumps(

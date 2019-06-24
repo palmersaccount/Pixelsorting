@@ -1728,3 +1728,83 @@ Sorted on: 06/24/2019 10:49
 
 Sorted image: https://s.put.re/dR8RUMj9.png
 -----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/vvrkykzb.png
+Sort func: minimum
+Args: -r 28 -t 0.81
+Sorted on: 06/24/2019 13:14
+
+Sorted image: https://s.put.re/vPs3Y1om.png
+-----------------------------------
+Starting image url: https://s.put.re/N6Y2FD3Z.png
+Resolution: 5184x3888
+Int func: snap
+File link: https://s.put.re/pJjFpMLS.png
+Sort func: minimum
+Args: -r 20 -c 450 -a 49 
+Sorted on: 06/24/2019 13:20
+
+Sorted image: https://s.put.re/QhCVa54h.png
+-----------------------------------
+Starting image url: https://s.put.re/N6Y2FD3Z.png
+Resolution: 5184x3888
+Int func: snap
+File link: https://s.put.re/yJ9JBdQv.png
+Sort func: intensity
+Args: 
+Sorted on: 06/24/2019 13:24
+
+Sorted image: https://s.put.re/jricoLWc.png
+-----------------------------------
+Starting image url: https://s.put.re/QsUQbC1R.jpg
+Resolution: 2048x1364
+Int func: snap
+File link: 
+Sort func: intensity
+Args: 
+Sorted on: 06/24/2019 13:30
+
+Sorted image: https://s.put.re/exghWhD9.png
+-----------------------------------
+Starting image url: https://s.put.re/QsUQbC1R.jpg
+Resolution: 2048x1364
+Int func: file-edges
+File link: https://s.put.re/HA47u5ZG.png
+Sort func: minimum
+Args: -r 51 -t 0.81
+Sorted on: 06/24/2019 13:31
+
+Sorted image: https://s.put.re/ciw58CWn.png
+-----------------------------------
+Starting image url: https://s.put.re/QsUQbC1R.jpg
+Resolution: 2048x1364
+Int func: file-edges
+File link: https://s.put.re/kguky9Gz.png
+Sort func: minimum
+Args: -r 64 -t 0.89
+Sorted on: 06/24/2019 13:33
+
+Sorted image: https://s.put.re/P4Bmyrto.png
+-----------------------------------
+Starting image url: https://s.put.re/QsUQbC1R.jpg
+Resolution: 2048x1364
+Int func: file-edges
+File link: https://s.put.re/3ZLYZGsd.png
+Sort func: minimum
+Args: -r 29 -t 0.83
+Sorted on: 06/24/2019 13:35
+
+Sorted image: https://s.put.re/TcoLQ5AW.png
+-----------------------------------
+Starting image url: https://s.put.re/QsUQbC1R.jpg
+Resolution: 2048x1364
+Int func: file-edges
+File link: https://s.put.re/EZkijmxg.png
+Sort func: minimum
+Args: -r 27 -t 0.7
+Sorted on: 06/24/2019 13:36
+
+Sorted image: https://s.put.re/a7esteXe.png
+-----------------------------------
