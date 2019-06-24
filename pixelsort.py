@@ -106,7 +106,25 @@ def ElementaryCA(pixels: Any, args: Any, width: int, height: int) -> Any:
     width /= 4
     height /= 4
     if args.filelink in ["False", ""]:
-        rules: List = [26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15, 9, 154, 142]
+        rules: List = [
+            26,
+            19,
+            23,
+            25,
+            35,
+            106,
+            11,
+            110,
+            45,
+            41,
+            105,
+            54,
+            3,
+            15,
+            9,
+            154,
+            142,
+        ]
 
         if not args.int_function == "snap":
             ruleprompt = input(
@@ -208,9 +226,7 @@ def UploadImg(img: str) -> str:
         link: str = output["data"]["link"]
         return link
     except FileNotFoundError:
-        print(
-            f"{'---'*15}\n'{img}' not usable!\nPlease find a proper image to use this script!\n{'---'*15}"
-        )
+        print(f"{'---'*15}\n'{img}' not usable!\n{'---'*15}")
         exit()
 
 
@@ -1275,10 +1291,14 @@ def main():
             size0, size1 = thanos_img.size
             for y in ProgressBars(size1, "The end is near..."):
                 for x in range(size0):
-                    ImgPixels(thanos_img, x, y, sorted_pixels if preset_true else pixels)
+                    ImgPixels(
+                        thanos_img, x, y, sorted_pixels if preset_true else pixels
+                    )
             thanos_img.save("images/thanos_img.png")
             print("I am... inevitable...")
-            sorted_pixels = interval_function(intervals if preset_true else pixels, __args, internet)
+            sorted_pixels = interval_function(
+                intervals if preset_true else pixels, __args, internet
+            )
         else:
             sorted_pixels = interval_function(pixels, __args, internet)
     else:
@@ -1332,7 +1352,7 @@ def main():
                 f'Args: {(arg_parse_input if arg_parse_input is not None else "No args")}\n'
                 f'Sorted on: {date_time}\n\nSorted image: {link}\n{(35 * "-")}'
             )
-        
+
         print("Uploading to DB...")
         dbURL = "https://pixelsorting-a289.restdb.io/rest/outputs"
         payload = dumps(
