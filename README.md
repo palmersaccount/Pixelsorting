@@ -4,19 +4,13 @@
 
 [![forthebadge](https://forthebadge.com/images/badges/as-seen-on-tv.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/certified-cousin-terio.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/contains-technical-debt.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/designed-in-ms-paint.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/mom-made-pizza-rolls.svg)](https://forthebadge.com)
 
----
-
 ## What is Pixel Sorting
 
 Have a look at [this post](http://satyarth.me/articles/pixel-sorting/) or [/r/pixelsorting](http://www.reddit.com/r/pixelsorting/top/)
 
 All credit goes to [this repo](https://github.com/satyarth/pixelsort) for all the basic parts of this program! This program wouldn't be anything without it.
 
----
-
 ## Dependencies
-
----
 
 ***The program will install these for you. All you need is [python 3.7+](https://www.python.org/downloads/) and [Git](https://git-scm.com/downloads) and the script will work. However, you can install these manually if you desire.***
 
@@ -35,8 +29,6 @@ To install all at once, run `pip install pillow requests tqdm numpy` or let the 
 ---
 
 ## Usage
-
----
 
 From the command line:
 
