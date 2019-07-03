@@ -1257,8 +1257,7 @@ def main():
         "snap",
     ] else None
     print(f"Upper threshold: {__args.upper_threshold}") if int_func_input in [
-        "random",
-        "waves",
+        "threshold",
     ] else None
     print(f"Characteristic length: {__args.clength}") if int_func_input in [
         "random",

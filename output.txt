@@ -1808,3 +1808,93 @@ Sorted on: 06/24/2019 13:36
 
 Sorted image: https://s.put.re/a7esteXe.png
 -----------------------------------
+Starting image url: https://s.put.re/bhmRhKpT.png
+Resolution: 2400x3000
+Int func (randomly chosen): edges
+
+Sort func (randomly chosen): hue
+Args: -a 228 -c 300 -u 0.6 -t 0.1 -r 67 
+Sorted on: 07/03/2019 10:49
+
+Sorted image: https://s.put.re/Lwy4MYbL.png
+-----------------------------------
+Starting image url: https://s.put.re/bhmRhKpT.png
+Resolution: 2400x3000
+Int func (randomly chosen): threshold
+
+Sort func (randomly chosen): saturation
+Args: -a 163 -c 350 -u 0.95 -t 0.25 -r 59 
+Sorted on: 07/03/2019 10:50
+
+Sorted image: https://s.put.re/45Kf1kCu.png
+-----------------------------------
+Starting image url: https://s.put.re/bhmRhKpT.png
+Resolution: 2400x3000
+Int func: random
+
+Sort func: intensity
+Args: -r 38 -c 200 -a 263 
+Sorted on: 07/03/2019 10:51
+
+Sorted image: https://s.put.re/RkbGrwoD.png
+-----------------------------------
+Starting image url: https://s.put.re/bhmRhKpT.png
+Resolution: 2400x3000
+Int func: file-edges
+File link: https://s.put.re/2YZXHM2a.png
+Sort func: minimum
+Args: -r 47 -t 0.83
+Sorted on: 07/03/2019 10:52
+
+Sorted image: https://s.put.re/twbaXnYU.png
+-----------------------------------
+Starting image url: https://s.put.re/bhmRhKpT.png
+Resolution: 2400x3000
+Int func (randomly chosen): file
+
+Sort func (randomly chosen): lightness
+Args: -a 252 -c 350 -u 0.8 -t 0.15 -r 72 
+Sorted on: 07/03/2019 10:54
+
+Sorted image: https://s.put.re/UUHed5jo.png
+-----------------------------------
+Starting image url: https://s.put.re/bhmRhKpT.png
+Resolution: 2400x3000
+Int func: edges
+
+Sort func: saturation
+Args: -c 450 -t .5 -u .76 -a 35 -r 7.5
+Sorted on: 07/03/2019 10:56
+
+Sorted image: https://s.put.re/DrB1f2DE.png
+-----------------------------------
+Starting image url: https://s.put.re/bhmRhKpT.png
+Resolution: 2400x3000
+Int func: threshold
+
+Sort func: intensity
+Args: -r 15 -c 250 -a 65 -t .4 -u .8
+Sorted on: 07/03/2019 10:59
+
+Sorted image: https://s.put.re/cS9i12K7.png
+-----------------------------------
+Starting image url: https://s.put.re/bhmRhKpT.png
+Resolution: 2400x3000
+Int func: threshold
+
+Sort func: hue
+Args: -c 150 -a 65 -t .75 -r 5
+Sorted on: 07/03/2019 11:02
+
+Sorted image: https://s.put.re/Exesgqru.png
+-----------------------------------
+Starting image url: https://s.put.re/bhmRhKpT.png
+Resolution: 2400x3000
+Int func: threshold
+
+Sort func: saturation
+Args: -r 5 -t .3 -a 75
+Sorted on: 07/03/2019 11:03
+
+Sorted image: https://s.put.re/QYpPxTPB.png
+-----------------------------------
