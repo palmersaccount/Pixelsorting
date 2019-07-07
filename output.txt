@@ -1898,3 +1898,33 @@ Sorted on: 07/03/2019 11:03
 
 Sorted image: https://s.put.re/QYpPxTPB.png
 -----------------------------------
+Starting image url: https://i.redd.it/ngscw7g60o831.jpg
+Resolution: 4032x3024
+Int func (randomly chosen): file
+
+Sort func (randomly chosen): minimum
+Args: -a 147 -c 800 -u 0.7 -t 0.45 -r 18 
+Sorted on: 07/06/2019 20:15
+
+Sorted image: https://s.put.re/rwo6KaaY.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: file-edges
+File link: https://s.put.re/iBPVw217.png
+Sort func: minimum
+Args: -r 21 -t 0.74
+Sorted on: 07/06/2019 20:20
+
+Sorted image: https://s.put.re/rmjkmMah.png
+-----------------------------------
+Starting image url: https://i.redd.it/ngscw7g60o831.jpg
+Resolution: 4032x3024
+Int func: file-edges
+File link: https://s.put.re/zc673e8w.png
+Sort func: minimum
+Args: -r 17 -t 0.87
+Sorted on: 07/06/2019 20:24
+
+Sorted image: https://s.put.re/dj5NBsve.png
+-----------------------------------

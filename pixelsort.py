@@ -92,7 +92,7 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
     return pixels
 
 
-def ElementaryCA(pixels: Any, args: Any, width: int, height: int) -> Any:
+def ElementaryCA(pixels: Any, args: Any, width: Any, height: Any) -> Any:
     r"""
     Generate images of elementary cellular automata.
     Selected rules from https://en.wikipedia.org/wiki/Elementary_cellular_automaton
@@ -103,8 +103,8 @@ def ElementaryCA(pixels: Any, args: Any, width: int, height: int) -> Any:
     :param height: used for image size.
     :returns: PIL Image object.
     """
-    width /= 4
-    height /= 4
+    width /= 4 if width <= 2500 else 8
+    height /= 4 if height <= 2500 else 8
     if args.filelink in ["False", ""]:
         rules: List = [
             26,
@@ -1019,6 +1019,7 @@ def main():
     clear()
     if preset_q in ["y", "yes", "1"]:
         print(
+            f"{resolution_msg}\n\n"
             "Preset options:\n"
             "-1|main -- Main args (r: 35-65, c: random gen, a: 0-360, random, intensity)\n"
             "-2|main file -- Main args, but only for file edges\n"
