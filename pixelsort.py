@@ -61,6 +61,41 @@ except ImportError:
         exit()
 
 
+BlackPixel: Tuple[int, int, int, int] = (0, 0, 0, 255)
+WhitePixel: Tuple[int, int, int, int] = (255, 255, 255, 255)
+
+
+# LAMBDA FUNCTIONS #
+RemoveOld: Callable[[str], Any] = lambda f: remove(f) if path.exists(f) else None
+Append: Callable[[Any, Any], Any] = lambda l, obj: l.append(obj)
+AppendPIL: Callable[[Any, int, int, Any], Any] = lambda l, x, y, d: l[y].append(d[x, y])
+Append3D: Callable[[List, int, int, Any], Any] = lambda l, x, y, d: l.append(d[y][x])
+AppendInPlace: Callable[[List, int, Any], List] = lambda l, y, x: l[y].append(x)
+RandomWidth: Callable[[int], int] = lambda c: int(c * (1 - rand.random()))
+ImgPixels: Callable[[Any, int, int, Any], Any] = lambda i, x, y, d: i.putpixel(
+    (x, y), d[y][x]
+)
+IDGen: Callable[[int], str] = lambda n: "".join(
+    rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(n)
+)
+ProgressBars: Callable[[Any, str], Any] = lambda r, d: trange(
+    r, desc=("{:30}".format(d))
+)
+AppendBW: Callable[[List, int, int, Any, float], List] = (
+    lambda l, x, y, d, t: AppendInPlace(l, y, WhitePixel)
+    if (lightness(d[y][x]) < t)
+    else AppendInPlace(l, y, BlackPixel)
+)
+
+
+# SORTING PIXELS #
+lightness: Callable[[Any], float] = (lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0)
+intensity: Callable[[Any], float] = lambda p: p[0] + p[1] + p[2]
+hue: Callable[[Any], float] = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0
+saturation: Callable[[Any], float] = (lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0)
+minimum: Callable[[Any], float] = lambda p: min(p[0], p[1], p[2])
+
+
 # MISC FUNCTIONS #
 def clear():
     r"""
@@ -165,20 +200,20 @@ def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
             # Initialize the first row of ca randomly
             Append(ca, [])
             for x in range(int(width)):
-                AppendPartial(ca, 0, bool(rand.getrandbits(1)))
+                AppendInPlace(ca, 0, bool(rand.getrandbits(1)))
 
             # Generate the succeeding generation
             # Cells at the eges are initialized randomly
             for y in range(1, int(height)):
                 Append(ca, [])
-                AppendPartial(ca, y, bool(rand.getrandbits(1)))
+                AppendInPlace(ca, y, bool(rand.getrandbits(1)))
                 for x in range(1, int(width) - 1):
-                    AppendPartial(
+                    AppendInPlace(
                         ca,
                         y,
                         (rule[(ca[y - 1][x - 1], ca[y - 1][x], ca[y - 1][x + 1])]),
                     )
-                AppendPartial(ca, y, bool(rand.getrandbits(1)))
+                AppendInPlace(ca, y, bool(rand.getrandbits(1)))
             return ca
 
         rule = generate_rule(rulenumber)
@@ -267,40 +302,6 @@ def CropTo(image_to_crop: Any, args: dict) -> Any:
     right = dx / 2 + reference_size[0]
     lower = dy / 2 + reference_size[1]
     return image_to_crop.crop(box=(int(left), int(upper), int(right), int(lower)))
-
-
-BlackPixel: Tuple[int, int, int, int] = (0, 0, 0, 255)
-WhitePixel: Tuple[int, int, int, int] = (255, 255, 255, 255)
-
-# LAMBDA FUNCTIONS #
-IDGen: Callable[[int], str] = lambda n: "".join(
-    rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(n)
-)
-Append: Callable[[Any, Any], Any] = lambda l, obj: l.append(obj)
-AppendPIL: Callable[[Any, int, int, Any], Any] = lambda l, x, y, d: l[y].append(d[x, y])
-AppendList: Callable[[List, int, int, Any], Any] = lambda l, x, y, d: l.append(d[y][x])
-AppendPartial: Callable[[List, int, Any], List] = lambda l, y, x: l[y].append(x)
-ImgPixels: Callable[[Any, int, int, Any], Any] = lambda i, x, y, d: i.putpixel(
-    (x, y), d[y][x]
-)
-RandomWidth: Callable[[int], int] = lambda c: int(c * (1 - rand.random()))
-ProgressBars: Callable[[Any, str], Any] = lambda r, d: trange(
-    r, desc=("{:30}".format(d))
-)
-AppendBW: Callable[[List, int, int, Any, float], List] = (
-    lambda l, x, y, d, t: AppendPartial(l, y, WhitePixel)
-    if (lightness(d[y][x]) < t)
-    else AppendPartial(l, y, BlackPixel)
-)
-RemoveOld = lambda f: remove(f) if path.exists(f) else None
-
-
-# SORTING PIXELS #
-lightness: Callable[[Any], float] = (lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0)
-intensity: Callable[[Any], float] = lambda p: p[0] + p[1] + p[2]
-hue: Callable[[Any], float] = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0
-saturation: Callable[[Any], float] = (lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0)
-minimum: Callable[[Any], float] = lambda p: min(p[0], p[1], p[2])
 
 
 # READING FUNCTIONS #
@@ -612,13 +613,13 @@ def SortImage(
         for x_max in intervals[y]:
             interval: List = []
             for x in range(x_min, x_max):
-                AppendList(interval, x, y, pixels)
+                Append3D(interval, x, y, pixels)
             if rand.randint(0, 100) >= args["randomness"]:
                 row += sort_interval(interval, sorting_function)
             else:
                 row += interval
             x_min = x_max
-        AppendList(row, 0, y, pixels)
+        Append3D(row, 0, y, pixels)
         Append(sorted_pixels, row)
     return sorted_pixels
 
@@ -655,8 +656,8 @@ def edge(pixels: Any, args: dict) -> List:
         Append(intervals, [])
         for x in range(len(pixels[0])):
             if edge_pixels[y][x] == BlackPixel:
-                AppendPartial(intervals, y, x)
-        AppendPartial(intervals, y, len(pixels[0]))
+                AppendInPlace(intervals, y, x)
+        AppendInPlace(intervals, y, len(pixels[0]))
     return intervals
 
 
@@ -670,8 +671,8 @@ def threshold(pixels: Any, args: dict) -> List:
                 lightness(pixels[y][x]) < args["bottom_threshold"]
                 or lightness(pixels[y][x]) > args["upper_threshold"]
             ):
-                AppendPartial(intervals, y, x)
-        AppendPartial(intervals, y, len(pixels[0]))
+                AppendInPlace(intervals, y, x)
+        AppendInPlace(intervals, y, len(pixels[0]))
     return intervals
 
 
@@ -685,10 +686,10 @@ def random(pixels: Any, args: dict) -> List:
             width = RandomWidth(args["clength"])
             x += width
             if x > len(pixels[0]):
-                AppendPartial(intervals, y, len(pixels[0]))
+                AppendInPlace(intervals, y, len(pixels[0]))
                 break
             else:
-                AppendPartial(intervals, y, x)
+                AppendInPlace(intervals, y, x)
     return intervals
 
 
@@ -702,10 +703,10 @@ def waves(pixels: Any, args: dict) -> List:
             width = args["clength"] + rand.randint(0, 10)
             x += width
             if x > len(pixels[0]):
-                AppendPartial(intervals, y, len(pixels[0]))
+                AppendInPlace(intervals, y, len(pixels[0]))
                 break
             else:
-                AppendPartial(intervals, y, x)
+                AppendInPlace(intervals, y, x)
     return intervals
 
 
@@ -729,8 +730,8 @@ def file_mask(pixels: Any, args: dict) -> List:
         Append(intervals, [])
         for x in range(len(pixels[0])):
             if file_pixels[y][x] == BlackPixel:
-                AppendPartial(intervals, y, x)
-        AppendPartial(intervals, y, len(pixels[0]))
+                AppendInPlace(intervals, y, x)
+        AppendInPlace(intervals, y, len(pixels[0]))
 
     return intervals
 
@@ -767,8 +768,8 @@ def file_edges(pixels: Any, args: dict) -> List:
         Append(intervals, [])
         for x in range(len(pixels[0])):
             if edge_pixels[y][x] == BlackPixel:
-                AppendPartial(intervals, y, x)
-        AppendPartial(intervals, y, len(pixels[0]))
+                AppendInPlace(intervals, y, x)
+        AppendInPlace(intervals, y, len(pixels[0]))
     return intervals
 
 
