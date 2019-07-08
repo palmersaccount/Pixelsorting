@@ -1928,3 +1928,13 @@ Sorted on: 07/06/2019 20:24
 
 Sorted image: https://s.put.re/dj5NBsve.png
 -----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func (randomly chosen): edges
+
+Sort func (randomly chosen): minimum
+Args: -a 77 -c 450 -u 0.75 -t 0.45 -r 65 
+Sorted on: 07/08/2019 11:31
+
+Sorted image: https://s.put.re/uBnCJB4Z.png
+-----------------------------------
