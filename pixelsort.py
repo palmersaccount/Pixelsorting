@@ -1234,7 +1234,16 @@ def main():
         print("No args given!")
         arg_parse_input = ""
 
-    args_full: str = f"{arg_parse_input} -l {url} -i {int_func_input} -s {sort_func_input} -p {str(preset_true)} {f'-k {file_link}' if db_preset else ''} -d {str(db_preset)} -y {internet}"
+    args_full: str = (
+        f"{arg_parse_input}"
+        f" -l {url}"
+        f" -i {int_func_input}"
+        f" -s {sort_func_input}"
+        f" -p {str(preset_true)}"
+        f" {f'-k {file_link}' if db_preset else ''}"
+        f" -d {str(db_preset)}"
+        f" -y {internet}"
+    )
 
     args_namespace = parse.parse_args(args_full.split())
 
@@ -1253,7 +1262,9 @@ def main():
         "internet": args_namespace.internet,
     }
 
-    interval_function: Callable[[Any, dict], List] = ReadIntervalFunction(int_func_input)
+    interval_function: Callable[[Any, dict], List] = ReadIntervalFunction(
+        int_func_input
+    )
     sorting_function: Callable[[Any, dict], List] = ReadSortingFunction(sort_func_input)
 
     print(
