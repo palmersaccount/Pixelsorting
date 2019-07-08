@@ -92,7 +92,7 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
     return pixels
 
 
-def ElementaryCA(pixels: Any, args: Any, width: Any, height: Any) -> Any:
+def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
     r"""
     Generate images of elementary cellular automata.
     Selected rules from https://en.wikipedia.org/wiki/Elementary_cellular_automaton
@@ -105,7 +105,7 @@ def ElementaryCA(pixels: Any, args: Any, width: Any, height: Any) -> Any:
     """
     width /= 4 if width <= 2500 else 8
     height /= 4 if height <= 2500 else 8
-    if args.filelink in ["False", ""]:
+    if args["filelink"] in ["False", ""]:
         rules: List = [
             26,
             19,
@@ -126,7 +126,7 @@ def ElementaryCA(pixels: Any, args: Any, width: Any, height: Any) -> Any:
             142,
         ]
 
-        if not args.int_function == "snap":
+        if not args["int_function"] == "snap" or args["preset"]:
             ruleprompt = input(
                 f"Rule selection (max of 255)(leave blank for random)\n"
                 f"(Recommended to leave blank, most of the rules aren't good): "
@@ -201,7 +201,7 @@ def ElementaryCA(pixels: Any, args: Any, width: Any, height: Any) -> Any:
         return newImg
     else:
         print("Using file image from DB...")
-        img = ImgOpen(args.filelink, True)
+        img = ImgOpen(args["filelink"])
         img.save("images/ElementaryCA.png")
         return img
 
@@ -230,7 +230,7 @@ def UploadImg(img: str) -> str:
         exit()
 
 
-def ImgOpen(url: str, internet: bool) -> Any:
+def ImgOpen(url: str, internet: bool = HasInternet()) -> Any:
     r"""
     Opens the image from a direct url if the internet is connected.
     ------
@@ -248,7 +248,7 @@ def ImgOpen(url: str, internet: bool) -> Any:
         exit()
 
 
-def CropTo(image_to_crop: Any, args: Any, internet: bool) -> Any:
+def CropTo(image_to_crop: Any, args: dict) -> Any:
     r"""
     Crops image to the size of a reference image. This function assumes
     that the relevant image is located in the center and you want to crop away
@@ -257,7 +257,7 @@ def CropTo(image_to_crop: Any, args: Any, internet: bool) -> Any:
     :param reference_image
     :return: image cropped to the size of the reference image
     """
-    reference_image = ImgOpen(args.url, internet)
+    reference_image = ImgOpen(args["url"], args["internet"])
     reference_size: Tuple[int, int] = reference_image.size
     current_size: Tuple[int, int] = image_to_crop.size
     dx = current_size[0] - reference_size[0]
@@ -292,6 +292,7 @@ AppendBW: Callable[[List, int, int, Any, float], List] = (
     if (lightness(d[y][x]) < t)
     else AppendPartial(l, y, BlackPixel)
 )
+RemoveOld = lambda f: remove(f) if path.exists(f) else None
 
 
 # SORTING PIXELS #
@@ -303,62 +304,54 @@ minimum: Callable[[Any], float] = lambda p: min(p[0], p[1], p[2])
 
 
 # READING FUNCTIONS #
-def ReadImageInput(url_input: str, internet: bool) -> Tuple[str, bool, bool, Any]:
+def ReadImageInput(
+    url_input: str, internet: bool = HasInternet()
+) -> Tuple[str, bool, bool, Any]:
     r"""
     Reading the image input.
     -----
     :param url_input: The inputted URL, number of default image, or local file path.
     :param internet: true/false for having internet.
     :returns: (in order) url[str], url_given[bool], url_random[bool], random_url[str]
+
+    Explination on returns:
+    - url -> the url or local image string.
+    - url_given -> was the url given? or randomized?
+    - url_random -> was the url randomized or chosen from preset images?
+    - random_url -> if the url was randomly chose, the string of what number was chosen
     """
     print("Opening image...")
-    try:
-        if internet:
-            if url_input in ["", " ", "0", "1", "2", "3", "4", "5", "6"]:
-                raise IOError
-            else:
-                ImgOpen(url_input, internet)
-                return url_input, True, False, None
-        else:
-            if url_input in ["", " "]:
-                url = "images/default.jpg"
-            else:
-                url = url_input
-            return url, True, False, False
-    except IOError:
-        random_url = str(rand.randint(0, 5))
-        url_options = {
-            "0": "https://s.put.re/SRcqAfhP.jpg",
-            "1": "https://s.put.re/Ds9KV8jX.jpg",
-            "2": "https://s.put.re/QsUQbC1R.jpg",
-            "3": "https://s.put.re/5zgcV3TT.jpg",
-            "4": "https://s.put.re/567w8wpK.jpg",
-            "5": "https://s.put.re/gcYkpmbd.jpg",
-            "6": "https://s.put.re/K49iqXVJ.png",
-        }
-        try:
-            return (
-                (
-                    url_options[
-                        (
-                            url_input
-                            if url_input in ["0", "1", "2", "3", "4", "5", "6"]
-                            else random_url
-                        )
-                    ]
-                    if url_input in ["", " ", "0", "1", "2", "3", "4", "5", "6"]
-                    else url_input
-                ),
-                (
-                    False
-                    if url_input in ["", " ", "0", "1", "2", "3", "4", "5", "6"]
-                    else True
-                ),
-                (True if url_input in ["", " "] else False),
-                (random_url if url_input in ["", " "] else None),
-            )
-        except KeyError:
-            return url_options[random_url], False, True, random_url
+    url_options: dict = {
+        "0": "https://s.put.re/SRcqAfhP.jpg",
+        "1": "https://s.put.re/Ds9KV8jX.jpg",
+        "2": "https://s.put.re/QsUQbC1R.jpg",
+        "3": "https://s.put.re/5zgcV3TT.jpg",
+        "4": "https://s.put.re/567w8wpK.jpg",
+        "5": "https://s.put.re/gcYkpmbd.jpg",
+        "6": "https://s.put.re/K49iqXVJ.png",
+    }
+    random_url: str = str(rand.randint(0, len(url_options)))
+
+    if url_input not in ["0", "1", "2", "3", "4", "5", "6", "", " "]:
+        img_parse: Any = urlparse(url_input)
+        if img_parse.scheme not in ["http", "https"]:
+            print("Local image detected! Uploading to put.re...")
+            url_input = UploadImg(url_input)
+            return url_input, True, False, random_url
+    elif url_input in ["", " "]:
+        print("Using default image! Uploading to put.re for script usability...")
+        return UploadImg("images/default.jpg"), True, False, random_url
+    else:
+        return (
+            url_options[(url_input if url_input not in ["", " "] else random_url)],
+            (
+                False
+                if url_input in ["0", "1", "2", "3", "4", "5", "6", "", " "]
+                else True
+            ),  # url given
+            True if url_input in ["", " "] else False,  # url_random (bool)
+            random_url,  # url_random (str)
+        )
 
 
 def ReadIntervalFunction(int_func_input: str) -> Callable[[Any, Any, bool], List[Any]]:
@@ -620,7 +613,7 @@ def SortImage(
             interval: List = []
             for x in range(x_min, x_max):
                 AppendList(interval, x, y, pixels)
-            if rand.randint(0, 100) >= args.randomness:
+            if rand.randint(0, 100) >= args["randomness"]:
                 row += sort_interval(interval, sorting_function)
             else:
                 row += interval
@@ -631,10 +624,10 @@ def SortImage(
 
 
 # INTERVALS #
-def edge(pixels: Any, args: Any, internet: bool) -> List:
+def edge(pixels: Any, args: dict) -> List:
     edge_data: Any = (
-        ImgOpen(args.url, internet)
-        .rotate(args.angle, expand=True)
+        ImgOpen(args["url"], args["internet"])
+        .rotate(args["angle"], expand=True)
         .filter(ImageFilter.FIND_EDGES)
         .convert("RGBA")
         .load()
@@ -649,7 +642,7 @@ def edge(pixels: Any, args: Any, internet: bool) -> List:
     for y in ProgressBars(len(pixels), "Thresholding..."):
         Append(edge_pixels, [])
         for x in range(len(pixels[0])):
-            AppendBW(edge_pixels, x, y, filter_pixels, args.bottom_threshold)
+            AppendBW(edge_pixels, x, y, filter_pixels, args["bottom_threshold"])
 
     for y in tqdm(
         range(len(pixels) - 1, 1, -1), desc=("{:30}".format("Cleaning up..."))
@@ -667,29 +660,29 @@ def edge(pixels: Any, args: Any, internet: bool) -> List:
     return intervals
 
 
-def threshold(pixels: Any, args: Any, internet: bool) -> List:
+def threshold(pixels: Any, args: dict) -> List:
     intervals: List = []
 
     for y in ProgressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [])
         for x in range(len(pixels[0])):
             if (
-                lightness(pixels[y][x]) < args.bottom_threshold
-                or lightness(pixels[y][x]) > args.upper_threshold
+                lightness(pixels[y][x]) < args["bottom_threshold"]
+                or lightness(pixels[y][x]) > args["upper_threshold"]
             ):
                 AppendPartial(intervals, y, x)
         AppendPartial(intervals, y, len(pixels[0]))
     return intervals
 
 
-def random(pixels: Any, args: Any, internet: bool) -> List:
+def random(pixels: Any, args: dict) -> List:
     intervals: List = []
 
     for y in ProgressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [])
         x = 0
         while True:
-            width = RandomWidth(args.clength)
+            width = RandomWidth(args["clength"])
             x += width
             if x > len(pixels[0]):
                 AppendPartial(intervals, y, len(pixels[0]))
@@ -699,14 +692,14 @@ def random(pixels: Any, args: Any, internet: bool) -> List:
     return intervals
 
 
-def waves(pixels: Any, args: Any, internet: bool) -> List:
+def waves(pixels: Any, args: dict) -> List:
     intervals: List = []
 
     for y in ProgressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [])
         x = 0
         while True:
-            width = args.clength + rand.randint(0, 10)
+            width = args["clength"] + rand.randint(0, 10)
             x += width
             if x > len(pixels[0]):
                 AppendPartial(intervals, y, len(pixels[0]))
@@ -716,13 +709,13 @@ def waves(pixels: Any, args: Any, internet: bool) -> List:
     return intervals
 
 
-def file_mask(pixels: Any, args: Any, internet: bool) -> List:
+def file_mask(pixels: Any, args: dict) -> List:
     img = ElementaryCA(pixels, args, int(len(pixels)), int(len(pixels[0]))).resize(
         (len(pixels[0]), len(pixels)), Image.ANTIALIAS
     )
     data: Any = img.load()
 
-    file_pixels = PixelAppend(img.size[1], img.size[0], data, "Defining edges...")
+    file_pixels = PixelAppend(len(pixels), len(pixels[0]), data, "Defining edges...")
     intervals: List = []
 
     for y in tqdm(
@@ -742,10 +735,10 @@ def file_mask(pixels: Any, args: Any, internet: bool) -> List:
     return intervals
 
 
-def file_edges(pixels: Any, args: Any, internet: bool) -> List:
+def file_edges(pixels: Any, args: dict) -> List:
     edge_data: Any = (
         ElementaryCA(pixels, args, int(len(pixels)), int(len(pixels[0])))
-        .rotate(args.angle, expand=True)
+        .rotate(args["angle"], expand=True)
         .resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
         .filter(ImageFilter.FIND_EDGES)
         .convert("RGBA")
@@ -761,7 +754,7 @@ def file_edges(pixels: Any, args: Any, internet: bool) -> List:
     for y in ProgressBars(len(pixels), "Thresholding..."):
         Append(edge_pixels, [])
         for x in range(len(pixels[0])):
-            AppendBW(edge_pixels, x, y, filter_pixels, args.bottom_threshold)
+            AppendBW(edge_pixels, x, y, filter_pixels, args["bottom_threshold"])
 
     for y in tqdm(
         range(len(pixels) - 1, 1, -1), desc=("{:30}".format("Cleaning up edges..."))
@@ -779,7 +772,7 @@ def file_edges(pixels: Any, args: Any, internet: bool) -> List:
     return intervals
 
 
-def snap_sort(pixels: Any, args: Any, internet: bool) -> List:
+def snap_sort(pixels: Any, args: dict) -> List:
     input_img = ImgOpen("images/thanos_img.png", False)
     pixels_snap: Any = array(input_img)
 
@@ -807,16 +800,16 @@ def snap_sort(pixels: Any, args: Any, internet: bool) -> List:
     size0, size1 = snapped_img.size
     pixels_return = PixelAppend(size1, size0, data, "I hope they remember you...")
 
-    remove("images/snapped_pixels.png")
-    remove("images/thanos_img.png")
+    RemoveOld("images/snapped_pixels.png")
+    RemoveOld("images/thanos_img.png")
     print(f"{('/' * 45)}\nPerfectly balanced, as all things should be.\n{('/' * 45)}")
 
     return pixels_return
 
 
-def shuffle_total(pixels: Any, args: Any, internet: bool) -> List:
+def shuffle_total(pixels: Any, args: dict) -> List:
     print("Creating array from image...")
-    input_img = ImgOpen(args.url, internet).convert("RGBA")
+    input_img = ImgOpen(args["url"], args["internet"]).convert("RGBA")
     height: int = input_img.size[1]
     shuffled: Any = array(input_img)
 
@@ -829,12 +822,13 @@ def shuffle_total(pixels: Any, args: Any, internet: bool) -> List:
     size0, size1 = input_img.size
     pixels = PixelAppend(size1, size0, data, "Recreating image...")
 
+    RemoveOld("images/shuffled.png")
     return pixels
 
 
-def shuffled_axis(pixels: Any, args: Any, internet: bool) -> List:
+def shuffled_axis(pixels: Any, args: dict) -> List:
     print("Creating array from image...")
-    input_img = ImgOpen(args.url, internet).convert("RGBA")
+    input_img = ImgOpen(args["url"], args["internet"]).convert("RGBA")
     height: int = input_img.size[1]
     shuffled: Any = array(input_img)
 
@@ -847,11 +841,11 @@ def shuffled_axis(pixels: Any, args: Any, internet: bool) -> List:
     size0, size1 = input_img.size
     pixels = PixelAppend(size1, size0, data, "Recreating image...")
 
-    remove("images/shuffled.png")
+    RemoveOld("images/shuffled.png")
     return pixels
 
 
-def none(pixels: Any, args: Any, internet: bool) -> List:
+def none(pixels: Any, args: dict) -> List:
     intervals: List = []
     for y in ProgressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [len(pixels[y])])
@@ -879,6 +873,7 @@ def main():
     :-p --preset -> is preset used
     :-k --filelink -> for DBpreset
     :-d --dbpreset -> is dbpreset used
+    :-y --internet -> is internet there
     """
     parse.add_argument(
         "-l",
@@ -950,14 +945,20 @@ def main():
         type=bool,
         default=False,
     )
+    parse.add_argument(
+        "-y",
+        "--internet",
+        help="Boolean for if internet is preset or not.",
+        type=bool,
+        default=True,
+    )
 
     clear()
     # remove old image files that didn't get deleted before
-    removeOld = lambda f: remove(f) if path.isfile(f) else None
-    removeOld("images/image.png")
-    removeOld("images/thanos_img.png")
-    removeOld("images/snapped_pixels.png")
-    removeOld("images/ElementaryCA.png")
+    RemoveOld("images/image.png")
+    RemoveOld("images/thanos_img.png")
+    RemoveOld("images/snapped_pixels.png")
+    RemoveOld("images/ElementaryCA.png")
 
     internet = HasInternet()
 
@@ -981,17 +982,12 @@ def main():
         url_input = input(
             "Please input the URL of the image, the default image #, or the image path:\n(this might take a while depending the image resolution)\n"
         )
-        if url_input not in ["0", "1", "2", "3", "4", "5", "6", "", " "]:
-            img_parse: Any = urlparse(url_input)
-            if img_parse.scheme not in ["http", "https"]:
-                print("Local image detected! Uploading to put.re...")
-                url_input = UploadImg(url_input)
         if len(url_input) > 79:
             print("Image URL too long, uploading to put.re for a shorter URL...")
             img = ImgOpen(url_input, internet)
             img.save("image.png")
             url_input = UploadImg("image.png")
-            removeOld("image.png")
+            RemoveOld("image.png")
         url, url_given, url_random, random_url = ReadImageInput(url_input, internet)
     else:
         print("Internet not connected! Local image must be used.")
@@ -1238,12 +1234,27 @@ def main():
         print("No args given!")
         arg_parse_input = ""
 
-    args_full: str = f"{arg_parse_input} -l {url} -i {int_func_input} -s {sort_func_input} -p {str(preset_true)} {f'-k {file_link}' if db_preset else ''} -d {str(db_preset)}"
+    args_full: str = f"{arg_parse_input} -l {url} -i {int_func_input} -s {sort_func_input} -p {str(preset_true)} {f'-k {file_link}' if db_preset else ''} -d {str(db_preset)} -y {internet}"
 
-    __args = parse.parse_args(args_full.split())
+    args_namespace = parse.parse_args(args_full.split())
 
-    interval_function: Callable[[Any, Any], Any] = ReadIntervalFunction(int_func_input)
-    sorting_function: Callable[[Any, Any], Any] = ReadSortingFunction(sort_func_input)
+    __args: dict = {
+        "url": args_namespace.url,
+        "int_function": args_namespace.int_function,
+        "sorting_function": args_namespace.sorting_function,
+        "bottom_threshold": args_namespace.bottom_threshold,
+        "upper_threshold": args_namespace.upper_threshold,
+        "clength": args_namespace.clength,
+        "angle": args_namespace.angle,
+        "randomness": args_namespace.randomness,
+        "preset": args_namespace.preset,
+        "filelink": args_namespace.filelink,
+        "dbpreset": args_namespace.dbpreset,
+        "internet": args_namespace.internet,
+    }
+
+    interval_function: Callable[[Any, dict], List] = ReadIntervalFunction(int_func_input)
+    sorting_function: Callable[[Any, dict], List] = ReadSortingFunction(sort_func_input)
 
     print(
         f"{image_msg}\n{resolution_msg}\n"
@@ -1251,25 +1262,25 @@ def main():
         f"\n{int_msg}\n{sort_msg}\n{site_msg}"
     )
 
-    print(f"Lower threshold: {__args.bottom_threshold}") if int_func_input in [
+    print(f"Lower threshold: {__args['bottom_threshold']}") if int_func_input in [
         "threshold",
         "edges",
         "file-edges",
         "snap",
     ] else None
-    print(f"Upper threshold: {__args.upper_threshold}") if int_func_input in [
-        "threshold",
+    print(f"Upper threshold: {__args['upper_threshold']}") if int_func_input in [
+        "threshold"
     ] else None
-    print(f"Characteristic length: {__args.clength}") if int_func_input in [
+    print(f"Characteristic length: {__args['clength']}") if int_func_input in [
         "random",
         "waves",
     ] else None
-    print(f"Randomness: {__args.randomness} %")
-    print(f"Angle: {__args.angle} °")
+    print(f"Randomness: {__args['randomness']} %")
+    print(f"Angle: {__args['angle']} °")
     print("------------------------------")
 
     print("Rotating image...")
-    input_img: Any = input_img.rotate(__args.angle, expand=True)
+    input_img: Any = input_img.rotate(__args["angle"], expand=True)
 
     print("Getting data...")
     data: Any = input_img.load()
@@ -1280,7 +1291,7 @@ def main():
     if shuffled or snapped:
         if snapped:
             if preset_true:
-                intervals = file_edges(pixels, __args, internet)
+                intervals = file_edges(pixels, __args)
                 sorted_pixels = SortImage(pixels, intervals, __args, sorting_function)
             print(
                 f"{('/' * 45)}\n"
@@ -1297,12 +1308,12 @@ def main():
             thanos_img.save("images/thanos_img.png")
             print("I am... inevitable...")
             sorted_pixels = interval_function(
-                intervals if preset_true else pixels, __args, internet
+                intervals if preset_true else pixels, __args
             )
         else:
-            sorted_pixels = interval_function(pixels, __args, internet)
+            sorted_pixels = interval_function(pixels, __args)
     else:
-        intervals = interval_function(pixels, __args, internet)
+        intervals = interval_function(pixels, __args)
         sorted_pixels = SortImage(pixels, intervals, __args, sorting_function)
 
     output_img = Image.new("RGBA", input_img.size)
@@ -1311,12 +1322,12 @@ def main():
         for x in range(size0):
             ImgPixels(output_img, x, y, sorted_pixels)
 
-    if __args.angle is not 0:
+    if __args["angle"] is not 0:
         print("Rotating output image back to original orientation...")
-        output_img = output_img.rotate(360 - __args.angle, expand=True)
+        output_img = output_img.rotate(360 - __args["angle"], expand=True)
 
         print("Crop image to apropriate size...")
-        output_img = CropTo(output_img, __args, internet)
+        output_img = CropTo(output_img, __args)
 
     print("Saving image...")
     output_img.save(output_image_path)
@@ -1338,8 +1349,8 @@ def main():
 
         # delete old file, seeing as its uploaded
         print("Removing local file...")
-        removeOld(output_image_path)
-        removeOld("images/ElementaryCA.png")
+        RemoveOld(output_image_path)
+        RemoveOld("images/ElementaryCA.png")
 
         # output to 'output.txt'
         print("Saving config to 'output.txt'...")
