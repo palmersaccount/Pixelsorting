@@ -126,7 +126,7 @@ def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
             142,
         ]
 
-        if not args["int_function"] == "snap" or args["preset"]:
+        if args["int_function"] != "snap":
             ruleprompt = input(
                 f"Rule selection (max of 255)(leave blank for random)\n"
                 f"(Recommended to leave blank, most of the rules aren't good): "
@@ -136,7 +136,7 @@ def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
                     rulenumber: int = int(ruleprompt)
                 else:
                     print("Number not in range, using random rule.")
-                    raise ValueError
+                    rulenumber = rules[rand.randrange(0, len(rules))]
             except ValueError:
                 rulenumber = rules[rand.randrange(0, len(rules))]
         else:
