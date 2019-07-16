@@ -333,26 +333,43 @@ def ReadImageInput(
     }
     random_url: str = str(rand.randint(0, len(url_options)))
 
-    if url_input not in ["0", "1", "2", "3", "4", "5", "6", "", " "]:
-        img_parse: Any = urlparse(url_input)
-        if img_parse.scheme not in ["http", "https"]:
-            print("Local image detected! Uploading to put.re...")
-            url_input = UploadImg(url_input)
-            return url_input, True, False, random_url
-    elif url_input in ["", " "]:
-        print("Using default image! Uploading to put.re for script usability...")
-        return UploadImg("images/default.jpg"), True, False, random_url
-    else:
-        return (
-            url_options[(url_input if url_input not in ["", " "] else random_url)],
-            (
-                False
-                if url_input in ["0", "1", "2", "3", "4", "5", "6", "", " "]
-                else True
-            ),  # url given
-            True if url_input in ["", " "] else False,  # url_random (bool)
-            random_url,  # url_random (str)
-        )
+    try:
+        if internet:
+            if url_input in ["", " ", "0", "1", "2", "3", "4", "5", "6"]:
+                raise IOError
+            else:
+                ImgOpen(url_input, internet)
+                return url_input, True, False, None
+        else:
+            if url_input in ["", " "]:
+                url = "images/default.jpg"
+            else:
+                url = url_input
+            return url, True, False, False
+    except IOError:
+        try:
+            return (
+                (
+                    url_options[
+                        (
+                            url_input
+                            if url_input in ["0", "1", "2", "3", "4", "5", "6"]
+                            else random_url
+                        )
+                    ]
+                    if url_input in ["", " ", "0", "1", "2", "3", "4", "5", "6"]
+                    else url_input
+                ),
+                (
+                    False
+                    if url_input in ["", " ", "0", "1", "2", "3", "4", "5", "6"]
+                    else True
+                ),
+                (True if url_input in ["", " "] else False),
+                (random_url if url_input in ["", " "] else None),
+            )
+        except KeyError:
+            return url_options[random_url], False, True, random_url
 
 
 def ReadIntervalFunction(int_func_input: str) -> Callable[[Any, Any, bool], List[Any]]:
