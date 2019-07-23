@@ -25,11 +25,11 @@ def HasInternet(host: str = "1.1.1.1", port: int = 53, timeout: int = 3) -> bool
 
     Service: domain (DNS/TCP)
 
-    Examples
+    Example
     ------
     >>> internet = HasInternet("1.1.1.1", 53, 3)
-    >>> print(internet)
-    True
+    >>> internet
+    >>> True
     """
     try:
         socket.setdefaulttimeout(timeout)
@@ -251,7 +251,7 @@ def UploadImg(img: str) -> str:
     Example
     -----
     >>> link = UploadImg("https://i.redd.it/ufj4p5zwf9v21.jpg")
-    >>> print(link)
+    >>> link
     >>> "https://s.put.re/Uc2A2Z7t.jpg"
     (those links are actually correct.)
     """
@@ -272,6 +272,12 @@ def ImgOpen(url: str, internet: bool = HasInternet()) -> Any:
     :param url: The URL of a direct image.
     :param internet: a bool if the internet is connected.
     :returns: Callable 'Image' object from Pillow.
+
+    Example
+    -----
+    >>> img = ImgOpen(url, internet)
+    >>> img
+    >>> <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=2560x1974 at 0x29C74D7A518>
     """
     try:
         img = Image.open((get(url, stream=True).raw) if internet else url)
@@ -334,19 +340,21 @@ def ReadImageInput(
     random_url: str = str(rand.randint(0, len(url_options)))
 
     try:
-        if internet:
-            if url_input in ["", " ", "0", "1", "2", "3", "4", "5", "6"]:
-                raise IOError
-            else:
-                ImgOpen(url_input, internet)
-                return url_input, True, False, None
+        assert url_input not in ["0", "1", "2", "3", "4", "5", "6"]
+        if internet and url_input not in ["", " "]:
+            ImgOpen(url_input, internet)
+            return url_input, True, False, None
         else:
             if url_input in ["", " "]:
-                url = "images/default.jpg"
+                url = (
+                    UploadImg("images/default.jpg")
+                    if internet
+                    else "images/default.jpg"
+                )
             else:
                 url = url_input
             return url, True, False, False
-    except IOError:
+    except (IOError, AssertionError):
         try:
             return (
                 (
@@ -383,8 +391,8 @@ def ReadIntervalFunction(int_func_input: str) -> Callable[[Any, Any, bool], List
     Example
     -----
     >>> interval = ReadIntervalFunction("random")
-    >>> print(interval)
-    function<random>
+    >>> interval
+    >>> function<random>
     """
     try:
         return {
@@ -414,8 +422,8 @@ def ReadSortingFunction(sort_func_input: str) -> Callable[[Any], float]:
     Example
     -----
     >>> sortFunc = ReadSortingFunction("hue")
-    >>> print(sortFunc)
-    lambda<hue>
+    >>> sortFunc
+    >>> lambda<hue>
     """
     try:
         return {
@@ -430,7 +438,7 @@ def ReadSortingFunction(sort_func_input: str) -> Callable[[Any], float]:
 
 
 def ReadPreset(
-    preset_input: str, width: int
+    preset_input: str, width: int, presets: dict
 ) -> Tuple[str, str, str, bool, bool, bool, bool, bool, bool, bool, bool, bool, str]:
     r"""
     Returning values for 'presets'.
@@ -439,24 +447,25 @@ def ReadPreset(
     :param width: the input img width, used for size reference
     :returns: (in order) arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted, db_preset, db_file_img
     :raises KeyError: String not in selection.
+
+    Explination of returns
+    -----
+    - arg_parse_input -> what the arg parse input is
+    - int_func_input -> what the chosen interval function is
+    - sort_func_input -> what the sorting function is
+    - preset_true -> is the preset true
+    - int_rand -> was the interval function chosen at random?
+    - sort_rand -> was the sorting function chosen at random?
+    - int_chosen -> was the interval function chosen chosen?
+    - sort_chosen -> was the sorting function chosen?
+    - shuffled -> is the interval function shuffled?
+    - snapped -> is the interval function snapped?
+    - file_sorted -> is the interval function file?
+    - db_preset -> is the preset gathered from the database?
+    - db_file_img -> if the preset is from the database, the file image link
     """
     try:
         # order-- arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted, db_preset, db_file_img
-        int_func_input: List = [
-            "random",
-            "threshold",
-            "edges",
-            "waves",
-            "file",
-            "file-edges",
-        ]
-        sort_func_input: List = [
-            "lightness",
-            "hue",
-            "intensity",
-            "minimum",
-            "saturation",
-        ]
         if HasInternet():
             r = get(
                 "https://pixelsorting-a289.restdb.io/rest/outputs",
@@ -493,101 +502,8 @@ def ReadPreset(
                         )
                 except KeyError:
                     continue
-        presets = {
-            "main": (
-                (
-                    f"-r {rand.randrange(35, 65)} "
-                    f"-c {(rand.randrange(150, 350, 25)) if (width <= 2500) else rand.randrange(500, 750, 25)} "
-                    f"-a {rand.randrange(0, 360)} "
-                ),
-                "random",
-                "intensity",
-                True,
-                False,
-                False,
-                True,
-                True,
-                False,
-                False,
-                False,
-                False,
-                "",
-            ),
-            "main file": (
-                (
-                    f"-r {rand.randrange(15, 65)} "
-                    f"-t {float(rand.randrange(65, 90)/100)}"
-                ),
-                "file-edges",
-                "minimum",
-                True,
-                False,
-                False,
-                True,
-                True,
-                False,
-                False,
-                True,
-                False,
-                "",
-            ),
-            "full random": (
-                (
-                    f"-a {rand.randrange(0, 360)} "
-                    f"-c {(rand.randrange(50, 500, 25)) if (width <= 2500) else rand.randrange(500, 1250, 25)} "
-                    f"-u {float(rand.randrange(50, 100, 5) / 100)} "
-                    f"-t {float(rand.randrange(10, 50, 5) / 100)} "
-                    f"-r {rand.randrange(5, 75)} "
-                ),
-                int_func_input[rand.randrange(0, len(int_func_input))],
-                sort_func_input[rand.randrange(0, len(sort_func_input))],
-                True,
-                True,
-                True,
-                True,
-                True,
-                False,
-                False,
-                False,
-                False,
-                "",
-            ),
-            "snap sort": (
-                (
-                    f"-r {rand.randrange(15,50,5)} "
-                    f"-c {(rand.randrange(50, 250, 25)) if (width <= 2500) else rand.randrange(350, 650, 25)} "
-                    f"-a {rand.randrange(0,180)} "
-                ),
-                "snap",
-                "minimum",
-                True,
-                False,
-                False,
-                True,
-                True,
-                False,
-                True,
-                False,
-                False,
-                "",
-            ),
-            "Kims Script": (
-                f"-a 90 -u {float(rand.randrange(15, 85)/100)}",
-                "threshold",
-                sort_func_input[rand.randrange(0, len(sort_func_input))],
-                True,
-                False,
-                False,
-                True,
-                True,
-                False,
-                False,
-                False,
-                False,
-                "",
-            ),
-        }
-        return presets[preset_input]
+        print(presets[preset_input][1])
+        return presets[preset_input][1]
     except KeyError:
         print("[WARNING] Invalid preset name, no preset will be applied")
         return (
@@ -978,7 +894,130 @@ def main():
     RemoveOld("images/snapped_pixels.png")
     RemoveOld("images/ElementaryCA.png")
 
+    # variables
     internet = HasInternet()
+    int_func_options: List = [
+        "random",
+        "threshold",
+        "edges",
+        "waves",
+        "snap",
+        "shuffle-total",
+        "shuffle-axis",
+        "file",
+        "file-edges",
+        "none",
+    ]
+    sort_func_options: List = ["lightness", "hue", "intensity", "minimum", "saturation"]
+    presets: dict = {
+        "main": [
+            "Main args (r: 35-65, c: random gen, a: 0-360, random, intensity)",
+            (
+                (
+                    f"-r {rand.randrange(35, 65)} "
+                    f"-c {(rand.randrange(150, 350, 25))} "
+                    f"-a {rand.randrange(0, 360)} "
+                ),
+                "random",
+                "intensity",
+                True,
+                False,
+                False,
+                True,
+                True,
+                False,
+                False,
+                False,
+                False,
+                "",
+            ),
+        ],
+        "main file": [
+            "Main args, but only for file edges",
+            (
+                (
+                    f"-r {rand.randrange(15, 65)} "
+                    f"-t {float(rand.randrange(65, 90)/100)}"
+                ),
+                "file-edges",
+                "minimum",
+                True,
+                False,
+                False,
+                True,
+                True,
+                False,
+                False,
+                True,
+                False,
+                "",
+            ),
+        ],
+        "full random": [
+            "Randomness in every arg!",
+            (
+                (
+                    f"-a {rand.randrange(0, 360)} "
+                    f"-c {(rand.randrange(50, 500, 25))} "
+                    f"-u {float(rand.randrange(50, 100, 5) / 100)} "
+                    f"-t {float(rand.randrange(10, 50, 5) / 100)} "
+                    f"-r {rand.randrange(5, 75)} "
+                ),
+                int_func_options[rand.randrange(0, len(int_func_options))],
+                sort_func_options[rand.randrange(0, len(sort_func_options))],
+                True,
+                True,
+                True,
+                True,
+                True,
+                False,
+                False,
+                False,
+                False,
+                "",
+            ),
+        ],
+        "snap sort": [
+            "You could not live with your own failure. And where did that bring you? Back to me.",
+            (
+                (
+                    f"-r {rand.randrange(15,50,5)} "
+                    f"-c {(rand.randrange(50, 250, 25))} "
+                    f"-a {rand.randrange(0,180)} "
+                ),
+                "snap",
+                "minimum",
+                True,
+                False,
+                False,
+                True,
+                True,
+                False,
+                True,
+                False,
+                False,
+                "",
+            ),
+        ],
+        "Kims Script": [
+            "Used by Kim Asendorf's original processing script",
+            (
+                f"-a 90 -u {float(rand.randrange(15, 85)/100)}",
+                "threshold",
+                sort_func_options[rand.randrange(0, len(sort_func_options))],
+                True,
+                False,
+                False,
+                True,
+                True,
+                False,
+                False,
+                False,
+                False,
+                "",
+            ),
+        ],
+    }
 
     if internet:
         # update script if possible.
@@ -1032,29 +1071,37 @@ def main():
     preset_q = input("\nDo you wish to apply a preset? (y/n)\n").lower()
     clear()
     if preset_q in ["y", "yes", "1"]:
-        print(
-            f"{resolution_msg}\n\n"
-            "Preset options:\n"
-            "-1|main -- Main args (r: 35-65, c: random gen, a: 0-360, random, intensity)\n"
-            "-2|main file -- Main args, but only for file edges\n"
-            "-3|full random -- Randomness in every arg!\n"
-            "-4|snap sort -- You could not live with your own failure. And where did that bring you? Back to me.\n"
-            "-5|Kims script -- Used by Kim Asendorf's original processing script\n"
-            "-Any preset ID from the database can be used."
-        )
+        presets_list: dict = []
+        for i in presets:
+            Append(presets_list, i)
+
+        print(f"{resolution_msg}\n")
+        for i, j in enumerate(presets_list):
+            print(f"{i+1}|{j} -- {presets[j][0]}")
+        print("-Any preset ID from the database can be used.")
+
         preset_input = input("\nChoice: ").lower()
-        if preset_input in ["1", "2", "3", "4", "5"]:
-            preset_input = {
-                "1": "main",
-                "2": "main file",
-                "3": "full random",
-                "4": "snap sort",
-                "5": "Kims Script",
-            }[preset_input]
+
+        if preset_input in str(range(1, len(presets_list) + 1)):
+            for i, j in enumerate(presets_list):
+                if str(i + 1) == preset_input:
+                    preset_input = str(j)
         # if presets are applied, they take over args
-        arg_parse_input, int_func_input, sort_func_input, preset_true, int_rand, sort_rand, int_chosen, sort_chosen, shuffled, snapped, file_sorted, db_preset, file_link = ReadPreset(
-            preset_input, width
-        )
+        (
+            arg_parse_input,
+            int_func_input,
+            sort_func_input,
+            preset_true,
+            int_rand,
+            sort_rand,
+            int_chosen,
+            sort_chosen,
+            shuffled,
+            snapped,
+            file_sorted,
+            db_preset,
+            file_link,
+        ) = ReadPreset(preset_input, width, presets)
     else:
         preset_true = False
         db_preset = False
@@ -1065,33 +1112,14 @@ def main():
     if not preset_true:
         # int func input
         print(f"{image_msg}\n{resolution_msg}")
-        print(
-            "\nWhat interval function are you using?\nOptions (default is random):\n"
-            "-1|random\n"
-            "-2|threshold\n"
-            "-3|edges\n"
-            "-4|waves\n"
-            "-5|snap\n"
-            "-6|shuffle-total\n"
-            "-7|shuffle-axis\n"
-            "-8|file\n"
-            "-9|file-edges\n"
-            "-10|none\n"
-            "-11|random select"
-        )
+
+        print("\nWhat interval function are you using?\nOptions (default is random):")
+        for i, j in enumerate(int_func_options):
+            print(f"-{i+1}|{j}")
+        print("-11|random select")
+
         int_func_input = input("\nChoice: ").lower()
-        int_func_options = [
-            "random",
-            "threshold",
-            "edges",
-            "waves",
-            "snap",
-            "shuffle-total",
-            "shuffle-axis",
-            "file",
-            "file-edges",
-            "none",
-        ]
+
         if int_func_input in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]:
             int_func_input = int_func_options[int(int_func_input) - 1]
             int_chosen = True
@@ -1127,17 +1155,12 @@ def main():
 
         # sort func input
         print(f"{image_msg}\n{int_msg}\n{resolution_msg}")
-        print(
-            "\nWhat sorting function are you using?\nOptions (default is lightness):\n"
-            "-1|lightness\n"
-            "-2|hue\n"
-            "-3|intensity\n"
-            "-4|minimum\n"
-            "-5|saturation\n"
-            "-6|random select"
-        )
+        print("\nWhat sorting function are you using?\nOptions (default is lightness):")
+        for i, j in enumerate(sort_func_options):
+            print(f"-{i+1}|{j}")
+        print("-6|random select")
+
         sort_func_input = input("\nChoice: ").lower()
-        sort_func_options = ["lightness", "hue", "intensity", "minimum", "saturation"]
         if sort_func_input in ["1", "2", "3", "4", "5"]:
             sort_func_input = sort_func_options[int(sort_func_input) - 1]
             sort_chosen = True
@@ -1175,19 +1198,7 @@ def main():
                 else "Interval function (randomly selected): "
             )
             + int_func_input
-            if int_func_input
-            in [
-                "random",
-                "threshold",
-                "edges",
-                "waves",
-                "snap",
-                "shuffle-total",
-                "shuffle-axis",
-                "file",
-                "file-edges",
-                "none",
-            ]
+            if int_func_input in int_func_options
             else "Interval function: random (default)"
         )
 
@@ -1198,8 +1209,7 @@ def main():
                 else "Sorting function (randomly selected): "
             )
             + sort_func_input
-            if sort_func_input
-            in ["lightness", "hue", "intensity", "minimum", "saturation"]
+            if sort_func_input in sort_func_options
             else "Sorting function: lightness (default)"
         )
 
