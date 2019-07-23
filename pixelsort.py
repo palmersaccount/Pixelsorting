@@ -11,7 +11,6 @@ from json import dumps, loads
 from os import name, path, remove, system
 from string import ascii_lowercase, ascii_uppercase, digits
 from typing import Any, Callable, List, Tuple
-from urllib.parse import urlparse
 from subprocess import run
 
 
@@ -1432,4 +1431,4 @@ def main():
 
 
 if __name__ == "__main__":
-    exit(main())
+    main()
