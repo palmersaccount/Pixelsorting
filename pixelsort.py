@@ -4,14 +4,14 @@
 import argparse
 import random as rand
 import socket
-from sys import exit
 from colorsys import rgb_to_hsv
 from datetime import datetime
 from json import dumps, loads
 from os import name, path, remove, system
 from string import ascii_lowercase, ascii_uppercase, digits
-from typing import Any, Callable, List, Tuple
 from subprocess import run
+from typing import Any, Callable, List, Tuple
+from urllib.parse import urlparse
 
 
 def HasInternet(host: str = "1.1.1.1", port: int = 53, timeout: int = 3) -> bool:
@@ -74,24 +74,24 @@ RandomWidth: Callable[[int], int] = lambda c: int(c * (1 - rand.random()))
 ImgPixels: Callable[[Any, int, int, Any], Any] = lambda i, x, y, d: i.putpixel(
     (x, y), d[y][x]
 )
-IDGen: Callable[[int], str] = lambda n: "".join(
-    rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(n)
+IDGen: Callable[[int], str] = lambda length: "".join(
+    rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(length)
 )
-ProgressBars: Callable[[Any, str], Any] = lambda r, d: trange(
-    r, desc=("{:30}".format(d))
+ProgressBars: Callable[[Any, str], Any] = lambda r, desc: trange(
+    r, desc=("{:30}".format(desc))
 )
 AppendBW: Callable[[List, int, int, Any, float], List] = (
-    lambda l, x, y, d, t: AppendInPlace(l, y, WhitePixel)
-    if (lightness(d[y][x]) < t)
-    else AppendInPlace(l, y, BlackPixel)
+    lambda lst, x, y, data, thresh: AppendInPlace(lst, y, WhitePixel)
+    if (lightness(data[y][x]) < thresh)
+    else AppendInPlace(lst, y, BlackPixel)
 )
 
 
 # SORTING PIXELS #
-lightness: Callable[[Any], float] = (lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0)
+lightness: Callable[[Any], float] = lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0
 intensity: Callable[[Any], float] = lambda p: p[0] + p[1] + p[2]
 hue: Callable[[Any], float] = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0
-saturation: Callable[[Any], float] = (lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0)
+saturation: Callable[[Any], float] = lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0
 minimum: Callable[[Any], float] = lambda p: min(p[0], p[1], p[2])
 
 
@@ -337,14 +337,20 @@ def ReadImageInput(
         "6": "https://s.put.re/K49iqXVJ.png",
     }
     random_url: str = str(rand.randint(0, len(url_options)))
+    img_parse: Any = urlparse(url_input)
 
     try:
         assert url_input not in ["0", "1", "2", "3", "4", "5", "6"]
         if internet and url_input not in ["", " "]:
+            if img_parse.scheme not in ["http", "https"]:
+                print("Local image detected! Uploading to put.re...")
+                url_input = UploadImg(url_input)
+                return url_input, True, False, random_url
             ImgOpen(url_input, internet)
             return url_input, True, False, None
         else:
             if url_input in ["", " "]:
+                print("Using included default image")
                 url = (
                     UploadImg("images/default.jpg")
                     if internet
@@ -909,7 +915,7 @@ def main():
     ]
     sort_func_options: List = ["lightness", "hue", "intensity", "minimum", "saturation"]
     presets: dict = {
-        "main": [
+        "Main": [
             "Main args (r: 35-65, c: random gen, a: 0-360, random, intensity)",
             (
                 (
@@ -931,7 +937,7 @@ def main():
                 "",
             ),
         ],
-        "main file": [
+        "Main file": [
             "Main args, but only for file edges",
             (
                 (
@@ -952,7 +958,7 @@ def main():
                 "",
             ),
         ],
-        "full random": [
+        "Full random": [
             "Randomness in every arg!",
             (
                 (
@@ -976,7 +982,7 @@ def main():
                 "",
             ),
         ],
-        "snap sort": [
+        "Snap sort": [
             "You could not live with your own failure. And where did that bring you? Back to me.",
             (
                 (
@@ -1070,7 +1076,7 @@ def main():
     preset_q = input("\nDo you wish to apply a preset? (y/n)\n").lower()
     clear()
     if preset_q in ["y", "yes", "1"]:
-        presets_list: dict = []
+        presets_list: list = []
         for i in presets:
             Append(presets_list, i)
 
@@ -1081,30 +1087,28 @@ def main():
 
         preset_input = input("\nChoice: ").lower()
 
-        if preset_input in str(range(1, len(presets_list) + 1)):
+        if preset_input in list(map(str, range(1, len(presets_list) + 1))):
             for i, j in enumerate(presets_list):
                 if str(i + 1) == preset_input:
                     preset_input = str(j)
-        # if presets are applied, they take over args
-        (
-            arg_parse_input,
-            int_func_input,
-            sort_func_input,
-            preset_true,
-            int_rand,
-            sort_rand,
-            int_chosen,
-            sort_chosen,
-            shuffled,
-            snapped,
-            file_sorted,
-            db_preset,
-            file_link,
-        ) = ReadPreset(preset_input, width, presets)
+            # if presets are applied, they take over args
+            (
+                arg_parse_input,
+                int_func_input,
+                sort_func_input,
+                preset_true,
+                int_rand,
+                sort_rand,
+                int_chosen,
+                sort_chosen,
+                shuffled,
+                snapped,
+                file_sorted,
+                db_preset,
+                file_link,
+            ) = ReadPreset(preset_input, width, presets)
     else:
-        preset_true = False
-        db_preset = False
-        file_link = "False"
+        preset_true, db_preset, file_link = False, False, "False"
     clear()
 
     # int func, sort func & int msg, sort msg
@@ -1118,15 +1122,11 @@ def main():
         print("-11|random select")
 
         int_func_input = input("\nChoice: ").lower()
-
-        if int_func_input in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]:
-            int_func_input = int_func_options[int(int_func_input) - 1]
-            int_chosen = True
-            int_rand = False
+        
+        if int_func_input in list(map(str, range(1, len(int_func_options) + 1))):
+            int_func_input, int_chosen, int_rand = int_func_options[int(int_func_input) - 1], True, False
         elif int_func_input in ["11", "random select"]:
-            int_func_input = int_func_options[rand.randint(0, 3)]
-            int_chosen = True
-            int_rand = True
+            int_func_input, int_chosen, int_rand = int_func_options[rand.randint(0, 3)], True, True
         else:
             int_chosen, int_func_input = (
                 (True, int_func_input)
@@ -1160,7 +1160,9 @@ def main():
         print("-6|random select")
 
         sort_func_input = input("\nChoice: ").lower()
-        if sort_func_input in ["1", "2", "3", "4", "5"]:
+
+        if sort_func_input in list(map(str, range(1, len(sort_func_options) + 1))):
+        #if sort_func_input in ["1", "2", "3", "4", "5"]:
             sort_func_input = sort_func_options[int(sort_func_input) - 1]
             sort_chosen = True
             sort_rand = False
