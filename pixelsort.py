@@ -160,7 +160,7 @@ def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
             142,
         ]
 
-        if args["int_function"] != "snap":
+        if args["presetname"] not in ["Snap", "Random"]:
             ruleprompt = input(
                 f"Rule selection (max of 255)(leave blank for random)\n"
                 f"(Recommended to leave blank, most of the rules aren't good): "
@@ -799,39 +799,26 @@ def main():
 
     # arg parsing arguments
     parse = argparse.ArgumentParser(description="pixel mangle an image")
+    parse_util = argparse.ArgumentParser(description="misc. args used in program (shouldn't be accessible to user.)")
     """
     (Taken args)
-    :-l,--url -> url
-    :-i,--int_function -> interval function
-    :-s,--sorting_function -> sorting function
+    //user read//
     :-t,--bottom_threshold -> bottom/lower threshold
     :-u,--upper_threshold -> top/upper threshold
     :-c,--clength -> character length
     :-a,--angle -> angle for rotation
     :-r,--randomness -> randomness
+
+    //not accessible to user//
+    :-l,--url -> url
+    :-i,--int_function -> interval function
+    :-s,--sorting_function -> sorting function
     :-p --preset -> is preset used
-    :-k --filelink -> for DBpreset
     :-d --dbpreset -> is dbpreset used
     :-y --internet -> is internet there
+    :-k --filelink -> for DBpreset
+    :-b --presetname -> name of preset used
     """
-    parse.add_argument(
-        "-l",
-        "--url",
-        help="URL of a given image. Used as the input image.",
-        default="https://s.put.re/QsUQbC1R.jpg",
-    )
-    parse.add_argument(
-        "-i",
-        "--int_function",
-        help="random, threshold, edges, waves, snap, shuffle-total, shuffle-axis, file, file-edges, none",
-        default="random",
-    )
-    parse.add_argument(
-        "-s",
-        "--sorting_function",
-        help="lightness, intensity, hue, saturation, minimum",
-        default="lightness",
-    )
     parse.add_argument(
         "-t",
         "--bottom_threshold",
@@ -867,29 +854,51 @@ def main():
         help="What percentage of intervals are NOT sorted",
         default=10,
     )
-    parse.add_argument(
+
+    parse_util.add_argument(
+        "-l",
+        "--url",
+        help="URL of a given image. Used as the input image.",
+        default="https://s.put.re/QsUQbC1R.jpg",
+    )
+    parse_util.add_argument(
+        "-i",
+        "--int_function",
+        help="random, threshold, edges, waves, snap, shuffle-total, shuffle-axis, file, file-edges, none",
+        default="random",
+    )
+    parse_util.add_argument(
+        "-s",
+        "--sorting_function",
+        help="lightness, intensity, hue, saturation, minimum",
+        default="lightness",
+    )
+    parse_util.add_argument(
         "-p",
         "--preset",
         type=bool,
         help="Is a preset used or not? Boolean.",
         default=False,
     )
-    parse.add_argument(
-        "-k", "--filelink", help="File image used, only in DB preset mode.", default=""
-    )
-    parse.add_argument(
+    parse_util.add_argument(
         "-d",
         "--dbpreset",
         help="Boolean for if preset is used or not.",
         type=bool,
         default=False,
     )
-    parse.add_argument(
+    parse_util.add_argument(
         "-y",
         "--internet",
         help="Boolean for if internet is preset or not.",
         type=bool,
         default=True,
+    )
+    parse_util.add_argument(
+        "-b", "--presetname", help="Name of the preset used.", default="None"
+    )
+    parse_util.add_argument(
+        "-k", "--filelink", help="File image used, only in DB preset mode.", default=""
     )
 
     clear()
@@ -907,11 +916,11 @@ def main():
         "edges",
         "waves",
         "snap",
-        "shuffle-total",
-        "shuffle-axis",
         "file",
         "file-edges",
         "none",
+        "shuffle-total",
+        "shuffle-axis",
     ]
     sort_func_options: List = ["lightness", "hue", "intensity", "minimum", "saturation"]
     presets: dict = {
@@ -937,7 +946,7 @@ def main():
                 "",
             ),
         ],
-        "Main file": [
+        "File": [
             "Main args, but only for file edges",
             (
                 (
@@ -958,7 +967,7 @@ def main():
                 "",
             ),
         ],
-        "Full random": [
+        "Random": [
             "Randomness in every arg!",
             (
                 (
@@ -968,7 +977,7 @@ def main():
                     f"-t {float(rand.randrange(10, 50, 5) / 100)} "
                     f"-r {rand.randrange(5, 75)} "
                 ),
-                int_func_options[rand.randrange(0, len(int_func_options))],
+                int_func_options[rand.randrange(0, len(int_func_options) - 2)],
                 sort_func_options[rand.randrange(0, len(sort_func_options))],
                 True,
                 True,
@@ -982,7 +991,7 @@ def main():
                 "",
             ),
         ],
-        "Snap sort": [
+        "Snap": [
             "You could not live with your own failure. And where did that bring you? Back to me.",
             (
                 (
@@ -1004,7 +1013,7 @@ def main():
                 "",
             ),
         ],
-        "Kims Script": [
+        "Kims": [
             "Used by Kim Asendorf's original processing script",
             (
                 f"-a 90 -u {float(rand.randrange(15, 85)/100)}",
@@ -1108,7 +1117,7 @@ def main():
                 file_link,
             ) = ReadPreset(preset_input, width, presets)
     else:
-        preset_true, db_preset, file_link = False, False, "False"
+        preset_true, db_preset, file_link, preset_input = False, False, "False", "None"
     clear()
 
     # int func, sort func & int msg, sort msg
@@ -1122,11 +1131,19 @@ def main():
         print("-11|random select")
 
         int_func_input = input("\nChoice: ").lower()
-        
+
         if int_func_input in list(map(str, range(1, len(int_func_options) + 1))):
-            int_func_input, int_chosen, int_rand = int_func_options[int(int_func_input) - 1], True, False
+            int_func_input, int_chosen, int_rand = (
+                int_func_options[int(int_func_input) - 1],
+                True,
+                False,
+            )
         elif int_func_input in ["11", "random select"]:
-            int_func_input, int_chosen, int_rand = int_func_options[rand.randint(0, 3)], True, True
+            int_func_input, int_chosen, int_rand = (
+                int_func_options[rand.randint(0, 3)],
+                True,
+                True,
+            )
         else:
             int_chosen, int_func_input = (
                 (True, int_func_input)
@@ -1162,7 +1179,7 @@ def main():
         sort_func_input = input("\nChoice: ").lower()
 
         if sort_func_input in list(map(str, range(1, len(sort_func_options) + 1))):
-        #if sort_func_input in ["1", "2", "3", "4", "5"]:
+            # if sort_func_input in ["1", "2", "3", "4", "5"]:
             sort_func_input = sort_func_options[int(sort_func_input) - 1]
             sort_chosen = True
             sort_rand = False
@@ -1264,31 +1281,33 @@ def main():
         arg_parse_input = ""
 
     args_full: str = (
-        f"{arg_parse_input}"
         f" -l {url}"
         f" -i {int_func_input}"
         f" -s {sort_func_input}"
+        f" -b {preset_input}"
         f" -p {str(preset_true)}"
-        f" {f'-k {file_link}' if db_preset else ''}"
         f" -d {str(db_preset)}"
-        f" -y {internet}"
+        f" -y {str(internet)}"
+        f"{f' -k file_link' if db_preset else ''}"
     )
 
-    args_namespace = parse.parse_args(args_full.split())
+    args_namespace = parse.parse_args(arg_parse_input.split())
+    util_args_namespace = parse_util.parse_args(args_full.split())
 
     __args: dict = {
-        "url": args_namespace.url,
-        "int_function": args_namespace.int_function,
-        "sorting_function": args_namespace.sorting_function,
         "bottom_threshold": args_namespace.bottom_threshold,
         "upper_threshold": args_namespace.upper_threshold,
         "clength": args_namespace.clength,
         "angle": args_namespace.angle,
         "randomness": args_namespace.randomness,
-        "preset": args_namespace.preset,
-        "filelink": args_namespace.filelink,
-        "dbpreset": args_namespace.dbpreset,
-        "internet": args_namespace.internet,
+        "url": util_args_namespace.url,
+        "int_function": util_args_namespace.int_function,
+        "sorting_function": util_args_namespace.sorting_function,
+        "presetname": util_args_namespace.presetname,
+        "filelink": util_args_namespace.filelink,
+        "dbpreset": util_args_namespace.dbpreset,
+        "preset": bool(util_args_namespace.preset),
+        "internet": bool(util_args_namespace.internet),
     }
 
     interval_function: Callable[[Any, dict], List] = ReadIntervalFunction(
@@ -1343,12 +1362,12 @@ def main():
             for y in ProgressBars(size1, "The end is near..."):
                 for x in range(size0):
                     ImgPixels(
-                        thanos_img, x, y, sorted_pixels if preset_true else pixels
+                        thanos_img, x, y, pixels
                     )
             thanos_img.save("images/thanos_img.png")
             print("I am... inevitable...")
             sorted_pixels = interval_function(
-                intervals if preset_true else pixels, __args
+                pixels, __args
             )
         else:
             sorted_pixels = interval_function(pixels, __args)

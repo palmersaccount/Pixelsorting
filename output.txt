@@ -2038,3 +2038,43 @@ Sorted on: 07/22/2019 12:03
 
 Sorted image: https://s.put.re/KDiHGTmM.png
 -----------------------------------
+Starting image url: https://s.put.re/6rZC6pcn.jpg
+Resolution: 2048x1364
+Int func: shuffle-axis
+
+Sort func (randomly chosen): saturation
+Args: 
+Sorted on: 07/24/2019 10:48
+
+Sorted image: https://s.put.re/BSLubvUi.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func: shuffle-total
+
+Sort func: lightness
+Args: 
+Sorted on: 07/24/2019 10:49
+
+Sorted image: https://s.put.re/ZX9PrYgc.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func (randomly chosen): file-edges
+
+Sort func (randomly chosen): lightness
+Args: -a 233 -c 400 -u 0.8 -t 0.15 -r 65 
+Sorted on: 07/24/2019 11:01
+
+Sorted image: https://s.put.re/LGR5b3WR.png
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func (randomly chosen): file-edges
+
+Sort func (randomly chosen): hue
+Args: -a 278 -c 150 -u 0.75 -t 0.1 -r 15 
+Sorted on: 07/24/2019 11:23
+
+Sorted image: https://s.put.re/3yt43oeF.png
+-----------------------------------
