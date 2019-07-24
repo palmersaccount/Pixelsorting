@@ -799,7 +799,7 @@ def main():
 
     # arg parsing arguments
     parse = argparse.ArgumentParser(description="pixel mangle an image")
-    parse_util = argparse.ArgumentParser(description="misc. args used in program (shouldn't be accessible to user.)")
+    parse_util = argparse.ArgumentParser(description="misc. args used in program")
     """
     (Taken args)
     //user read//
@@ -909,20 +909,38 @@ def main():
     RemoveOld("images/ElementaryCA.png")
 
     # variables
-    internet = HasInternet()
-    int_func_options: List = [
-        "random",
-        "threshold",
-        "edges",
-        "waves",
-        "snap",
-        "file",
-        "file-edges",
-        "none",
-        "shuffle-total",
-        "shuffle-axis",
-    ]
-    sort_func_options: List = ["lightness", "hue", "intensity", "minimum", "saturation"]
+    misc_variables: dict = {
+        "internet": HasInternet(),
+        "preset_true": False,
+        "snapped": False,
+        "shuffled": False,
+        "int_rand": False,
+        "sort_rand": False,
+        "int_chosen": False,
+        "sort_chosen": False,
+        "file_sorted": False,
+        "resolution_msg": "",
+        "image_msg": "",
+        "int_msg": "",
+        "sort_msg": "",
+        "site_msg": "",
+        "link": "",
+        "date_time": datetime.now().strftime("%m/%d/%Y %H:%M"),
+        "preset_id": datetime.now().strftime("%m%d%Y%H%M"),
+        "sort_func_options": ["lightness", "hue", "intensity", "minimum", "saturation"],
+        "int_func_options": [
+            "random",
+            "threshold",
+            "edges",
+            "waves",
+            "snap",
+            "file",
+            "file-edges",
+            "none",
+            "shuffle-total",
+            "shuffle-axis",
+        ],
+    }
     presets: dict = {
         "Main": [
             "Main args (r: 35-65, c: random gen, a: 0-360, random, intensity)",
@@ -977,8 +995,12 @@ def main():
                     f"-t {float(rand.randrange(10, 50, 5) / 100)} "
                     f"-r {rand.randrange(5, 75)} "
                 ),
-                int_func_options[rand.randrange(0, len(int_func_options) - 2)],
-                sort_func_options[rand.randrange(0, len(sort_func_options))],
+                misc_variables["int_func_options"][
+                    rand.randrange(0, len(misc_variables["int_func_options"]) - 2)
+                ],
+                misc_variables["sort_func_options"][
+                    rand.randrange(0, len(misc_variables["sort_func_options"]))
+                ],
                 True,
                 True,
                 True,
@@ -1018,7 +1040,9 @@ def main():
             (
                 f"-a 90 -u {float(rand.randrange(15, 85)/100)}",
                 "threshold",
-                sort_func_options[rand.randrange(0, len(sort_func_options))],
+                misc_variables["sort_func_options"][
+                    rand.randrange(0, len(misc_variables["sort_func_options"]))
+                ],
                 True,
                 False,
                 False,
@@ -1033,15 +1057,15 @@ def main():
         ],
     }
 
-    if internet:
+    if misc_variables["internet"]:
         # update script if possible.
         run(["git", "pull", "https://github.com/wolfembers/Pixelsorting.git"])
         clear()
 
     print(
-        f"Pixel sorting based on {'web hosted images.' if internet else 'local images'}\n"
+        f"Pixel sorting based on {'web hosted images.' if misc_variables['internet'] else 'local images'}\n"
         f"Most of the backend is sourced from https://github.com/satyarth/pixelsort"
-        f"\nThe output image is {'uploaded to put.re after being sorted.' if internet else 'saved locally.'}\n"
+        f"\nThe output image is {'uploaded to put.re after being sorted.' if misc_variables['internet'] else 'saved locally.'}\n"
         f"\nTo see any past runs, args used, and the result image, open 'output.txt'\n"
         f"{(35 * '--')}"
         f"\nThanks for using this program!\nPress any key to continue..."
@@ -1049,28 +1073,32 @@ def main():
     input()
     clear()
 
-    if internet:
+    if misc_variables["internet"]:
         url_input = input(
             "Please input the URL of the image, the default image #, or the image path:\n(this might take a while depending the image resolution)\n"
         )
         if len(url_input) > 79:
             print("Image URL too long, uploading to put.re for a shorter URL...")
-            img = ImgOpen(url_input, internet)
+            img = ImgOpen(url_input, misc_variables["internet"])
             img.save("image.png")
             url_input = UploadImg("image.png")
             RemoveOld("image.png")
-        url, url_given, url_random, random_url = ReadImageInput(url_input, internet)
+        url, url_given, url_random, random_url = ReadImageInput(
+            url_input, misc_variables["internet"]
+        )
     else:
         print("Internet not connected! Local image must be used.")
         url_input = input(
             "Please input the location of the local file (default image in images folder):\n"
         )
-        url, url_given, url_random, random_url = ReadImageInput(url_input, internet)
-    input_img = ImgOpen(url, internet)
+        url, url_given, url_random, random_url = ReadImageInput(
+            url_input, misc_variables["internet"]
+        )
+    input_img = ImgOpen(url, misc_variables["internet"])
 
     width, height = input_img.size
-    resolution_msg = f"Resolution: {width}x{height}"
-    image_msg = (
+    misc_variables["resolution_msg"] = f"Resolution: {width}x{height}"
+    misc_variables["image_msg"] = (
         (
             f"[WARNING] No image url given, using {('random' if url_random else 'chosen')}"
             f" default image {(random_url if url_random else str(url_input))}"
@@ -1081,7 +1109,7 @@ def main():
     clear()
 
     # preset input
-    print(f"{image_msg}\n{resolution_msg}")
+    print(f"{misc_variables['image_msg']}\n{misc_variables['resolution_msg']}")
     preset_q = input("\nDo you wish to apply a preset? (y/n)\n").lower()
     clear()
     if preset_q in ["y", "yes", "1"]:
@@ -1089,7 +1117,7 @@ def main():
         for i in presets:
             Append(presets_list, i)
 
-        print(f"{resolution_msg}\n")
+        print(f"{misc_variables['resolution_msg']}\n")
         for i, j in enumerate(presets_list):
             print(f"{i+1}|{j} -- {presets[j][0]}")
         print("-Any preset ID from the database can be used.")
@@ -1105,152 +1133,169 @@ def main():
                 arg_parse_input,
                 int_func_input,
                 sort_func_input,
-                preset_true,
-                int_rand,
-                sort_rand,
-                int_chosen,
-                sort_chosen,
-                shuffled,
-                snapped,
-                file_sorted,
+                misc_variables["preset_true"],
+                misc_variables["int_rand"],
+                misc_variables["sort_rand"],
+                misc_variables["int_chosen"],
+                misc_variables["sort_chosen"],
+                misc_variables["shuffled"],
+                misc_variables["snapped"],
+                misc_variables["file_sorted"],
                 db_preset,
                 file_link,
             ) = ReadPreset(preset_input, width, presets)
     else:
-        preset_true, db_preset, file_link, preset_input = False, False, "False", "None"
+        misc_variables["preset_true"], db_preset, file_link, preset_input = (
+            False,
+            False,
+            "False",
+            "None",
+        )
     clear()
 
     # int func, sort func & int msg, sort msg
-    if not preset_true:
+    if not misc_variables["preset_true"]:
         # int func input
-        print(f"{image_msg}\n{resolution_msg}")
+        print(f"{misc_variables['image_msg']}\n{misc_variables['resolution_msg']}")
 
         print("\nWhat interval function are you using?\nOptions (default is random):")
-        for i, j in enumerate(int_func_options):
+        for i, j in enumerate(misc_variables["int_func_options"]):
             print(f"-{i+1}|{j}")
         print("-11|random select")
 
         int_func_input = input("\nChoice: ").lower()
 
-        if int_func_input in list(map(str, range(1, len(int_func_options) + 1))):
-            int_func_input, int_chosen, int_rand = (
-                int_func_options[int(int_func_input) - 1],
+        if int_func_input in list(
+            map(str, range(1, len(misc_variables["int_func_options"]) + 1))
+        ):
+            int_func_input, misc_variables["int_chosen"], misc_variables["int_rand"] = (
+                misc_variables["int_func_options"][int(int_func_input) - 1],
                 True,
                 False,
             )
         elif int_func_input in ["11", "random select"]:
-            int_func_input, int_chosen, int_rand = (
-                int_func_options[rand.randint(0, 3)],
+            int_func_input, misc_variables["int_chosen"], misc_variables["int_rand"] = (
+                misc_variables["int_func_options"][rand.randint(0, 3)],
                 True,
                 True,
             )
         else:
-            int_chosen, int_func_input = (
+            misc_variables["int_chosen"], int_func_input = (
                 (True, int_func_input)
-                if int_func_input in int_func_options
+                if int_func_input in misc_variables["int_func_options"]
                 else (False, "random")
             )
-            int_rand = False
-        shuffled = (
+            misc_variables["int_rand"] = False
+        misc_variables["shuffled"] = (
             True if int_func_input in ["shuffle-total", "shuffle-axis"] else False
         )
-        snapped = True if int_func_input in ["snap"] else False
-        file_sorted = True if int_func_input in ["file", "file-edges"] else False
+        misc_variables["snapped"] = True if int_func_input in ["snap"] else False
+        misc_variables["file_sorted"] = (
+            True if int_func_input in ["file", "file-edges"] else False
+        )
 
-        int_msg = (
+        misc_variables["int_msg"] = (
             (
                 "Interval function: "
-                if not int_rand
+                if not misc_variables["int_rand"]
                 else "Interval function (randomly selected): "
             )
             + int_func_input
-            if int_chosen
+            if misc_variables["int_chosen"]
             else "Interval function: random (default)"
         )
         clear()
 
         # sort func input
-        print(f"{image_msg}\n{int_msg}\n{resolution_msg}")
+        print(
+            f"{misc_variables['image_msg']}\n{misc_variables['int_msg']}\n{misc_variables['resolution_msg']}"
+        )
         print("\nWhat sorting function are you using?\nOptions (default is lightness):")
-        for i, j in enumerate(sort_func_options):
+        for i, j in enumerate(misc_variables["sort_func_options"]):
             print(f"-{i+1}|{j}")
         print("-6|random select")
 
         sort_func_input = input("\nChoice: ").lower()
 
-        if sort_func_input in list(map(str, range(1, len(sort_func_options) + 1))):
+        if sort_func_input in list(
+            map(str, range(1, len(misc_variables["sort_func_options"]) + 1))
+        ):
             # if sort_func_input in ["1", "2", "3", "4", "5"]:
-            sort_func_input = sort_func_options[int(sort_func_input) - 1]
-            sort_chosen = True
-            sort_rand = False
+            sort_func_input = misc_variables["sort_func_options"][
+                int(sort_func_input) - 1
+            ]
+            misc_variables["sort_chosen"] = True
+            misc_variables["sort_rand"] = False
         elif sort_func_input in ["6", "random select"]:
-            sort_func_input = sort_func_options[rand.randint(0, 4)]
-            sort_chosen = True
-            sort_rand = True
+            sort_func_input = misc_variables["sort_func_options"][rand.randint(0, 4)]
+            misc_variables["sort_chosen"] = True
+            misc_variables["sort_rand"] = True
         else:
-            sort_chosen, sort_func_input = (
+            misc_variables["sort_chosen"], sort_func_input = (
                 (True, sort_func_input)
-                if sort_func_input in sort_func_options
+                if sort_func_input in misc_variables["sort_func_options"]
                 else (False, "lightness")
             )
-            sort_rand = False
+            misc_variables["sort_rand"] = False
 
-        sort_msg = (
+        misc_variables["sort_msg"] = (
             (
                 "Sorting function: "
-                if not sort_rand
+                if not misc_variables["sort_rand"]
                 else "Sorting function (randomly selected): "
             )
             + sort_func_input
-            if sort_chosen
+            if misc_variables["sort_chosen"]
             else "Sorting function: lightness (default)"
         )
         clear()
 
     # int func msg, sort func msg
-    if preset_true:
-        int_msg = (
+    if misc_variables["preset_true"]:
+        misc_variables["int_msg"] = (
             (
                 "Interval function: "
-                if not int_rand
+                if not misc_variables["int_rand"]
                 else "Interval function (randomly selected): "
             )
             + int_func_input
-            if int_func_input in int_func_options
+            if int_func_input in misc_variables["int_func_options"]
             else "Interval function: random (default)"
         )
 
-        sort_msg = (
+        misc_variables["sort_msg"] = (
             (
                 "Sorting function: "
-                if not sort_rand
+                if not misc_variables["sort_rand"]
                 else "Sorting function (randomly selected): "
             )
             + sort_func_input
-            if sort_func_input in sort_func_options
+            if sort_func_input in misc_variables["sort_func_options"]
             else "Sorting function: lightness (default)"
         )
 
     # hosting site
-    if internet:
+    if misc_variables["internet"]:
         output_image_path = "images/image.png"
-        site_msg = "Uploading sorted image to put.re"
+        misc_variables["site_msg"] = "Uploading sorted image to put.re"
     else:
         print("Internet not connected! Image will be saved locally.\n")
         file_name = input(
             "Name of output file (leave empty for randomized name):\n(do not include the file extension, .png will always be used.)\n"
         )
         output_image_path = (IDGen(5) + ".png") if file_name in ["", " "] else file_name
-        site_msg = f"Internet not connected, saving locally as {output_image_path}"
+        misc_variables[
+            "site_msg"
+        ] = f"Internet not connected, saving locally as {output_image_path}"
     clear()
 
     # args
-    if not preset_true:
+    if not misc_variables["preset_true"]:
         needs_help = input("Do you need help with args? (y/n)\n")
         clear()
         if needs_help in ["y", "yes", "1"]:
             print(
-                f"{image_msg}\n{resolution_msg}\n{int_msg}\n{sort_msg}\n{site_msg}\n"
+                f"{misc_variables['image_msg']}\n{misc_variables['resolution_msg']}\n{misc_variables['int_msg']}\n{misc_variables['sort_msg']}\n{misc_variables['site_msg']}\n"
                 f"\nWhat args will you be adding?\n"
                 f'{("{:21}".format("Parameter"))}{("{:>6}".format("| Flag |"))}{("{:>12}".format("Description"))}\n'
                 f'{("{:21}".format("---------------------"))}{("{:>6}".format("|------|"))}{("{:>12}".format("------------"))}\n'
@@ -1262,7 +1307,7 @@ def main():
             )
         else:
             print(
-                f"{image_msg}\n{resolution_msg}\n{int_msg}\n{sort_msg}\n{site_msg}\n"
+                f"{misc_variables['image_msg']}\n{misc_variables['resolution_msg']}\n{misc_variables['int_msg']}\n{misc_variables['sort_msg']}\n{misc_variables['site_msg']}\n"
                 f"\nWhat args will you be adding?\n"
                 f'{("{:21}".format("Parameter"))}{("{:>6}".format("| Flag |"))}\n'
                 f'{("{:21}".format("---------------------"))}{("{:>6}".format("|------|"))}\n'
@@ -1285,9 +1330,9 @@ def main():
         f" -i {int_func_input}"
         f" -s {sort_func_input}"
         f" -b {preset_input}"
-        f" -p {str(preset_true)}"
+        f" -p {str(misc_variables['preset_true'])}"
         f" -d {str(db_preset)}"
-        f" -y {str(internet)}"
+        f" -y {str(misc_variables['internet'])}"
         f"{f' -k file_link' if db_preset else ''}"
     )
 
@@ -1316,9 +1361,9 @@ def main():
     sorting_function: Callable[[Any, dict], List] = ReadSortingFunction(sort_func_input)
 
     print(
-        f"{image_msg}\n{resolution_msg}\n"
-        f'{("Preset: " + preset_input if preset_true else "No preset applied")}'
-        f"\n{int_msg}\n{sort_msg}\n{site_msg}"
+        f"{misc_variables['image_msg']}\n{misc_variables['resolution_msg']}\n"
+        f"{('Preset: ' + preset_input if misc_variables['preset_true'] else 'No preset applied')}"
+        f"\n{misc_variables['int_msg']}\n{misc_variables['sort_msg']}\n{misc_variables['site_msg']}"
     )
 
     print(f"Lower threshold: {__args['bottom_threshold']}") if int_func_input in [
@@ -1347,11 +1392,10 @@ def main():
     size0, size1 = input_img.size
     pixels: List = PixelAppend(size1, size0, data, "Getting pixels...")
 
-    if shuffled or snapped:
-        if snapped:
-            if preset_true:
-                intervals = file_edges(pixels, __args)
-                sorted_pixels = SortImage(pixels, intervals, __args, sorting_function)
+    if misc_variables["shuffled"] or misc_variables["snapped"]:
+        if misc_variables["snapped"]:
+            intervals = file_edges(pixels, __args)
+            sorted_pixels = SortImage(pixels, intervals, __args, sorting_function)
             print(
                 f"{('/' * 45)}\n"
                 f"Dread it. Run from it. Destiny still arrives."
@@ -1361,14 +1405,10 @@ def main():
             size0, size1 = thanos_img.size
             for y in ProgressBars(size1, "The end is near..."):
                 for x in range(size0):
-                    ImgPixels(
-                        thanos_img, x, y, pixels
-                    )
+                    ImgPixels(thanos_img, x, y, pixels)
             thanos_img.save("images/thanos_img.png")
             print("I am... inevitable...")
-            sorted_pixels = interval_function(
-                pixels, __args
-            )
+            sorted_pixels = interval_function(sorted_pixels, __args)
         else:
             sorted_pixels = interval_function(pixels, __args)
     else:
@@ -1392,15 +1432,14 @@ def main():
     output_img.save(output_image_path)
     output_img.show()
 
-    if internet:
-        date_time = datetime.now().strftime("%m/%d/%Y %H:%M")
-        preset_id = datetime.now().strftime("%m%d%Y%H%M")
-
+    if misc_variables["internet"]:
         print("Uploading...")
-        link = UploadImg("images/image.png")
+        misc_variables["link"] = UploadImg("images/image.png")
         print("Image uploaded!")
 
-        if file_sorted or (snapped and preset_true):
+        if misc_variables["file_sorted"] or (
+            misc_variables["snapped"] and misc_variables["preset_true"]
+        ):
             file_link = UploadImg("images/ElementaryCA.png")
             print("File image uploaded!")
         else:
@@ -1415,12 +1454,12 @@ def main():
         print("Saving config to 'output.txt'...")
         with open("output.txt", "a") as f:
             f.write(
-                f"\nStarting image url: {url}\n{resolution_msg}\n"
-                f'{("Int func: " if not int_rand else "Int func (randomly chosen): ")}{int_func_input}\n'
-                f'{(("File link: ")+file_link) if file_sorted or snapped else ""}\n'
-                f'{("Sort func: " if not sort_rand else "Sort func (randomly chosen): ")}{sort_func_input}\n'
+                f"\nStarting image url: {url}\n{misc_variables['resolution_msg']}\n"
+                f'{("Int func: " if not misc_variables["int_rand"] else "Int func (randomly chosen): ")}{int_func_input}\n'
+                f'{(("File link: ") + file_link) if misc_variables["file_sorted"] or misc_variables["snapped"] else ""}\n'
+                f'{("Sort func: " if not misc_variables["sort_rand"] else "Sort func (randomly chosen): ")}{sort_func_input}\n'
                 f'Args: {(arg_parse_input if arg_parse_input is not None else "No args")}\n'
-                f'Sorted on: {date_time}\n\nSorted image: {link}\n{(35 * "-")}'
+                f'Sorted on: {misc_variables["date_time"]}\n\nSorted image: {misc_variables["link"]}\n{(35 * "-")}'
             )
 
         print("Uploading to DB...")
@@ -1428,14 +1467,14 @@ def main():
         payload = dumps(
             {
                 "start_link": f"{url}",
-                "resolution": f"{resolution_msg[11:]}",
+                "resolution": f"{misc_variables['resolution_msg'][11:]}",
                 "int_func": f"{int_func_input}",
                 "file_link": f"{file_link}",
                 "sort_func": f"{sort_func_input}",
                 "args": f"{arg_parse_input}",
-                "date": f"{date_time}",
-                "sorted_link": f"{link}",
-                "preset_id": f"{preset_id}",
+                "date": f"{misc_variables['date_time']}",
+                "sorted_link": f"{misc_variables['link']}",
+                "preset_id": f"{misc_variables['preset_id']}",
             }
         )
         headers = {
@@ -1446,7 +1485,7 @@ def main():
         request("POST", dbURL, data=payload, headers=headers)
 
         print("Done!")
-        print(f"Link to image: {link}")
+        print(f"Link to image: {misc_variables['link']}")
     else:
         print("Not saving config to 'output.txt', as there is no internet.\nDone!")
 
