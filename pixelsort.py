@@ -176,7 +176,7 @@ def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
         else:
             rulenumber = rules[rand.randrange(0, len(rules))]
 
-        scalefactor: int = rand.randrange(1, 5)
+        scalefactor: int = 5
 
         # Define colors of the output image
         true_pixel: Tuple[int, int, int] = (255, 255, 255)
@@ -235,7 +235,7 @@ def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
         return newImg
     else:
         print("Using file image from DB...")
-        img = ImgOpen(args["filelink"])
+        img = ImgOpen(args["filelink"], args["internet"])
         img.save("images/ElementaryCA.png")
         return img
 
@@ -264,7 +264,7 @@ def UploadImg(img: str) -> str:
         exit()
 
 
-def ImgOpen(url: str, internet: bool = HasInternet()) -> Any:
+def ImgOpen(url: str, internet: bool) -> Any:
     r"""
     Opens the image from a direct url if the internet is connected.
     ------
@@ -279,7 +279,7 @@ def ImgOpen(url: str, internet: bool = HasInternet()) -> Any:
     >>> <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=2560x1974 at 0x29C74D7A518>
     """
     try:
-        img = Image.open((get(url, stream=True).raw) if internet else url)
+        img = Image.open((get(url, stream=True).raw) if internet else url).convert('RGBA')
         return img
     except OSError:
         print(
