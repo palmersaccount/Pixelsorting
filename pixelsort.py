@@ -279,7 +279,9 @@ def ImgOpen(url: str, internet: bool) -> Any:
     >>> <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=2560x1974 at 0x29C74D7A518>
     """
     try:
-        img = Image.open((get(url, stream=True).raw) if internet else url).convert('RGBA')
+        img = Image.open((get(url, stream=True).raw) if internet else url).convert(
+            "RGBA"
+        )
         return img
     except OSError:
         print(
@@ -1392,8 +1394,12 @@ def main():
     size0, size1 = input_img.size
     pixels: List = PixelAppend(size1, size0, data, "Getting pixels...")
 
-    if misc_variables["shuffled"] or misc_variables["snapped"]:
-        if misc_variables["snapped"]:
+    if (
+        misc_variables["shuffled"]
+        or misc_variables["snapped"]
+        or __args["int_function"] in ["snap", "shuffle-total", "shuffle-axis"]
+    ):
+        if misc_variables["snapped"] or __args["int_function"] == "snap":
             intervals = file_edges(pixels, __args)
             sorted_pixels = SortImage(pixels, intervals, __args, sorting_function)
             print(
