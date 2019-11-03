@@ -176,7 +176,7 @@ def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
         else:
             rulenumber = rules[rand.randrange(0, len(rules))]
 
-        scalefactor: int = 5
+        scalefactor: int = 1
 
         # Define colors of the output image
         true_pixel: Tuple[int, int, int] = (255, 255, 255)

@@ -2418,3 +2418,193 @@ Sorted on: 11/02/2019 09:21
 
 Sorted image: https://s.put.re/iqq1oa5e.png
 -----------------------------------
+Starting image url: https://i.imgur.com/EttaYTe.jpg
+Resolution: 3205x2530
+Int func: file-edges
+File link: https://s.put.re/urDzgWZL.png
+Sort func: minimum
+Args: -r 30 -t 0.72
+Sorted on: 11/02/2019 22:38
+
+Sorted image: https://s.put.re/EfsGwyf8.png
+-----------------------------------
+Starting image url: https://i.imgur.com/EttaYTe.jpg
+Resolution: 3205x2530
+Int func (randomly chosen): random
+
+Sort func (randomly chosen): lightness
+Args: -a 77 -c 75 -u 0.5 -t 0.4 -r 23 
+Sorted on: 11/02/2019 22:39
+
+Sorted image: https://s.put.re/jAz7Up6s.png
+-----------------------------------
+Starting image url: https://i.imgur.com/8HBMojP.jpg
+Resolution: 4595x3658
+Int func (randomly chosen): file-edges
+
+Sort func (randomly chosen): minimum
+Args: -a 161 -c 375 -u 0.5 -t 0.2 -r 56 
+Sorted on: 11/02/2019 22:42
+
+Sorted image: https://s.put.re/KesGeofe.png
+-----------------------------------
+Starting image url: https://i.imgur.com/ZH6U4rQ.jpg
+Resolution: 2148x1666
+Int func (randomly chosen): file-edges
+
+Sort func (randomly chosen): intensity
+Args: -a 160 -c 300 -u 0.8 -t 0.35 -r 28 
+Sorted on: 11/02/2019 22:45
+
+Sorted image: https://s.put.re/AD4YDbAj.png
+-----------------------------------
+Starting image url: https://i.imgur.com/ZH6U4rQ.jpg
+Resolution: 2148x1666
+Int func (randomly chosen): threshold
+
+Sort func (randomly chosen): minimum
+Args: -a 206 -c 175 -u 0.55 -t 0.35 -r 60 
+Sorted on: 11/02/2019 22:47
+
+Sorted image: https://s.put.re/o1rg2e6e.png
+-----------------------------------
+Starting image url: https://i.imgur.com/ZH6U4rQ.jpg
+Resolution: 2148x1666
+Int func (randomly chosen): file-edges
+
+Sort func (randomly chosen): saturation
+Args: -a 193 -c 300 -u 0.85 -t 0.45 -r 63 
+Sorted on: 11/02/2019 22:48
+
+Sorted image: https://s.put.re/ES5uK9zM.png
+-----------------------------------
+Starting image url: https://i.imgur.com/ZH6U4rQ.jpg
+Resolution: 2148x1666
+Int func (randomly chosen): none
+
+Sort func (randomly chosen): hue
+Args: -a 169 -c 150 -u 0.85 -t 0.15 -r 37 
+Sorted on: 11/02/2019 22:49
+
+Sorted image: https://s.put.re/DU864TN3.png
+-----------------------------------
+Starting image url: https://i.imgur.com/ZH6U4rQ.jpg
+Resolution: 2148x1666
+Int func (randomly chosen): threshold
+
+Sort func (randomly chosen): lightness
+Args: -a 50 -c 275 -u 0.8 -t 0.15 -r 37 
+Sorted on: 11/02/2019 22:49
+
+Sorted image: https://s.put.re/KJJ7e3R3.png
+-----------------------------------
+Starting image url: https://i.imgur.com/ZH6U4rQ.jpg
+Resolution: 2148x1666
+Int func: file-edges
+File link: https://s.put.re/YxWub92e.png
+Sort func: minimum
+Args: -r 57 -t 0.89
+Sorted on: 11/02/2019 22:50
+
+Sorted image: https://s.put.re/LnJ4dfKg.png
+-----------------------------------
+Starting image url: https://i.imgur.com/ZH6U4rQ.jpg
+Resolution: 2148x1666
+Int func: file-edges
+File link: https://s.put.re/ES7U3P2g.png
+Sort func: minimum
+Args: -r 49 -t 0.89
+Sorted on: 11/02/2019 22:51
+
+Sorted image: https://s.put.re/5BYzfdrb.png
+-----------------------------------
+Starting image url: https://i.imgur.com/ZH6U4rQ.jpg
+Resolution: 2148x1666
+Int func: file-edges
+File link: https://s.put.re/swBNC1WA.png
+Sort func: minimum
+Args: -r 59 -t 0.65
+Sorted on: 11/02/2019 22:52
+
+Sorted image: https://s.put.re/gtzjerCr.png
+-----------------------------------
+Starting image url: https://i.imgur.com/ZH6U4rQ.jpg
+Resolution: 2148x1666
+Int func: file-edges
+File link: https://s.put.re/e2T3EXV3.png
+Sort func: minimum
+Args: -r 39 -t 0.75
+Sorted on: 11/02/2019 22:53
+
+Sorted image: https://s.put.re/iUP9raPM.png
+-----------------------------------
+Starting image url: https://i.imgur.com/ZH6U4rQ.jpg
+Resolution: 2148x1666
+Int func: file-edges
+File link: https://s.put.re/5ia1Z2p7.png
+Sort func: minimum
+Args: -r 38 -t 0.87
+Sorted on: 11/02/2019 22:53
+
+Sorted image: https://s.put.re/r4moD5BF.png
+-----------------------------------
+Starting image url: https://i.imgur.com/ZH6U4rQ.jpg
+Resolution: 2148x1666
+Int func: file-edges
+File link: https://s.put.re/7To5dE6R.png
+Sort func: minimum
+Args: -r 36 -t 0.73
+Sorted on: 11/02/2019 22:54
+
+Sorted image: https://s.put.re/eqpyLfhU.png
+-----------------------------------
+Starting image url: https://i.imgur.com/QKEkmWK.jpg
+Resolution: 1991x1529
+Int func (randomly chosen): edges
+
+Sort func (randomly chosen): minimum
+Args: -a 175 -c 275 -u 0.8 -t 0.4 -r 17 
+Sorted on: 11/02/2019 22:55
+
+Sorted image: https://s.put.re/S67pS315.png
+-----------------------------------
+Starting image url: https://i.imgur.com/QKEkmWK.jpg
+Resolution: 1991x1529
+Int func: file-edges
+File link: https://s.put.re/o7coS7XC.png
+Sort func: minimum
+Args: -r 61 -t 0.76
+Sorted on: 11/02/2019 22:56
+
+Sorted image: https://s.put.re/HmSeB2qW.png
+-----------------------------------
+Starting image url: https://i.imgur.com/QKEkmWK.jpg
+Resolution: 1991x1529
+Int func: random
+
+Sort func: minimum
+Args: -r 15 -c 335 -a 67
+Sorted on: 11/02/2019 22:57
+
+Sorted image: https://s.put.re/eyJSKEd9.png
+-----------------------------------
+Starting image url: https://i.imgur.com/QKEkmWK.jpg
+Resolution: 1991x1529
+Int func: random
+
+Sort func: minimum
+Args: -r 5 -c 75 -a 57.8
+Sorted on: 11/02/2019 22:59
+
+Sorted image: https://s.put.re/AHtbmfh5.png
+-----------------------------------
+Starting image url: https://i.imgur.com/QKEkmWK.jpg
+Resolution: 1991x1529
+Int func: file-edges
+File link: https://s.put.re/ScYgy5mA.png
+Sort func: minimum
+Args: -r 54 -t 0.8
+Sorted on: 11/02/2019 23:00
+
+Sorted image: https://s.put.re/qk3X3BxX.png
+-----------------------------------
