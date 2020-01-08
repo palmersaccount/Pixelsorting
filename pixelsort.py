@@ -1059,10 +1059,12 @@ def main():
         ],
     }
 
+    """
     if misc_variables["internet"]:
         # update script if possible.
         run(["git", "pull", "https://github.com/wolfembers/Pixelsorting.git"])
         clear()
+    """
 
     print(
         f"Pixel sorting based on {'web hosted images.' if misc_variables['internet'] else 'local images'}\n"

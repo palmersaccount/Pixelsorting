@@ -2608,3 +2608,113 @@ Sorted on: 11/02/2019 23:00
 
 Sorted image: https://s.put.re/qk3X3BxX.png
 -----------------------------------
+Starting image url: https://i.redd.it/qnf3q3j4v0511.jpg
+Resolution: 908x1139
+Int func (randomly chosen): file-edges
+
+Sort func (randomly chosen): saturation
+Args: -a 216 -c 450 -u 0.85 -t 0.1 -r 46 
+Sorted on: 01/07/2020 12:03
+
+Sorted image: https://s.put.re/aHFChMPB.png
+-----------------------------------
+Starting image url: https://i.redd.it/qnf3q3j4v0511.jpg
+Resolution: 908x1139
+Int func (randomly chosen): file
+
+Sort func (randomly chosen): saturation
+Args: -a 345 -c 275 -u 0.95 -t 0.15 -r 41 
+Sorted on: 01/07/2020 12:04
+
+Sorted image: https://s.put.re/gko5K6Ec.png
+-----------------------------------
+Starting image url: https://i.redd.it/qnf3q3j4v0511.jpg
+Resolution: 908x1139
+Int func: file-edges
+File link: https://s.put.re/iyNzPt73.png
+Sort func: minimum
+Args: -r 51 -t 0.84
+Sorted on: 01/07/2020 12:04
+
+Sorted image: https://s.put.re/6fJD9zRb.png
+-----------------------------------
+Starting image url: https://i.redd.it/qnf3q3j4v0511.jpg
+Resolution: 908x1139
+Int func (randomly chosen): threshold
+
+Sort func (randomly chosen): saturation
+Args: -a 189 -c 150 -u 0.55 -t 0.1 -r 22 
+Sorted on: 01/07/2020 12:05
+
+Sorted image: https://s.put.re/8xhW4KPe.png
+-----------------------------------
+Starting image url: https://i.imgur.com/3uqN4jx.jpg
+Resolution: 2000x1267
+Int func (randomly chosen): random
+
+Sort func (randomly chosen): saturation
+Args: -a 282 -c 300 -u 0.5 -t 0.15 -r 27 
+Sorted on: 01/07/2020 12:06
+
+Sorted image: https://s.put.re/omnow5hJ.png
+-----------------------------------
+Starting image url: https://i.imgur.com/3uqN4jx.jpg
+Resolution: 2000x1267
+Int func (randomly chosen): waves
+
+Sort func (randomly chosen): hue
+Args: -a 269 -c 375 -u 0.95 -t 0.25 -r 41 
+Sorted on: 01/07/2020 12:06
+
+Sorted image: https://s.put.re/piRNPH5M.png
+-----------------------------------
+Starting image url: https://i.imgur.com/3uqN4jx.jpg
+Resolution: 2000x1267
+Int func (randomly chosen): waves
+
+Sort func (randomly chosen): saturation
+Args: -a 294 -c 125 -u 0.55 -t 0.45 -r 51 
+Sorted on: 01/07/2020 12:07
+
+Sorted image: https://s.put.re/1VP3X1cV.png
+-----------------------------------
+Starting image url: https://i.imgur.com/3uqN4jx.jpg
+Resolution: 2000x1267
+Int func (randomly chosen): file
+
+Sort func (randomly chosen): saturation
+Args: -a 219 -c 200 -u 0.55 -t 0.15 -r 53 
+Sorted on: 01/07/2020 12:07
+
+Sorted image: https://s.put.re/mxRS5BxS.png
+-----------------------------------
+Starting image url: https://i.imgur.com/3uqN4jx.jpg
+Resolution: 2000x1267
+Int func: file-edges
+File link: https://s.put.re/CPYTudeT.png
+Sort func: minimum
+Args: -r 60 -t 0.77
+Sorted on: 01/07/2020 12:09
+
+Sorted image: https://s.put.re/Um7FuXv8.png
+-----------------------------------
+Starting image url: https://i.imgur.com/3uqN4jx.jpg
+Resolution: 2000x1267
+Int func: file-edges
+File link: https://s.put.re/ELeA2NvH.png
+Sort func: minimum
+Args: -r 44 -t 0.66
+Sorted on: 01/07/2020 12:10
+
+Sorted image: https://s.put.re/qwZChcvV.png
+-----------------------------------
+Starting image url: https://i.redd.it/tb8uubk712441.jpg
+Resolution: 2552x3430
+Int func (randomly chosen): random
+
+Sort func (randomly chosen): hue
+Args: -a 214 -c 400 -u 0.9 -t 0.45 -r 12 
+Sorted on: 01/07/2020 12:11
+
+Sorted image: https://s.put.re/NSmgaf3q.png
+-----------------------------------
