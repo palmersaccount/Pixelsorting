@@ -311,6 +311,94 @@ def CropTo(image_to_crop: Any, args: dict) -> Any:
     return image_to_crop.crop(box=(int(left), int(upper), int(right), int(lower)))
 
 
+def RandomGen(preset: dict, permutations: int) -> str:
+    """
+    This is a holder function. Do not touch.
+    """
+    """
+    misc_variables: dict = {
+        "internet": HasInternet(),
+        "preset_true": False,
+        "snapped": False,
+        "shuffled": False,
+        "int_rand": False,
+        "sort_rand": False,
+        "int_chosen": False,
+        "sort_chosen": False,
+        "file_sorted": False,
+        "resolution_msg": "",
+        "image_msg": "",
+        "int_msg": "",
+        "sort_msg": "",
+        "site_msg": "",
+        "link": "",
+        "date_time": datetime.now().strftime("%m/%d/%Y %H:%M"),
+        "preset_id": datetime.now().strftime("%m%d%Y%H%M"),
+        "sort_func_options": ["lightness", "hue", "intensity", "minimum", "saturation"],
+        "int_func_options": [
+            "random",
+            "threshold",
+            "edges",
+            "waves",
+            "snap",
+            "file",
+            "file-edges",
+            "none",
+            "shuffle-total",
+            "shuffle-axis",
+        ],
+    }
+
+    "Random": [
+            "Randomness in every arg!",
+            (
+                (
+                    f"-a {rand.randrange(0, 360)} "
+                    f"-c {(rand.randrange(50, 500, 25))} "
+                    f"-u {float(rand.randrange(50, 100, 5) / 100)} "
+                    f"-t {float(rand.randrange(10, 50, 5) / 100)} "
+                    f"-r {rand.randrange(5, 75)} "
+                ),
+                misc_variables["int_func_options"][
+                    rand.randrange(0, len(misc_variables["int_func_options"]) - 2)
+                ],
+                misc_variables["sort_func_options"][
+                    rand.randrange(0, len(misc_variables["sort_func_options"]))
+                ],
+                True,
+                True,
+                True,
+                True,
+                True,
+                False,
+                False,
+                False,
+                False,
+                "",
+            ),
+        ],
+    """
+
+    sort_func_options: list = ["lightness", "hue", "intensity", "minimum", "saturation"],
+    int_func_options: list = [
+        "random",
+        "threshold",
+        "edges",
+        "waves",
+        "snap",
+        "file",
+        "file-edges",
+        "none",
+        "shuffle-total",
+        "shuffle-axis",
+    ],
+
+    # for big sampling
+    import random
+    from itertools import permutations
+    sample_of_presets: list = list(permutations(range(0, 4)))
+
+
 # READING FUNCTIONS #
 def ReadImageInput(
     url_input: str, internet: bool = HasInternet()
