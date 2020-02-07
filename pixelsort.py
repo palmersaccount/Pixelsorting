@@ -14,6 +14,9 @@ from typing import Any, Callable, List, Tuple
 from urllib.parse import urlparse
 
 
+from util import *
+
+
 def HasInternet(host: str = "1.1.1.1", port: int = 53, timeout: int = 3) -> bool:
     r"""
     Checks for internet.
@@ -63,7 +66,7 @@ except ImportError:
 BlackPixel: Tuple[int, int, int, int] = (0, 0, 0, 255)
 WhitePixel: Tuple[int, int, int, int] = (255, 255, 255, 255)
 
-
+"""
 # LAMBDA FUNCTIONS #
 RemoveOld: Callable[[str], Any] = lambda f: remove(f) if path.exists(f) else None
 Append: Callable[[Any, Any], Any] = lambda l, obj: l.append(obj)
@@ -85,7 +88,7 @@ AppendBW: Callable[[List, int, int, Any, float], List] = (
     if (lightness(data[y][x]) < thresh)
     else AppendInPlace(lst, y, BlackPixel)
 )
-
+"""
 
 # SORTING PIXELS #
 lightness: Callable[[Any], float] = lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0
