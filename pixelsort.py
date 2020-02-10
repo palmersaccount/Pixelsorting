@@ -13,7 +13,7 @@ from subprocess import run
 from urllib.parse import urlparse
 
 
-def HasInternet(host = "1.1.1.1", port = 53, timeout = 3) -> bool:
+def HasInternet(host="1.1.1.1", port=53, timeout=3):
     r"""
     Checks for internet.
     ------
@@ -70,15 +70,11 @@ AppendPIL = lambda l, x, y, d: l[y].append(d[x, y])
 Append3D = lambda l, x, y, d: l.append(d[y][x])
 AppendInPlace = lambda l, y, x: l[y].append(x)
 RandomWidth = lambda c: (c * (1 - rand.random()))
-ImgPixels = lambda i, x, y, d: i.putpixel(
-    (x, y), d[y][x]
-)
+ImgPixels = lambda i, x, y, d: i.putpixel((x, y), d[y][x])
 IDGen = lambda length: "".join(
     rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(length)
 )
-ProgressBars = lambda r, desc: trange(
-    r, desc=("{:30}".format(desc))
-)
+ProgressBars = lambda r, desc: trange(r, desc=("{:30}".format(desc)))
 AppendBW = (
     lambda lst, x, y, data, thresh: AppendInPlace(lst, y, WhitePixel)
     if (lightness(data[y][x]) < thresh)
@@ -139,25 +135,7 @@ def ElementaryCA(pixels, args, width, height):
     width /= 4 if width <= 2500 else 8
     height /= 4 if height <= 2500 else 8
     if args["filelink"] in ["False", ""]:
-        rules = [
-            26,
-            19,
-            23,
-            25,
-            35,
-            106,
-            11,
-            110,
-            45,
-            41,
-            105,
-            54,
-            3,
-            15,
-            9,
-            154,
-            142,
-        ]
+        rules = [26, 19, 23, 25, 35, 106, 11, 110, 45, 41, 105, 54, 3, 15, 9, 154, 142]
 
         if args["presetname"] not in ["Snap", "Random"]:
             ruleprompt = input(
@@ -257,11 +235,13 @@ def UploadImg(img):
         r = post("https://api.put.re/upload", files={"file": (img, open(img, "rb"))})
         output = loads(r.text)
         link = output["data"]["link"]
-        return link
+        return link, True
     except FileNotFoundError:
         print(f"{'---'*15}\n'{img}' not usable!\n{'---'*15}")
+        return "", False
     except KeyError:
         print(f"{'---'*15}\n{output['message']}\n{'---'*15}")
+        return "", False
 
 
 def ImgOpen(url, internet):
@@ -312,9 +292,7 @@ def CropTo(image_to_crop, args):
 
 
 # READING FUNCTIONS #
-def ReadImageInput(
-    url_input, internet = HasInternet()
-):
+def ReadImageInput(url_input, internet=HasInternet()):
     r"""
     Reading the image input.
     -----
@@ -346,7 +324,7 @@ def ReadImageInput(
         if internet and url_input not in ["", " "]:
             if img_parse.scheme not in ["http", "https"]:
                 print("Local image detected! Uploading to put.re...")
-                url_input = UploadImg(url_input)
+                url_input, misc_variables["image_upload_failed"] = UploadImg(url_input)
                 return url_input, True, False, random_url
             ImgOpen(url_input, internet)
             return url_input, True, False, None
@@ -444,9 +422,7 @@ def ReadSortingFunction(sort_func_input):
         return lightness
 
 
-def ReadPreset(
-    preset_input, width, presets
-):
+def ReadPreset(preset_input, width, presets):
     r"""
     Returning values for 'presets'.
     -----
@@ -531,9 +507,7 @@ def ReadPreset(
 
 
 # SORTER #
-def SortImage(
-    pixels, intervals, args, sorting_function
-):
+def SortImage(pixels, intervals, args, sorting_function):
     r"""
     Sorts the image.
     -----
@@ -921,6 +895,7 @@ def main():
         "int_chosen": False,
         "sort_chosen": False,
         "file_sorted": False,
+        "image_upload_failed": False,
         "resolution_msg": "",
         "image_msg": "",
         "int_msg": "",
@@ -1078,7 +1053,7 @@ def main():
             print("Image URL too long, uploading to put.re for a shorter URL...")
             img = ImgOpen(url_input, misc_variables["internet"])
             img.save("image.png")
-            url_input = UploadImg("image.png")
+            url_input, misc_variables["image_upload_failed"] = UploadImg("image.png")
             RemoveOld("image.png")
         url, url_given, url_random, random_url = ReadImageInput(
             url_input, misc_variables["internet"]
@@ -1348,8 +1323,8 @@ def main():
         "presetname": util_args_namespace.presetname,
         "filelink": util_args_namespace.filelink,
         "dbpreset": util_args_namespace.dbpreset,
-        "preset"(util_args_namespace.preset),
-        "internet"(util_args_namespace.internet),
+        "preset": (util_args_namespace.preset),
+        "internet": (util_args_namespace.internet),
     }
 
     interval_function: Callable[[Any, dict], List] = ReadIntervalFunction(
@@ -1435,21 +1410,26 @@ def main():
 
     if misc_variables["internet"]:
         print("Uploading...")
-        misc_variables["link"] = UploadImg("images/image.png")
+        misc_variables["link"], misc_variables["image_upload_failed"] = UploadImg(
+            "images/image.png"
+        )
         print("Image uploaded!")
 
         if misc_variables["file_sorted"] or (
             misc_variables["snapped"] and misc_variables["preset_true"]
         ):
-            file_link = UploadImg("images/ElementaryCA.png")
+            file_link, misc_variables["image_upload_failed"] = UploadImg(
+                "images/ElementaryCA.png"
+            )
             print("File image uploaded!")
         else:
             file_link = ""
 
-        # delete old file, seeing as its uploaded
-        print("Removing local file...")
-        RemoveOld(output_image_path)
-        RemoveOld("images/ElementaryCA.png")
+        # delete old file, seeing as its uploaded as long as it didn't fail to upload
+        if misc_variables["image_upload_failed"] == True:
+            print("Removing local file...")
+            RemoveOld(output_image_path)
+            RemoveOld("images/ElementaryCA.png")
 
         # output to 'output.txt'
         print("Saving config to 'output.txt'...")

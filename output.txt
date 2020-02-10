@@ -2718,3 +2718,33 @@ Sorted on: 01/07/2020 12:11
 
 Sorted image: https://s.put.re/NSmgaf3q.png
 -----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func (randomly chosen): file-edges
+
+Sort func (randomly chosen): hue
+Args: -a 325 -c 150 -u 0.55 -t 0.1 -r 53 
+Sorted on: 02/10/2020 12:07
+
+Sorted image: None
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func (randomly chosen): threshold
+
+Sort func (randomly chosen): minimum
+Args: -a 49 -c 425 -u 0.6 -t 0.25 -r 58 
+Sorted on: 02/10/2020 12:12
+
+Sorted image: 
+-----------------------------------
+Starting image url: https://s.put.re/Ds9KV8jX.jpg
+Resolution: 2000x1333
+Int func (randomly chosen): file-edges
+
+Sort func (randomly chosen): saturation
+Args: -a 169 -c 425 -u 0.6 -t 0.45 -r 37 
+Sorted on: 02/10/2020 12:16
+
+Sorted image: 
+-----------------------------------

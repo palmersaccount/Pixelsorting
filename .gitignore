@@ -119,3 +119,5 @@ dmypy.json
 .vscode/settings.json
 *.code-workspace
 output.txt
+images/ElementaryCA.png
+images/image.png
