@@ -10,11 +10,10 @@ from json import dumps, loads
 from os import name, path, remove, system
 from string import ascii_lowercase, ascii_uppercase, digits
 from subprocess import run
-from typing import Any, Callable, List, Tuple
 from urllib.parse import urlparse
 
 
-def HasInternet(host: str = "1.1.1.1", port: int = 53, timeout: int = 3) -> bool:
+def HasInternet(host = "1.1.1.1", port = 53, timeout = 3) -> bool:
     r"""
     Checks for internet.
     ------
@@ -60,27 +59,27 @@ except ImportError:
         exit()
 
 
-BlackPixel: Tuple[int, int, int, int] = (0, 0, 0, 255)
-WhitePixel: Tuple[int, int, int, int] = (255, 255, 255, 255)
+BlackPixel = (0, 0, 0, 255)
+WhitePixel = (255, 255, 255, 255)
 
 
 # LAMBDA FUNCTIONS #
-RemoveOld: Callable[[str], Any] = lambda f: remove(f) if path.exists(f) else None
-Append: Callable[[Any, Any], Any] = lambda l, obj: l.append(obj)
-AppendPIL: Callable[[Any, int, int, Any], Any] = lambda l, x, y, d: l[y].append(d[x, y])
-Append3D: Callable[[List, int, int, Any], Any] = lambda l, x, y, d: l.append(d[y][x])
-AppendInPlace: Callable[[List, int, Any], List] = lambda l, y, x: l[y].append(x)
-RandomWidth: Callable[[int], int] = lambda c: int(c * (1 - rand.random()))
-ImgPixels: Callable[[Any, int, int, Any], Any] = lambda i, x, y, d: i.putpixel(
+RemoveOld = lambda f: remove(f) if path.exists(f) else None
+Append = lambda l, obj: l.append(obj)
+AppendPIL = lambda l, x, y, d: l[y].append(d[x, y])
+Append3D = lambda l, x, y, d: l.append(d[y][x])
+AppendInPlace = lambda l, y, x: l[y].append(x)
+RandomWidth = lambda c: (c * (1 - rand.random()))
+ImgPixels = lambda i, x, y, d: i.putpixel(
     (x, y), d[y][x]
 )
-IDGen: Callable[[int], str] = lambda length: "".join(
+IDGen = lambda length: "".join(
     rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(length)
 )
-ProgressBars: Callable[[Any, str], Any] = lambda r, desc: trange(
+ProgressBars = lambda r, desc: trange(
     r, desc=("{:30}".format(desc))
 )
-AppendBW: Callable[[List, int, int, Any, float], List] = (
+AppendBW = (
     lambda lst, x, y, data, thresh: AppendInPlace(lst, y, WhitePixel)
     if (lightness(data[y][x]) < thresh)
     else AppendInPlace(lst, y, BlackPixel)
@@ -88,11 +87,11 @@ AppendBW: Callable[[List, int, int, Any, float], List] = (
 
 
 # SORTING PIXELS #
-lightness: Callable[[Any], float] = lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0
-intensity: Callable[[Any], float] = lambda p: p[0] + p[1] + p[2]
-hue: Callable[[Any], float] = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0
-saturation: Callable[[Any], float] = lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0
-minimum: Callable[[Any], float] = lambda p: min(p[0], p[1], p[2])
+lightness = lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0
+intensity = lambda p: p[0] + p[1] + p[2]
+hue = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0
+saturation = lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0
+minimum = lambda p: min(p[0], p[1], p[2])
 
 
 # MISC FUNCTIONS #
@@ -104,7 +103,7 @@ def clear():
     return system("cls" if name == "nt" else "clear")
 
 
-def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
+def PixelAppend(size1, size0, data, msg):
     r"""
     Making a 3D array of pixel values from a PIL image.
     -----
@@ -118,7 +117,7 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
     -----
     >>> pixels = PixelAppend(size1, size0, data, "Appending")
     """
-    pixels: List = []
+    pixels = []
     for y in ProgressBars(size1, msg):
         Append(pixels, [])
         for x in range(size0):
@@ -126,7 +125,7 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
     return pixels
 
 
-def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
+def ElementaryCA(pixels, args, width, height):
     r"""
     Generate images of elementary cellular automata.
     Selected rules from https://en.wikipedia.org/wiki/Elementary_cellular_automaton
@@ -140,7 +139,7 @@ def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
     width /= 4 if width <= 2500 else 8
     height /= 4 if height <= 2500 else 8
     if args["filelink"] in ["False", ""]:
-        rules: List = [
+        rules = [
             26,
             19,
             23,
@@ -167,7 +166,7 @@ def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
             )
             try:
                 if int(ruleprompt) in range(255):
-                    rulenumber: int = int(ruleprompt)
+                    rulenumber = int(ruleprompt)
                 else:
                     print("Number not in range, using random rule.")
                     rulenumber = rules[rand.randrange(0, len(rules))]
@@ -176,7 +175,7 @@ def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
         else:
             rulenumber = rules[rand.randrange(0, len(rules))]
 
-        scalefactor: int = 1
+        scalefactor = 1
 
         # Define colors of the output image
         true_pixel: Tuple[int, int, int] = (255, 255, 255)
@@ -184,8 +183,8 @@ def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
 
         # Generates a dictionary that tells you what your state should be based on the rule number
         # and the states of the adjacent cells in the previous generation
-        def generate_rule(rulenumber: int) -> dict:
-            rule: dict = {}
+        def generate_rule(rulenumber) -> dict:
+            rule = {}
             for left in [False, True]:
                 for middle in [False, True]:
                     for right in [False, True]:
@@ -194,8 +193,8 @@ def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
             return rule
 
         # Generates a 2d representation of the state of the automaton at each generation
-        def generate_ca(rule: dict) -> List:
-            ca: List = []
+        def generate_ca(rule):
+            ca = []
             # Initialize the first row of ca randomly
             Append(ca, [])
             for x in range(int(width)):
@@ -240,7 +239,7 @@ def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
         return img
 
 
-def UploadImg(img: str) -> str:
+def UploadImg(img):
     r"""
     Upload an image to put.re
     -----
@@ -257,14 +256,15 @@ def UploadImg(img: str) -> str:
     try:
         r = post("https://api.put.re/upload", files={"file": (img, open(img, "rb"))})
         output = loads(r.text)
-        link: str = output["data"]["link"]
+        link = output["data"]["link"]
         return link
     except FileNotFoundError:
         print(f"{'---'*15}\n'{img}' not usable!\n{'---'*15}")
-        exit()
+    except KeyError:
+        print(f"{'---'*15}\n{output['message']}\n{'---'*15}")
 
 
-def ImgOpen(url: str, internet: bool) -> Any:
+def ImgOpen(url, internet):
     r"""
     Opens the image from a direct url if the internet is connected.
     ------
@@ -290,7 +290,7 @@ def ImgOpen(url: str, internet: bool) -> Any:
         exit()
 
 
-def CropTo(image_to_crop: Any, args: dict) -> Any:
+def CropTo(image_to_crop, args):
     r"""
     Crops image to the size of a reference image. This function assumes
     that the relevant image is located in the center and you want to crop away
@@ -311,98 +311,10 @@ def CropTo(image_to_crop: Any, args: dict) -> Any:
     return image_to_crop.crop(box=(int(left), int(upper), int(right), int(lower)))
 
 
-def RandomGen(preset: dict, permutations: int) -> str:
-    """
-    This is a holder function. Do not touch.
-    """
-    """
-    misc_variables: dict = {
-        "internet": HasInternet(),
-        "preset_true": False,
-        "snapped": False,
-        "shuffled": False,
-        "int_rand": False,
-        "sort_rand": False,
-        "int_chosen": False,
-        "sort_chosen": False,
-        "file_sorted": False,
-        "resolution_msg": "",
-        "image_msg": "",
-        "int_msg": "",
-        "sort_msg": "",
-        "site_msg": "",
-        "link": "",
-        "date_time": datetime.now().strftime("%m/%d/%Y %H:%M"),
-        "preset_id": datetime.now().strftime("%m%d%Y%H%M"),
-        "sort_func_options": ["lightness", "hue", "intensity", "minimum", "saturation"],
-        "int_func_options": [
-            "random",
-            "threshold",
-            "edges",
-            "waves",
-            "snap",
-            "file",
-            "file-edges",
-            "none",
-            "shuffle-total",
-            "shuffle-axis",
-        ],
-    }
-
-    "Random": [
-            "Randomness in every arg!",
-            (
-                (
-                    f"-a {rand.randrange(0, 360)} "
-                    f"-c {(rand.randrange(50, 500, 25))} "
-                    f"-u {float(rand.randrange(50, 100, 5) / 100)} "
-                    f"-t {float(rand.randrange(10, 50, 5) / 100)} "
-                    f"-r {rand.randrange(5, 75)} "
-                ),
-                misc_variables["int_func_options"][
-                    rand.randrange(0, len(misc_variables["int_func_options"]) - 2)
-                ],
-                misc_variables["sort_func_options"][
-                    rand.randrange(0, len(misc_variables["sort_func_options"]))
-                ],
-                True,
-                True,
-                True,
-                True,
-                True,
-                False,
-                False,
-                False,
-                False,
-                "",
-            ),
-        ],
-    """
-
-    sort_func_options: list = ["lightness", "hue", "intensity", "minimum", "saturation"],
-    int_func_options: list = [
-        "random",
-        "threshold",
-        "edges",
-        "waves",
-        "snap",
-        "file",
-        "file-edges",
-        "none",
-        "shuffle-total",
-        "shuffle-axis",
-    ],
-
-    # for big sampling
-    import random
-    from itertools import permutations
-    sample_of_presets: list = list(permutations(range(0, 4)))
-
-
 # READING FUNCTIONS #
 def ReadImageInput(
-    url_input: str, internet: bool = HasInternet()
-) -> Tuple[str, bool, bool, Any]:
+    url_input, internet = HasInternet()
+):
     r"""
     Reading the image input.
     -----
@@ -417,7 +329,7 @@ def ReadImageInput(
     - random_url -> if the url was randomly chose, the string of what number was chosen
     """
     print("Opening image...")
-    url_options: dict = {
+    url_options = {
         "0": "https://s.put.re/SRcqAfhP.jpg",
         "1": "https://s.put.re/Ds9KV8jX.jpg",
         "2": "https://s.put.re/QsUQbC1R.jpg",
@@ -426,8 +338,8 @@ def ReadImageInput(
         "5": "https://s.put.re/gcYkpmbd.jpg",
         "6": "https://s.put.re/K49iqXVJ.png",
     }
-    random_url: str = str(rand.randint(0, len(url_options)))
-    img_parse: Any = urlparse(url_input)
+    random_url = str(rand.randint(0, len(url_options)))
+    img_parse = urlparse(url_input)
 
     try:
         assert url_input not in ["0", "1", "2", "3", "4", "5", "6"]
@@ -475,7 +387,7 @@ def ReadImageInput(
             return url_options[random_url], False, True, random_url
 
 
-def ReadIntervalFunction(int_func_input: str) -> Callable[[Any, Any, bool], List[Any]]:
+def ReadIntervalFunction(int_func_input):
     r"""
     Reading the interval function.
     -----
@@ -506,7 +418,7 @@ def ReadIntervalFunction(int_func_input: str) -> Callable[[Any, Any, bool], List
         return random
 
 
-def ReadSortingFunction(sort_func_input: str) -> Callable[[Any], float]:
+def ReadSortingFunction(sort_func_input):
     r"""
     Reading the sorting function.
     -----
@@ -533,8 +445,8 @@ def ReadSortingFunction(sort_func_input: str) -> Callable[[Any], float]:
 
 
 def ReadPreset(
-    preset_input: str, width: int, presets: dict
-) -> Tuple[str, str, str, bool, bool, bool, bool, bool, bool, bool, bool, bool, str]:
+    preset_input, width, presets
+):
     r"""
     Returning values for 'presets'.
     -----
@@ -620,26 +532,26 @@ def ReadPreset(
 
 # SORTER #
 def SortImage(
-    pixels: List, intervals: List, args: Any, sorting_function: Callable[[Any], float]
-) -> List:
+    pixels, intervals, args, sorting_function
+):
     r"""
     Sorts the image.
     -----
-    :param pixels: List of pixel values.
-    :param intervals: List of pixel values after being run through selected interval function.
+    :param pixels of pixel values.
+    :param intervals of pixel values after being run through selected interval function.
     :param args: Arguments.
     :param sorting_function: Sorting function used in sorting of pixels.
-    :returns: List of sorted pixels.
+    :returns of sorted pixels.
     """
-    sorted_pixels: List = []
+    sorted_pixels = []
     sort_interval: Callable[[List[Any], Callable[[Any], float]], List[Any]] = (
         lambda lst, func: [] if lst == [] else sorted(lst, key=func)
     )
     for y in ProgressBars(len(pixels), "Sorting..."):
-        row: List = []
+        row = []
         x_min = 0
         for x_max in intervals[y]:
-            interval: List = []
+            interval = []
             for x in range(x_min, x_max):
                 Append3D(interval, x, y, pixels)
             if rand.randint(0, 100) >= args["randomness"]:
@@ -653,8 +565,8 @@ def SortImage(
 
 
 # INTERVALS #
-def edge(pixels: Any, args: dict) -> List:
-    edge_data: Any = (
+def edge(pixels, args):
+    edge_data = (
         ImgOpen(args["url"], args["internet"])
         .rotate(args["angle"], expand=True)
         .filter(ImageFilter.FIND_EDGES)
@@ -665,8 +577,8 @@ def edge(pixels: Any, args: dict) -> List:
     filter_pixels = PixelAppend(
         len(pixels), len(pixels[0]), edge_data, "Finding threshold..."
     )
-    edge_pixels: List = []
-    intervals: List = []
+    edge_pixels = []
+    intervals = []
 
     for y in ProgressBars(len(pixels), "Thresholding..."):
         Append(edge_pixels, [])
@@ -689,8 +601,8 @@ def edge(pixels: Any, args: dict) -> List:
     return intervals
 
 
-def threshold(pixels: Any, args: dict) -> List:
-    intervals: List = []
+def threshold(pixels, args):
+    intervals = []
 
     for y in ProgressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [])
@@ -704,8 +616,8 @@ def threshold(pixels: Any, args: dict) -> List:
     return intervals
 
 
-def random(pixels: Any, args: dict) -> List:
-    intervals: List = []
+def random(pixels, args):
+    intervals = []
 
     for y in ProgressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [])
@@ -721,8 +633,8 @@ def random(pixels: Any, args: dict) -> List:
     return intervals
 
 
-def waves(pixels: Any, args: dict) -> List:
-    intervals: List = []
+def waves(pixels, args):
+    intervals = []
 
     for y in ProgressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [])
@@ -738,14 +650,14 @@ def waves(pixels: Any, args: dict) -> List:
     return intervals
 
 
-def file_mask(pixels: Any, args: dict) -> List:
+def file_mask(pixels, args):
     img = ElementaryCA(pixels, args, int(len(pixels)), int(len(pixels[0]))).resize(
         (len(pixels[0]), len(pixels)), Image.ANTIALIAS
     )
-    data: Any = img.load()
+    data = img.load()
 
     file_pixels = PixelAppend(len(pixels), len(pixels[0]), data, "Defining edges...")
-    intervals: List = []
+    intervals = []
 
     for y in tqdm(
         range(len(pixels) - 1, 1, -1), desc=("{:30}".format("Cleaning up edges..."))
@@ -764,8 +676,8 @@ def file_mask(pixels: Any, args: dict) -> List:
     return intervals
 
 
-def file_edges(pixels: Any, args: dict) -> List:
-    edge_data: Any = (
+def file_edges(pixels, args):
+    edge_data = (
         ElementaryCA(pixels, args, int(len(pixels)), int(len(pixels[0])))
         .rotate(args["angle"], expand=True)
         .resize((len(pixels[0]), len(pixels)), Image.ANTIALIAS)
@@ -777,8 +689,8 @@ def file_edges(pixels: Any, args: dict) -> List:
     filter_pixels = PixelAppend(
         len(pixels), len(pixels[0]), edge_data, "Defining edges..."
     )
-    edge_pixels: List = []
-    intervals: List = []
+    edge_pixels = []
+    intervals = []
 
     for y in ProgressBars(len(pixels), "Thresholding..."):
         Append(edge_pixels, [])
@@ -801,16 +713,16 @@ def file_edges(pixels: Any, args: dict) -> List:
     return intervals
 
 
-def snap_sort(pixels: Any, args: dict) -> List:
+def snap_sort(pixels, args):
     input_img = ImgOpen("images/thanos_img.png", False)
-    pixels_snap: Any = array(input_img)
+    pixels_snap = array(input_img)
 
     print("The hardest choices require the strongest wills...")
     nx, ny = input_img.size
-    xy: Any = mgrid[:nx, :ny].reshape(2, -1).T
-    rounded: int = int(round(int(xy.shape[0] / 2), 0))
+    xy = mgrid[:nx, :ny].reshape(2, -1).T
+    rounded = int(round(int(xy.shape[0] / 2), 0))
 
-    numbers_that_dont_feel_so_good: Any = xy.take(
+    numbers_that_dont_feel_so_good = xy.take(
         choice(xy.shape[0], rounded, replace=False), axis=0
     )
     print(f'Number of those worthy of the sacrifice: {("{:,}".format(rounded))}')
@@ -821,11 +733,11 @@ def snap_sort(pixels: Any, args: dict) -> List:
         ] = [0, 0, 0, 0]
 
     print("Sorted perfectly in half.")
-    returned_souls: Any = Image.fromarray(pixels_snap, "RGBA")
+    returned_souls = Image.fromarray(pixels_snap, "RGBA")
     returned_souls.save("images/snapped_pixels.png")
 
     snapped_img = ImgOpen("images/snapped_pixels.png", False)
-    data: Any = snapped_img.load()
+    data = snapped_img.load()
     size0, size1 = snapped_img.size
     pixels_return = PixelAppend(size1, size0, data, "I hope they remember you...")
 
@@ -836,17 +748,17 @@ def snap_sort(pixels: Any, args: dict) -> List:
     return pixels_return
 
 
-def shuffle_total(pixels: Any, args: dict) -> List:
+def shuffle_total(pixels, args):
     print("Creating array from image...")
     input_img = ImgOpen(args["url"], args["internet"]).convert("RGBA")
-    height: int = input_img.size[1]
-    shuffled: Any = array(input_img)
+    height = input_img.size[1]
+    shuffled = array(input_img)
 
     for i in ProgressBars(int(height), "Shuffling image..."):
         shuffle(shuffled[i])
     print("Saving shuffled image...")
-    shuffled_img: Any = Image.fromarray(shuffled, "RGBA")
-    data: Any = shuffled_img.load()
+    shuffled_img = Image.fromarray(shuffled, "RGBA")
+    data = shuffled_img.load()
 
     size0, size1 = input_img.size
     pixels = PixelAppend(size1, size0, data, "Recreating image...")
@@ -855,17 +767,17 @@ def shuffle_total(pixels: Any, args: dict) -> List:
     return pixels
 
 
-def shuffled_axis(pixels: Any, args: dict) -> List:
+def shuffled_axis(pixels, args):
     print("Creating array from image...")
     input_img = ImgOpen(args["url"], args["internet"]).convert("RGBA")
-    height: int = input_img.size[1]
-    shuffled: Any = array(input_img)
+    height = input_img.size[1]
+    shuffled = array(input_img)
 
     for _ in ProgressBars(height, "Shuffling image..."):
         shuffle(shuffled)
     print("Saving shuffled image...")
-    shuffled_img: Any = Image.fromarray(shuffled, "RGBA")
-    data: Any = shuffled_img.load()
+    shuffled_img = Image.fromarray(shuffled, "RGBA")
+    data = shuffled_img.load()
 
     size0, size1 = input_img.size
     pixels = PixelAppend(size1, size0, data, "Recreating image...")
@@ -874,8 +786,8 @@ def shuffled_axis(pixels: Any, args: dict) -> List:
     return pixels
 
 
-def none(pixels: Any, args: dict) -> List:
-    intervals: List = []
+def none(pixels, args):
+    intervals = []
     for y in ProgressBars(len(pixels), "Determining intervals..."):
         Append(intervals, [len(pixels[y])])
     return intervals
@@ -999,7 +911,7 @@ def main():
     RemoveOld("images/ElementaryCA.png")
 
     # variables
-    misc_variables: dict = {
+    misc_variables = {
         "internet": HasInternet(),
         "preset_true": False,
         "snapped": False,
@@ -1031,7 +943,7 @@ def main():
             "shuffle-axis",
         ],
     }
-    presets: dict = {
+    presets = {
         "Main": [
             "Main args (r: 35-65, c: random gen, a: 0-360, random, intensity)",
             (
@@ -1146,13 +1058,6 @@ def main():
             ),
         ],
     }
-
-    """
-    if misc_variables["internet"]:
-        # update script if possible.
-        run(["git", "pull", "https://github.com/wolfembers/Pixelsorting.git"])
-        clear()
-    """
 
     print(
         f"Pixel sorting based on {'web hosted images.' if misc_variables['internet'] else 'local images'}\n"
@@ -1417,7 +1322,7 @@ def main():
         print("No args given!")
         arg_parse_input = ""
 
-    args_full: str = (
+    args_full = (
         f" -l {url}"
         f" -i {int_func_input}"
         f" -s {sort_func_input}"
@@ -1431,7 +1336,7 @@ def main():
     args_namespace = parse.parse_args(arg_parse_input.split())
     util_args_namespace = parse_util.parse_args(args_full.split())
 
-    __args: dict = {
+    __args = {
         "bottom_threshold": args_namespace.bottom_threshold,
         "upper_threshold": args_namespace.upper_threshold,
         "clength": args_namespace.clength,
@@ -1443,8 +1348,8 @@ def main():
         "presetname": util_args_namespace.presetname,
         "filelink": util_args_namespace.filelink,
         "dbpreset": util_args_namespace.dbpreset,
-        "preset": bool(util_args_namespace.preset),
-        "internet": bool(util_args_namespace.internet),
+        "preset"(util_args_namespace.preset),
+        "internet"(util_args_namespace.internet),
     }
 
     interval_function: Callable[[Any, dict], List] = ReadIntervalFunction(
@@ -1476,13 +1381,13 @@ def main():
     print("------------------------------")
 
     print("Rotating image...")
-    input_img: Any = input_img.rotate(__args["angle"], expand=True)
+    input_img = input_img.rotate(__args["angle"], expand=True)
 
     print("Getting data...")
-    data: Any = input_img.load()
+    data = input_img.load()
 
     size0, size1 = input_img.size
-    pixels: List = PixelAppend(size1, size0, data, "Getting pixels...")
+    pixels = PixelAppend(size1, size0, data, "Getting pixels...")
 
     if (
         misc_variables["shuffled"]
