@@ -129,28 +129,94 @@ def UploadImg(img):
 
 
 # LAMBDA FUNCTIONS #
-RemoveOld = lambda f: remove(f) if path.exists(f) else None
-Append = lambda l, obj: l.append(obj)
-AppendPIL = lambda l, x, y, d: l[y].append(d[x, y])
-Append3D = lambda l, x, y, d: l.append(d[y][x])
-AppendInPlace = lambda l, y, x: l[y].append(x)
 RandomWidthlambda = lambda c: int(c * (1 - rand.random()))
-ImgPixels = lambda i, x, y, d: i.putpixel((x, y), d[y][x])
 IDGen = lambda length: "".join(
     rand.choice(ascii_lowercase + ascii_uppercase + digits) for _ in range(length)
 )
 ProgressBars = lambda r, desc: trange(r, desc=("{:30}".format(desc)))
-AppendBW = (
-    lambda lst, x, y, data, thresh: AppendInPlace(lst, y, WhitePixel)
-    if (lightness(data[y][x]) < thresh)
-    else AppendInPlace(lst, y, BlackPixel)
-)
 
 # lambda rewrites
 def RemoveOld(fileName):
     """
     Removes a file
-    
+    ---
     Args:
         fileName (str): Name of the file to be removed
     """
+    if path.exists(fileName):
+        remove(fileName)
+
+
+def Append(listName, obj):
+    """Append an object in place.
+    ---
+    improves effeciency a lot more than one would think.
+
+    :param listName: name of the list
+    :param obj: object being appended
+    """
+    listName.append(obj)
+
+
+def AppendPIL(listName, x, y, data):
+    """Append in place a PIL pixel value, obtained from a PIL data object
+    ---
+    :param listName: name of the list
+    :param x: x position
+    :param y: y position
+    :param data: data object, obtained from Image.load()
+    """
+    listName[y].append(data[x, y])
+
+
+def Append3D(listName, x, y, data):
+    """Appends an object in y position in a 3 dimensional list
+    ---
+    commonly used for image lists
+    
+    :param listName: name of the list
+    :param x: x position
+    :param y: y position
+    :param data: obtained from Image.load()
+    """
+    listName.append(data[y][x])
+
+
+def AppendInPlace(listName, y, obj):
+    """Appends an object in list 'y'
+    ---
+    :param listName: name of list
+    :param y: position y
+    :param obj: object being appended
+    """
+    listName[y].append(obj)
+
+
+def ImgPixels(img, x, y, data):
+    """Puts pixels backa into an image from a 3D list
+    ---
+    :param img: image (usually blank)
+    :param x: position x
+    :param y: position y
+    :param data: data object, obtained from Image.load()
+    """
+    img.putpixel((x, y), data[y][x])
+
+
+def AppendBW(listName, x, y, data, threshold):
+    """Appends a pixel in place based on a threshold value as well as the values of a black and white pixel
+    ---
+    
+    :param listName: name of the list
+    :param x: position x
+    :param y: position y
+    :param data: obtained from Image.load()
+    :param threshold: threshold value
+    """
+    BlackPixel = (0, 0, 0, 255)
+    WhitePixel = (255, 255, 255, 255)
+
+    if lightness(data[y][x]) < threshold:
+        AppendInPlace(listName, y, WhitePixel)
+    else:
+        AppendInPlace(listName, y, BlackPixel)
