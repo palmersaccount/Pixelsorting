@@ -129,6 +129,8 @@ def PixelAppend(size1: int, size0: int, data: Any, msg: str) -> List:
     return pixels
 
 
+## TODO
+# would recommend moving this to a seperate file, maybe split it up a bit
 def ElementaryCA(pixels: Any, args: dict, width: Any, height: Any) -> Any:
     r"""
     Generate images of elementary cellular automata.
@@ -382,7 +384,7 @@ def RandomGen(preset: dict, permutations: int) -> str:
         ],
     """
 
-    sort_func_options: list = ["lightness", "hue", "intensity", "minimum", "saturation"],
+    sort_func_options: list = ["lightness", "hue", "intensity", "minimum", "saturation"]
     int_func_options: list = [
         "random",
         "threshold",
@@ -394,7 +396,7 @@ def RandomGen(preset: dict, permutations: int) -> str:
         "none",
         "shuffle-total",
         "shuffle-axis",
-    ],
+    ]
 
     # for big sampling
     import random
