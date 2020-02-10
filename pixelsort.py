@@ -401,6 +401,7 @@ def RandomGen(preset: dict, permutations: int) -> str:
     # for big sampling
     import random
     from itertools import permutations
+
     sample_of_presets: list = list(permutations(range(0, 4)))
 
 
