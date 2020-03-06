@@ -156,8 +156,8 @@ def ElementaryCA(pixels, args, width, height):
         scalefactor = 1
 
         # Define colors of the output image
-        true_pixel: Tuple[int, int, int] = (255, 255, 255)
-        false_pixel: Tuple[int, int, int] = (0, 0, 0)
+        true_pixel = (255, 255, 255)
+        false_pixel = (0, 0, 0)
 
         # Generates a dictionary that tells you what your state should be based on the rule number
         # and the states of the adjacent cells in the previous generation
@@ -280,8 +280,8 @@ def CropTo(image_to_crop, args):
     :return: image cropped to the size of the reference image
     """
     reference_image = ImgOpen(args["url"], args["internet"])
-    reference_size: Tuple[int, int] = reference_image.size
-    current_size: Tuple[int, int] = image_to_crop.size
+    reference_size = reference_image.size
+    current_size = image_to_crop.size
     dx = current_size[0] - reference_size[0]
     dy = current_size[1] - reference_size[1]
     left = dx / 2
@@ -292,7 +292,7 @@ def CropTo(image_to_crop, args):
 
 
 # READING FUNCTIONS #
-def ReadImageInput(url_input, internet=HasInternet()):
+def ReadImageInput(url_input, misc_variables, internet=HasInternet()):
     r"""
     Reading the image input.
     -----
@@ -518,7 +518,7 @@ def SortImage(pixels, intervals, args, sorting_function):
     :returns of sorted pixels.
     """
     sorted_pixels = []
-    sort_interval: Callable[[List[Any], Callable[[Any], float]], List[Any]] = (
+    sort_interval = (
         lambda lst, func: [] if lst == [] else sorted(lst, key=func)
     )
     for y in ProgressBars(len(pixels), "Sorting..."):
@@ -1056,7 +1056,7 @@ def main():
             url_input, misc_variables["image_upload_failed"] = UploadImg("image.png")
             RemoveOld("image.png")
         url, url_given, url_random, random_url = ReadImageInput(
-            url_input, misc_variables["internet"]
+            url_input, misc_variables, misc_variables["internet"]
         )
     else:
         print("Internet not connected! Local image must be used.")
@@ -1064,7 +1064,7 @@ def main():
             "Please input the location of the local file (default image in images folder):\n"
         )
         url, url_given, url_random, random_url = ReadImageInput(
-            url_input, misc_variables["internet"]
+            url_input, misc_variables, misc_variables["internet"]
         )
     input_img = ImgOpen(url, misc_variables["internet"])
 
@@ -1327,10 +1327,10 @@ def main():
         "internet": (util_args_namespace.internet),
     }
 
-    interval_function: Callable[[Any, dict], List] = ReadIntervalFunction(
+    interval_function = ReadIntervalFunction(
         int_func_input
     )
-    sorting_function: Callable[[Any, dict], List] = ReadSortingFunction(sort_func_input)
+    sorting_function = ReadSortingFunction(sort_func_input)
 
     print(
         f"{misc_variables['image_msg']}\n{misc_variables['resolution_msg']}\n"
