@@ -2758,3 +2758,81 @@ Sorted on: 03/05/2020 21:59
 
 Sorted image: 
 -----------------------------------
+Starting image url: https://i.redd.it/gs5uf2hdlfk41.jpg
+Resolution: 2350x2993
+Int func (randomly chosen): none
+
+Sort func (randomly chosen): intensity
+Args: -a 47 -c 350 -u 0.85 -t 0.1 -r 11 
+Sorted on: 03/06/2020 15:03
+
+Sorted image: https://linx.li/t2l3zn9o.png
+
+-----------------------------------
+Starting image url: https://i.redd.it/gs5uf2hdlfk41.jpg
+Resolution: 2350x2993
+Int func (randomly chosen): file-edges
+
+Sort func (randomly chosen): saturation
+Args: -a 17 -c 50 -u 0.85 -t 0.1 -r 11 
+Sorted on: 03/06/2020 15:04
+
+Sorted image: https://linx.li/1acvmrcj.png
+
+-----------------------------------
+Starting image url: https://i.redd.it/gs5uf2hdlfk41.jpg
+Resolution: 2350x2993
+Int func: random
+
+Sort func: intensity
+Args: -r 42 -c 200 -a 321 
+Sorted on: 03/06/2020 15:08
+
+Sorted image: https://linx.li/2txajxnm.png
+
+-----------------------------------
+Starting image url: https://i.redd.it/gs5uf2hdlfk41.jpg
+Resolution: 2350x2993
+Int func: file-edges
+File link: https://linx.li/9nweh0d4.png
+
+Sort func: minimum
+Args: -r 63 -t 0.86
+Sorted on: 03/06/2020 15:09
+
+Sorted image: https://linx.li/yk4w0ac0.png
+
+-----------------------------------
+Starting image url: https://i.redd.it/g0f120g492j41.jpg
+Resolution: 2244x2866
+Int func (randomly chosen): file
+
+Sort func (randomly chosen): minimum
+Args: -a 72 -c 275 -u 0.55 -t 0.15 -r 32 
+Sorted on: 03/06/2020 15:11
+
+Sorted image: https://linx.li/b7uj0fns.png
+
+-----------------------------------
+Starting image url: https://i.redd.it/g0f120g492j41.jpg
+Resolution: 2244x2866
+Int func (randomly chosen): file
+
+Sort func (randomly chosen): saturation
+Args: -a 101 -c 125 -u 0.95 -t 0.4 -r 39 
+Sorted on: 03/06/2020 15:12
+
+Sorted image: https://linx.li/cdpdy5bc.png
+
+-----------------------------------
+Starting image url: https://i.redd.it/g0f120g492j41.jpg
+Resolution: 2244x2866
+Int func: random
+
+Sort func: intensity
+Args: -r 61 -c 250 -a 200 
+Sorted on: 03/06/2020 15:13
+
+Sorted image: https://linx.li/vpgynalu.png
+
+-----------------------------------

@@ -41,16 +41,27 @@ try:
     from numpy import array, mgrid
     from numpy.random import choice, shuffle
     from PIL import Image, ImageFilter
-    from requests import get, post, request
+    from requests import get, post, request, put
     from tqdm import tqdm, trange
 except ImportError:
     if HasInternet():
         # Upgrade/Install all packages
-        run(["pip", "install", "pillow", "numpy", "tqdm", "requests", "--upgrade"])
+        run(
+            [
+                "pip",
+                "install",
+                "pillow",
+                "numpy",
+                "tqdm",
+                "requests",
+                "pyimgur",
+                "--upgrade",
+            ]
+        )
         from numpy import array, mgrid
         from numpy.random import choice, shuffle
         from PIL import Image, ImageFilter
-        from requests import get, post, request
+        from requests import get, post, request, put
         from tqdm import tqdm, trange
     else:
         print(
@@ -219,7 +230,7 @@ def ElementaryCA(pixels, args, width, height):
 
 def UploadImg(img):
     r"""
-    Upload an image to put.re
+    Upload an image to put.re/imgur
     -----
     :param img: A string of a local file.
     :returns: String of link of the uploaded file.
@@ -232,17 +243,47 @@ def UploadImg(img):
     (those links are actually correct.)
     """
     try:
-        r = post("https://api.put.re/upload", files={"file": (img, open(img, "rb"))})
-        output = loads(r.text)
-        link = output["data"]["link"]
+        # Since put.re is currently not avaliable, I am temporarily using imgur.
+        # I really do not like using them due to the compression of images and poor .png support,
+        # but unfortunately this is what has to be done as I need a free online image solution.
+        # I will be leaving the old code to upload to put.re's api for whenver it is back up.
+
+        # r = post("https://api.put.re/upload", files={"file": (img, open(img, "rb"))})
+        # print(r.text)
+        # output = loads(r.text)
+        # link = output["data"]["link"]
+        # return link, True
+
+        """
+        In the event Imgur's API makes a change for the better, (which I HIGHLY doubt)
+        then we can use this code.
+
+        CLIENT_ID = "d7155a81c1e37bd"
+
+        im = Imgur(CLIENT_ID)
+        image = im.upload_image(
+            img,
+            title="Pixelsorting",
+            description="Pixelsorted image, from https://github.com/wolfembers/Pixelsorting",
+        )
+        link = image.link
+        return link, True
+        """
+
+        r = put("https://linx.li/upload/", open(img, "rb"))
+        link = r.text
         return link, True
     except FileNotFoundError:
         print(f"{'---'*15}\n'{img}' not usable!\n{'---'*15}")
         return "", False
+    """
+    This section isn't needed as it was a part of put.re's api.
+
     except KeyError:
         print(f"{'---'*15}\n{output['message']}\n{'---'*15}")
         print(f"\n\nput.re's API is currently down. Sorry about that.")
         return "", False
+    """
 
 
 def ImgOpen(url, internet):
@@ -290,6 +331,116 @@ def CropTo(image_to_crop, args):
     right = dx / 2 + reference_size[0]
     lower = dy / 2 + reference_size[1]
     return image_to_crop.crop(box=(int(left), int(upper), int(right), int(lower)))
+
+
+def ArgParsing():
+    """
+    This function is purely because it is hard to minimize every arg in the main function and it reduces the complexity of the main function.
+    """
+    # arg parsing arguments
+    parse = argparse.ArgumentParser(description="pixel mangle an image")
+    parse_util = argparse.ArgumentParser(description="misc. args used in program")
+    """
+    (Taken args)
+    //user read//
+    :-t,--bottom_threshold -> bottom/lower threshold
+    :-u,--upper_threshold -> top/upper threshold
+    :-c,--clength -> character length
+    :-a,--angle -> angle for rotation
+    :-r,--randomness -> randomness
+
+    //not accessible to user//
+    :-l,--url -> url
+    :-i,--int_function -> interval function
+    :-s,--sorting_function -> sorting function
+    :-p --preset -> is preset used
+    :-d --dbpreset -> is dbpreset used
+    :-y --internet -> is internet there
+    :-k --filelink -> for DBpreset
+    :-b --presetname -> name of preset used
+    """
+    parse.add_argument(
+        "-t",
+        "--bottom_threshold",
+        type=float,
+        help="Pixels darker than this are not sorted, between 0 and 1",
+        default=0.25,
+    )
+    parse.add_argument(
+        "-u",
+        "--upper_threshold",
+        type=float,
+        help="Pixels darker than this are not sorted, between 0 and 1",
+        default=0.8,
+    )
+    parse.add_argument(
+        "-c",
+        "--clength",
+        type=int,
+        help="Characteristic length of random intervals",
+        default=50,
+    )
+    parse.add_argument(
+        "-a",
+        "--angle",
+        type=float,
+        help="Rotate the image by an angle (in degrees) before sorting",
+        default=0,
+    )
+    parse.add_argument(
+        "-r",
+        "--randomness",
+        type=float,
+        help="What percentage of intervals are NOT sorted",
+        default=10,
+    )
+
+    parse_util.add_argument(
+        "-l",
+        "--url",
+        help="URL of a given image. Used as the input image.",
+        default="https://s.put.re/QsUQbC1R.jpg",
+    )
+    parse_util.add_argument(
+        "-i",
+        "--int_function",
+        help="random, threshold, edges, waves, snap, shuffle-total, shuffle-axis, file, file-edges, none",
+        default="random",
+    )
+    parse_util.add_argument(
+        "-s",
+        "--sorting_function",
+        help="lightness, intensity, hue, saturation, minimum",
+        default="lightness",
+    )
+    parse_util.add_argument(
+        "-p",
+        "--preset",
+        type=bool,
+        help="Is a preset used or not? Boolean.",
+        default=False,
+    )
+    parse_util.add_argument(
+        "-d",
+        "--dbpreset",
+        help="Boolean for if preset is used or not.",
+        type=bool,
+        default=False,
+    )
+    parse_util.add_argument(
+        "-y",
+        "--internet",
+        help="Boolean for if internet is preset or not.",
+        type=bool,
+        default=True,
+    )
+    parse_util.add_argument(
+        "-b", "--presetname", help="Name of the preset used.", default="None"
+    )
+    parse_util.add_argument(
+        "-k", "--filelink", help="File image used, only in DB preset mode.", default=""
+    )
+    return parse, parse_util
 
 
 # READING FUNCTIONS #
@@ -525,7 +676,7 @@ def SortImage(pixels, intervals, args, sorting_function):
         x_min = 0
         for x_max in intervals[y]:
             interval = []
-            for x in range(x_min, x_max):
+            for x in range(int(x_min), int(x_max)):
                 Append3D(interval, x, y, pixels)
             if rand.randint(0, 100) >= args["randomness"]:
                 row += sort_interval(interval, sorting_function)
@@ -772,113 +923,11 @@ def main():
     Pixelsorting an image.
     """
 
-    # arg parsing arguments
-    parse = argparse.ArgumentParser(description="pixel mangle an image")
-    parse_util = argparse.ArgumentParser(description="misc. args used in program")
-    """
-    (Taken args)
-    //user read//
-    :-t,--bottom_threshold -> bottom/lower threshold
-    :-u,--upper_threshold -> top/upper threshold
-    :-c,--clength -> character length
-    :-a,--angle -> angle for rotation
-    :-r,--randomness -> randomness
-
-    //not accessible to user//
-    :-l,--url -> url
-    :-i,--int_function -> interval function
-    :-s,--sorting_function -> sorting function
-    :-p --preset -> is preset used
-    :-d --dbpreset -> is dbpreset used
-    :-y --internet -> is internet there
-    :-k --filelink -> for DBpreset
-    :-b --presetname -> name of preset used
-    """
-    parse.add_argument(
-        "-t",
-        "--bottom_threshold",
-        type=float,
-        help="Pixels darker than this are not sorted, between 0 and 1",
-        default=0.25,
-    )
-    parse.add_argument(
-        "-u",
-        "--upper_threshold",
-        type=float,
-        help="Pixels darker than this are not sorted, between 0 and 1",
-        default=0.8,
-    )
-    parse.add_argument(
-        "-c",
-        "--clength",
-        type=int,
-        help="Characteristic length of random intervals",
-        default=50,
-    )
-    parse.add_argument(
-        "-a",
-        "--angle",
-        type=float,
-        help="Rotate the image by an angle (in degrees) before sorting",
-        default=0,
-    )
-    parse.add_argument(
-        "-r",
-        "--randomness",
-        type=float,
-        help="What percentage of intervals are NOT sorted",
-        default=10,
-    )
-
-    parse_util.add_argument(
-        "-l",
-        "--url",
-        help="URL of a given image. Used as the input image.",
-        default="https://s.put.re/QsUQbC1R.jpg",
-    )
-    parse_util.add_argument(
-        "-i",
-        "--int_function",
-        help="random, threshold, edges, waves, snap, shuffle-total, shuffle-axis, file, file-edges, none",
-        default="random",
-    )
-    parse_util.add_argument(
-        "-s",
-        "--sorting_function",
-        help="lightness, intensity, hue, saturation, minimum",
-        default="lightness",
-    )
-    parse_util.add_argument(
-        "-p",
-        "--preset",
-        type=bool,
-        help="Is a preset used or not? Boolean.",
-        default=False,
-    )
-    parse_util.add_argument(
-        "-d",
-        "--dbpreset",
-        help="Boolean for if preset is used or not.",
-        type=bool,
-        default=False,
-    )
-    parse_util.add_argument(
-        "-y",
-        "--internet",
-        help="Boolean for if internet is preset or not.",
-        type=bool,
-        default=True,
-    )
-    parse_util.add_argument(
-        "-b", "--presetname", help="Name of the preset used.", default="None"
-    )
-    parse_util.add_argument(
-        "-k", "--filelink", help="File image used, only in DB preset mode.", default=""
-    )
+    parse, parse_util = ArgParsing()
 
     clear()
     # remove old image files that didn't get deleted before
-    ##RemoveOld("images/image.png")
+    RemoveOld("images/image.png")
     RemoveOld("images/thanos_img.png")
     RemoveOld("images/snapped_pixels.png")
     RemoveOld("images/ElementaryCA.png")
@@ -1036,7 +1085,7 @@ def main():
     print(
         f"Pixel sorting based on {'web hosted images.' if misc_variables['internet'] else 'local images'}\n"
         f"Most of the backend is sourced from https://github.com/satyarth/pixelsort"
-        f"\nThe output image is {'uploaded to put.re after being sorted.' if misc_variables['internet'] else 'saved locally.'}\n"
+        f"\nThe output image is {'uploaded to linx.li after being sorted.' if misc_variables['internet'] else 'saved locally.'}\n"
         f"\nTo see any past runs, args used, and the result image, open 'output.txt'\n"
         f"{(35 * '--')}"
         f"\nThanks for using this program!\nPress any key to continue..."
@@ -1249,21 +1298,6 @@ def main():
             else "Sorting function: lightness (default)"
         )
 
-    # hosting site
-    if misc_variables["internet"]:
-        output_image_path = "images/image.png"
-        misc_variables["site_msg"] = "Uploading sorted image to put.re"
-    else:
-        print("Internet not connected! Image will be saved locally.\n")
-        file_name = input(
-            "Name of output file (leave empty for randomized name):\n(do not include the file extension, .png will always be used.)\n"
-        )
-        output_image_path = (IDGen(5) + ".png") if file_name in ["", " "] else file_name
-        misc_variables[
-            "site_msg"
-        ] = f"Internet not connected, saving locally as {output_image_path}"
-    clear()
-
     # args
     if not misc_variables["preset_true"]:
         needs_help = input("Do you need help with args? (y/n)\n")
@@ -1294,6 +1328,21 @@ def main():
             )
         arg_parse_input = input("\nArgs: ")
         clear()
+
+    # hosting site
+    if misc_variables["internet"]:
+        output_image_path = "images/image.png"
+        misc_variables["site_msg"] = "Uploading sorted image to linx.li."
+    else:
+        print("Internet not connected! Image will be saved locally.\n")
+        file_name = input(
+            "Name of output file (leave empty for randomized name):\n(do not include the file extension, .png will always be used.)\n"
+        )
+        output_image_path = (IDGen(5) + ".png") if file_name in ["", " "] else file_name
+        misc_variables[
+            "site_msg"
+        ] = f"Internet not connected, saving locally as {output_image_path}"
+    clear()
 
     # arg parsing
     if arg_parse_input in ["", " ", None]:
@@ -1398,7 +1447,7 @@ def main():
         for x in range(size0):
             ImgPixels(output_img, x, y, sorted_pixels)
 
-    if __args["angle"] is not 0:
+    if __args["angle"] != 0:
         print("Rotating output image back to original orientation...")
         output_img = output_img.rotate(360 - __args["angle"], expand=True)
 
