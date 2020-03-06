@@ -2748,3 +2748,13 @@ Sorted on: 02/10/2020 12:16
 
 Sorted image: 
 -----------------------------------
+Starting image url: https://i.imgur.com/shAde9l.jpg
+Resolution: 1080x1328
+Int func (randomly chosen): file-edges
+
+Sort func (randomly chosen): intensity
+Args: -a 354 -c 475 -u 0.9 -t 0.25 -r 19 
+Sorted on: 03/05/2020 21:59
+
+Sorted image: 
+-----------------------------------

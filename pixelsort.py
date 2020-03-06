@@ -241,6 +241,7 @@ def UploadImg(img):
         return "", False
     except KeyError:
         print(f"{'---'*15}\n{output['message']}\n{'---'*15}")
+        print(f"\n\nput.re's API is currently down. Sorry about that.")
         return "", False
 
 
@@ -518,9 +519,7 @@ def SortImage(pixels, intervals, args, sorting_function):
     :returns of sorted pixels.
     """
     sorted_pixels = []
-    sort_interval = (
-        lambda lst, func: [] if lst == [] else sorted(lst, key=func)
-    )
+    sort_interval = lambda lst, func: [] if lst == [] else sorted(lst, key=func)
     for y in ProgressBars(len(pixels), "Sorting..."):
         row = []
         x_min = 0
@@ -879,7 +878,7 @@ def main():
 
     clear()
     # remove old image files that didn't get deleted before
-    RemoveOld("images/image.png")
+    ##RemoveOld("images/image.png")
     RemoveOld("images/thanos_img.png")
     RemoveOld("images/snapped_pixels.png")
     RemoveOld("images/ElementaryCA.png")
@@ -1041,6 +1040,10 @@ def main():
         f"\nTo see any past runs, args used, and the result image, open 'output.txt'\n"
         f"{(35 * '--')}"
         f"\nThanks for using this program!\nPress any key to continue..."
+        f"\n\n\nFor anyone who has used the script before: put.re's api is currently down."
+        f"\nThis means the script cannot upload image urls, so I've temporarily"
+        f"\ndisabled the deletion of previous image files until this is resolved."
+        f"\nSorry about the mess. Hope fully they will fix soon."
     )
     input()
     clear()
@@ -1327,9 +1330,7 @@ def main():
         "internet": (util_args_namespace.internet),
     }
 
-    interval_function = ReadIntervalFunction(
-        int_func_input
-    )
+    interval_function = ReadIntervalFunction(int_func_input)
     sorting_function = ReadSortingFunction(sort_func_input)
 
     print(
