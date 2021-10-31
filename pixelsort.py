@@ -73,6 +73,12 @@ except ImportError:
 BlackPixel = (0, 0, 0, 255)
 WhitePixel = (255, 255, 255, 255)
 
+# SORTING PIXELS #
+lightness = lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0
+intensity = lambda p: p[0] + p[1] + p[2]
+hue = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0
+saturation = lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0
+minimum = lambda p: min(p[0], p[1], p[2])
 
 # LAMBDA FUNCTIONS #
 RemoveOld = lambda f: remove(f) if path.exists(f) else None
@@ -91,14 +97,6 @@ AppendBW = (
     if (lightness(data[y][x]) < thresh)
     else AppendInPlace(lst, y, BlackPixel)
 )
-
-
-# SORTING PIXELS #
-lightness = lambda p: rgb_to_hsv(p[0], p[1], p[2])[2] / 255.0
-intensity = lambda p: p[0] + p[1] + p[2]
-hue = lambda p: rgb_to_hsv(p[0], p[1], p[2])[0] / 255.0
-saturation = lambda p: rgb_to_hsv(p[0], p[1], p[2])[1] / 255.0
-minimum = lambda p: min(p[0], p[1], p[2])
 
 
 # MISC FUNCTIONS #
@@ -248,11 +246,11 @@ def UploadImg(img):
         # but unfortunately this is what has to be done as I need a free online image solution.
         # I will be leaving the old code to upload to put.re's api for whenver it is back up.
 
-        # r = post("https://api.put.re/upload", files={"file": (img, open(img, "rb"))})
-        # print(r.text)
-        # output = loads(r.text)
-        # link = output["data"]["link"]
-        # return link, True
+        r = post("https://api.put.re/upload", files={"file": (img, open(img, "rb"))})
+        print(r.text)
+        output = loads(r.text)
+        link = output["data"]["link"]
+        return link, True
 
         """
         In the event Imgur's API makes a change for the better, (which I HIGHLY doubt)
@@ -270,9 +268,9 @@ def UploadImg(img):
         return link, True
         """
 
-        r = put("https://linx.li/upload/", open(img, "rb"))
-        link = r.text
-        return link, True
+        # r = put("https://linx.li/upload/", open(img, "rb"))
+        # link = r.text
+        # return link, True
     except FileNotFoundError:
         print(f"{'---'*15}\n'{img}' not usable!\n{'---'*15}")
         return "", False
@@ -950,7 +948,7 @@ def main():
         "sort_msg": "",
         "site_msg": "",
         "link": "",
-        "date_time": datetime.now().strftime("%m/%d/%Y %H:%M"),
+        "date_time": datetime.now().strftime("(%m%d%Y%H%M)"),
         "preset_id": datetime.now().strftime("%m%d%Y%H%M"),
         "sort_func_options": ["lightness", "hue", "intensity", "minimum", "saturation"],
         "int_func_options": [
@@ -1083,16 +1081,16 @@ def main():
     }
 
     print(
-        f"Pixel sorting based on {'web hosted images.' if misc_variables['internet'] else 'local images'}\n"
+        f"Pixel sorting based on {'web hosted or local images.' if misc_variables['internet'] else 'local images'}\n"
         f"Most of the backend is sourced from https://github.com/satyarth/pixelsort"
-        f"\nThe output image is {'uploaded to linx.li after being sorted.' if misc_variables['internet'] else 'saved locally.'}\n"
-        f"\nTo see any past runs, args used, and the result image, open 'output.txt'\n"
+        f"\nThe output image is saved locally.\n"
         f"{(35 * '--')}"
-        f"\nThanks for using this program!\nPress any key to continue..."
-        f"\n\n\nFor anyone who has used the script before: put.re's api is currently down."
-        f"\nThis means the script cannot upload image urls, so I've temporarily"
-        f"\ndisabled the deletion of previous image files until this is resolved."
-        f"\nSorry about the mess. Hope fully they will fix soon."
+        f"\nupdate as of 10/30/21: put.re as well as lynx.li are unavaliable so the program no longer"
+        f"\nuploads its images or uploads to the database. I have removed almost every instance of "
+        f"\nuploading but be prepared for the program to break. I haven't had time to maintain it."
+        f"\n\nThings that don't work:"
+        f"\n-default images\n-presets from database\n-image uploading"
+        f"\n\nThanks for using this program!\nPress any key to continue..."
     )
     input()
     clear()
@@ -1101,6 +1099,9 @@ def main():
         url_input = input(
             "Please input the URL of the image, the default image #, or the image path:\n(this might take a while depending the image resolution)\n"
         )
+        url = url_input
+        url_given = url
+        """
         if len(url_input) > 79:
             print("Image URL too long, uploading to put.re for a shorter URL...")
             img = ImgOpen(url_input, misc_variables["internet"])
@@ -1110,6 +1111,7 @@ def main():
         url, url_given, url_random, random_url = ReadImageInput(
             url_input, misc_variables, misc_variables["internet"]
         )
+        """
     else:
         print("Internet not connected! Local image must be used.")
         url_input = input(
@@ -1330,18 +1332,15 @@ def main():
         clear()
 
     # hosting site
-    if misc_variables["internet"]:
-        output_image_path = "images/image.png"
-        misc_variables["site_msg"] = "Uploading sorted image to linx.li."
-    else:
-        print("Internet not connected! Image will be saved locally.\n")
-        file_name = input(
-            "Name of output file (leave empty for randomized name):\n(do not include the file extension, .png will always be used.)\n"
-        )
-        output_image_path = (IDGen(5) + ".png") if file_name in ["", " "] else file_name
-        misc_variables[
-            "site_msg"
-        ] = f"Internet not connected, saving locally as {output_image_path}"
+    file_name = input(
+        "Name of output file (leave empty for randomized name):\n(do not include the file extension or spaces, .png will always be used.)\n"
+    )
+    output_image_path = (
+        (IDGen(5) + "_" + misc_variables["date_time"] + ".png")
+        if file_name in ["", " "]
+        else (file_name + "_" + misc_variables["date_time"] + ".png")
+    )
+    misc_variables["site_msg"] = f"saving locally as {output_image_path}"
     clear()
 
     # arg parsing
@@ -1458,6 +1457,7 @@ def main():
     output_img.save(output_image_path)
     output_img.show()
 
+    """
     if misc_variables["internet"]:
         print("Uploading...")
         misc_variables["link"], misc_variables["image_upload_failed"] = UploadImg(
@@ -1519,6 +1519,7 @@ def main():
         print(f"Link to image: {misc_variables['link']}")
     else:
         print("Not saving config to 'output.txt', as there is no internet.\nDone!")
+    """
 
 
 if __name__ == "__main__":
