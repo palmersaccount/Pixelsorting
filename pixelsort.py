@@ -41,7 +41,7 @@ try:
     from numpy import array, mgrid
     from numpy.random import choice, shuffle
     from PIL import Image, ImageFilter
-    from requests import get, post, request, put
+    from requests import get, post, request, put, ConnectionError
     from tqdm import tqdm, trange
 except ImportError:
     if HasInternet():
@@ -61,7 +61,7 @@ except ImportError:
         from numpy import array, mgrid
         from numpy.random import choice, shuffle
         from PIL import Image, ImageFilter
-        from requests import get, post, request, put
+        from requests import get, post, request, put, ConnectionError
         from tqdm import tqdm, trange
     else:
         print(
@@ -284,6 +284,19 @@ def UploadImg(img):
     """
 
 
+def CheckUrl(inputStr):
+    r"""
+    Performs a very rough check if the file exists as a path or if it is a URL
+    ------
+    :param inputStr: the input string, file path or url
+    :returns: true if the file path exists, false if it does not.
+    """
+    if path.exists(inputStr):
+        return True
+    else:
+        return False
+
+
 def ImgOpen(url, internet):
     r"""
     Opens the image from a direct url if the internet is connected.
@@ -298,16 +311,22 @@ def ImgOpen(url, internet):
     >>> img
     >>> <PIL.JpegImagePlugin.JpegImageFile image mode=RGB size=2560x1974 at 0x29C74D7A518>
     """
-    try:
-        img = Image.open((get(url, stream=True).raw) if internet else url).convert(
-            "RGBA"
-        )
+    isUrl = CheckUrl(url)
+    if not isUrl:
+        try:
+            img = Image.open((get(url, stream=True).raw) if internet else url).convert(
+                "RGBA"
+            )
+            return img
+        except OSError:
+            print(
+                f"{'---'*15}\nURL '{url}' not usable!\nPlease find the direct image url to use this script!\n{'---'*15}"
+            )
+            exit()
+    else:
+        img = Image.open(url).convert("RGBA")
         return img
-    except OSError:
-        print(
-            f"{'---'*15}\nURL '{url}' not usable!\nPlease find the direct image url to use this script!\n{'---'*15}"
-        )
-        exit()
+
 
 
 def CropTo(image_to_crop, args):
