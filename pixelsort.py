@@ -55,7 +55,6 @@ except ImportError:
                 "numpy",
                 "tqdm",
                 "requests",
-                "pyimgur",
                 "--upgrade",
             ]
         )
@@ -230,6 +229,8 @@ def ElementaryCA(pixels, args, width, height):
 def UploadImg(img):
     r"""
     Upload an image to put.re/imgur
+
+    This section is currently completely unused but still left in place as it might one day get used again.
     -----
     :param img: A string of a local file.
     :returns: String of link of the uploaded file.
@@ -242,10 +243,6 @@ def UploadImg(img):
     (those links are actually correct.)
     """
     try:
-        # Since put.re is currently not avaliable, I am temporarily using imgur.
-        # I really do not like using them due to the compression of images and poor .png support,
-        # but unfortunately this is what has to be done as I need a free online image solution.
-        # I will be leaving the old code to upload to put.re's api for whenver it is back up.
 
         r = post("https://api.put.re/upload", files={"file": (img, open(img, "rb"))})
         print(r.text)
@@ -253,36 +250,9 @@ def UploadImg(img):
         link = output["data"]["link"]
         return link, True
 
-        """
-        In the event Imgur's API makes a change for the better, (which I HIGHLY doubt)
-        then we can use this code.
-
-        CLIENT_ID = "d7155a81c1e37bd"
-
-        im = Imgur(CLIENT_ID)
-        image = im.upload_image(
-            img,
-            title="Pixelsorting",
-            description="Pixelsorted image, from https://github.com/wolfembers/Pixelsorting",
-        )
-        link = image.link
-        return link, True
-        """
-
-        # r = put("https://linx.li/upload/", open(img, "rb"))
-        # link = r.text
-        # return link, True
     except FileNotFoundError:
         print(f"{'---'*15}\n'{img}' not usable!\n{'---'*15}")
         return "", False
-    """
-    This section isn't needed as it was a part of put.re's api.
-
-    except KeyError:
-        print(f"{'---'*15}\n{output['message']}\n{'---'*15}")
-        print(f"\n\nput.re's API is currently down. Sorry about that.")
-        return "", False
-    """
 
 
 def CheckUrl(inputStr):
@@ -500,11 +470,7 @@ def ReadImageInput(url_input, misc_variables, internet=HasInternet()):
         else:
             if url_input in ["", " "]:
                 print("Using included default image")
-                url = (
-                    UploadImg("images/default.jpg")
-                    if internet
-                    else "images/default.jpg"
-                )
+                url = "images/default.jpg"
             else:
                 url = url_input
             return url, True, False, False
@@ -1120,17 +1086,6 @@ def main():
         )
         url = url_input
         url_given = url
-        """
-        if len(url_input) > 79:
-            print("Image URL too long, uploading to put.re for a shorter URL...")
-            img = ImgOpen(url_input, misc_variables["internet"])
-            img.save("image.png")
-            url_input, misc_variables["image_upload_failed"] = UploadImg("image.png")
-            RemoveOld("image.png")
-        url, url_given, url_random, random_url = ReadImageInput(
-            url_input, misc_variables, misc_variables["internet"]
-        )
-        """
     else:
         print("Internet not connected! Local image must be used.")
         url_input = input(
@@ -1351,6 +1306,7 @@ def main():
         clear()
 
     # hosting site
+    ### This used to be where it would declare if saved locally or uploaded, there is not upladImg used anymore
     file_name = input(
         "Name of output file (leave empty for randomized name):\n(do not include the file extension or spaces, .png will always be used.)\n"
     )
