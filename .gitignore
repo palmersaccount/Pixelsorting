@@ -121,3 +121,4 @@ dmypy.json
 output.txt
 images/ElementaryCA.png
 images/image.png
+output/*

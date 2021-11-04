@@ -46,6 +46,7 @@ try:
 except ImportError:
     if HasInternet():
         # Upgrade/Install all packages
+        print("No required packages found, installing remaining ones now!")
         run(
             [
                 "pip",
@@ -326,7 +327,6 @@ def ImgOpen(url, internet):
     else:
         img = Image.open(url).convert("RGBA")
         return img
-
 
 
 def CropTo(image_to_crop, args):
@@ -1361,6 +1361,8 @@ def main():
     )
     misc_variables["site_msg"] = f"saving locally as {output_image_path}"
     clear()
+
+    output_image_path = "output/" + output_image_path
 
     # arg parsing
     if arg_parse_input in ["", " ", None]:
