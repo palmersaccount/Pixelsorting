@@ -1318,6 +1318,8 @@ def main():
     misc_variables["site_msg"] = f"saving locally as {output_image_path}"
     clear()
 
+    output_image_path = "output/" + output_image_path
+
     # arg parsing
     if arg_parse_input in ["", " ", None]:
         print("No args given!")
